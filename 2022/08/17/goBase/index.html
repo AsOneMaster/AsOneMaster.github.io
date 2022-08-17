@@ -20,15 +20,21 @@
     var CONFIG = {"hostname":"asonemaster.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="迅的个人博客">
-<meta property="og:url" content="https://asonemaster.github.io/tags/%E6%95%B0%E7%BB%84%E4%B8%8E%E5%88%87%E7%89%87/index.html">
+  <meta name="description" content="golang中make和new的区别共同点：都是给变量分配内存；不同点：  返回类型不同： new创建返回指针，指向分配类型的指针，分配的空间置为零，该类型的零值；make返回变量本身，分配空间后会进行初始；  分配类型：new可以为任意类型进行分配；make只能为slice，map，chan引用类型数据进行分配空间。   数组和切片的区别共同点：都是通过下标访问，并且都有容量长度； 不同点：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go语言基础1">
+<meta property="og:url" content="https://asonemaster.github.io/2022/08/17/goBase/index.html">
 <meta property="og:site_name" content="迅的个人博客">
+<meta property="og:description" content="golang中make和new的区别共同点：都是给变量分配内存；不同点：  返回类型不同： new创建返回指针，指向分配类型的指针，分配的空间置为零，该类型的零值；make返回变量本身，分配空间后会进行初始；  分配类型：new可以为任意类型进行分配；make只能为slice，map，chan引用类型数据进行分配空间。   数组和切片的区别共同点：都是通过下标访问，并且都有容量长度； 不同点：">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-17T05:16:20.029Z">
+<meta property="article:modified_time" content="2022-08-17T08:00:54.347Z">
 <meta property="article:author" content="asOneMaster">
+<meta property="article:tag" content="数组">
+<meta property="article:tag" content="切片">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://asonemaster.github.io/tags/%E6%95%B0%E7%BB%84%E4%B8%8E%E5%88%87%E7%89%87/">
+<link rel="canonical" href="https://asonemaster.github.io/2022/08/17/goBase/">
 
 
 <script id="page-configurations">
@@ -36,12 +42,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>标签: 数组与切片 | 迅的个人博客</title>
+  <title>go语言基础1 | 迅的个人博客</title>
   
 
 
@@ -177,51 +183,122 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">数组与切片
-          <small>标签</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/17/goBase/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="asOneMaster">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="迅的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          go语言基础1
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-08-17 13:16:20 / 修改时间：16:00:54" itemprop="dateCreated datePublished" datetime="2022-08-17T13:16:20+08:00">2022-08-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>466</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2022</span>
+        <h5 id="golang中make和new的区别"><a href="#golang中make和new的区别" class="headerlink" title="golang中make和new的区别"></a>golang中make和new的区别</h5><p>共同点：都是给变量分配内存；<br>不同点：</p>
+<ol>
+<li><p>返回类型不同： new创建返回指针，指向分配类型的指针，分配的空间置为零，该类型的零值；make返回变量本身，分配空间后会进行初始；</p>
+</li>
+<li><p>分配类型：new可以为任意类型进行分配；make只能为slice，map，chan引用类型数据进行分配空间。</p>
+</li>
+</ol>
+<h5 id="数组和切片的区别"><a href="#数组和切片的区别" class="headerlink" title="数组和切片的区别"></a>数组和切片的区别</h5><p>共同点：都是通过下标访问，并且都有容量长度；</p>
+<p>不同点：</p>
+<ol>
+<li>定义方式不同：数组必须指定大小，定义后不能增加容量和长度；切片不用，定义后切片数据增多，会自动扩容（当原切片长度小于1024时，新切片的容量会直接翻倍；超过1024会反复地增加25%，直到新容量超过所需要的容量）；</li>
+<li>类型不同：数值为值类型；切片为引用类型，每个切片底层引用一个数组，所以切片扩容后，便会指向一个新的底层数组，内存地址跟着改变。</li>
+</ol>
+<span id="more"></span>
+
+<h5 id="for-range-的时候它的地址会发生变化么？"><a href="#for-range-的时候它的地址会发生变化么？" class="headerlink" title="for range 的时候它的地址会发生变化么？"></a>for range 的时候它的地址会发生变化么？</h5><p>在 for a,b := range c 遍历中，a,b只会存一份地址，循环后会重新赋值，内存地址不变；因此for中创建协程后不要传入a或b的地址，可以再循环中通过创建临时变量解决。</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-17T13:16:20+08:00"
-              content="2022-08-17">
-          08-17
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E7%BB%84/" rel="tag"># 数组</a>
+              <a href="/tags/%E5%88%87%E7%89%87/" rel="tag"># 切片</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/17/go%E5%9F%BA%E7%A1%80/" itemprop="url">
-            <span itemprop="name">基础</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/17/golangStudy/" rel="prev" title="golang学习路线，所需知识">
+      <i class="fa fa-chevron-left"></i> golang学习路线，所需知识
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/08/17/goBase2/" rel="next" title="为什么代码中实例化结构体时大多要返回结构体指针 而不是结构体值">
+      为什么代码中实例化结构体时大多要返回结构体指针 而不是结构体值 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
@@ -274,6 +351,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#golang%E4%B8%ADmake%E5%92%8Cnew%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">golang中make和new的区别</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E7%BB%84%E5%92%8C%E5%88%87%E7%89%87%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.</span> <span class="nav-text">数组和切片的区别</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#for-range-%E7%9A%84%E6%97%B6%E5%80%99%E5%AE%83%E7%9A%84%E5%9C%B0%E5%9D%80%E4%BC%9A%E5%8F%91%E7%94%9F%E5%8F%98%E5%8C%96%E4%B9%88%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">for range 的时候它的地址会发生变化么？</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -287,7 +365,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -300,7 +378,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -337,13 +415,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">1k</span>
+    <span title="站点总字数">3k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">1 分钟</span>
+    <span title="站点阅读时长">3 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>

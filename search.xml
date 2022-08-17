@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>基础</title>
-    <url>/2022/08/17/go%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<h3 id="一、基础"><a href="#一、基础" class="headerlink" title="一、基础"></a>一、基础</h3><h5 id="golang中make和new的区别-（必问）"><a href="#golang中make和new的区别-（必问）" class="headerlink" title="golang中make和new的区别 （必问）"></a>golang中make和new的区别 （必问）</h5><p>共同点：都是给变量分配内存；<br>不同点：</p>
+    <title>go语言基础1</title>
+    <url>/2022/08/17/goBase/</url>
+    <content><![CDATA[<h5 id="golang中make和new的区别"><a href="#golang中make和new的区别" class="headerlink" title="golang中make和new的区别"></a>golang中make和new的区别</h5><p>共同点：都是给变量分配内存；<br>不同点：</p>
 <ol>
 <li><p>返回类型不同： new创建返回指针，指向分配类型的指针，分配的空间置为零，该类型的零值；make返回变量本身，分配空间后会进行初始；</p>
 </li>
 <li><p>分配类型：new可以为任意类型进行分配；make只能为slice，map，chan引用类型数据进行分配空间。</p>
 </li>
 </ol>
-<h5 id="数组和切片的区别-（必问）"><a href="#数组和切片的区别-（必问）" class="headerlink" title="数组和切片的区别 （必问）"></a>数组和切片的区别 （必问）</h5><p>共同点：都是通过下标访问，并且都有容量长度；</p>
+<h5 id="数组和切片的区别"><a href="#数组和切片的区别" class="headerlink" title="数组和切片的区别"></a>数组和切片的区别</h5><p>共同点：都是通过下标访问，并且都有容量长度；</p>
 <p>不同点：</p>
 <ol>
 <li>定义方式不同：数组必须指定大小，定义后不能增加容量和长度；切片不用，定义后切片数据增多，会自动扩容（当原切片长度小于1024时，新切片的容量会直接翻倍；超过1024会反复地增加25%，直到新容量超过所需要的容量）；</li>
@@ -24,33 +24,228 @@
         <category>go语言</category>
       </categories>
       <tags>
-        <tag>数组与切片</tag>
+        <tag>数组</tag>
+        <tag>切片</tag>
       </tags>
   </entry>
   <entry>
-    <title>Hello World</title>
-    <url>/2022/08/17/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new <span class="token string">"My New Post"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+    <title>为什么代码中实例化结构体时大多要返回结构体指针 而不是结构体值</title>
+    <url>/2022/08/17/goBase2/</url>
+    <content><![CDATA[<p>在学习 go 语言项目时，遇到这样一个问题：</p>
+<p>通过struct结构体作为一个model，数据绑定等操作都是返回一个结构体指针，那么返回一个结构体变量，或者返回一个结构体指针，他们的区别是什么？</p>
+<p>因为二者都可以让我们生成我们所需要的结构体，<strong>那为什么还要去使用返回结构体指针呢</strong>？</p>
+<p>对于此疑问，我做了如下实验</p>
 <span id="more"></span>
 
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">
+<span class="token comment">// TableFile : 文件表结构体</span>
+<span class="token keyword">type</span> TableFile <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+	FileHash <span class="token builtin">string</span>
+	FileName <span class="token builtin">string</span>
+	FileSize <span class="token builtin">string</span>
+	FileAddr <span class="token builtin">string</span>
+<span class="token punctuation">&#125;</span>
 
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<span class="token comment">// GetFileMeta1  从mysql获取文件元信息</span>
+<span class="token keyword">func</span> <span class="token function">GetFileMeta1</span><span class="token punctuation">(</span>filehash1 <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token operator">*</span>TableFile <span class="token punctuation">&#123;</span>
+
+	tfile1 <span class="token operator">:=</span> TableFile<span class="token punctuation">&#123;</span>FileHash<span class="token punctuation">:</span> filehash1<span class="token punctuation">&#125;</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"GetFileMeta1函数内：%p\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>tfile1<span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token operator">&amp;</span>tfile1
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// GetFileMeta2  从mysql获取文件元信息</span>
+<span class="token keyword">func</span> <span class="token function">GetFileMeta2</span><span class="token punctuation">(</span>filehash1 <span class="token builtin">string</span><span class="token punctuation">)</span> TableFile <span class="token punctuation">&#123;</span>
+
+	tfile2 <span class="token operator">:=</span> TableFile<span class="token punctuation">&#123;</span>FileHash<span class="token punctuation">:</span> filehash1<span class="token punctuation">&#125;</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"GetFileMeta2函数内：%p\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>tfile2<span class="token punctuation">)</span>
+	<span class="token keyword">return</span> tfile2
+<span class="token punctuation">&#125;</span>
+
+
+<span class="token comment">// GetFileMeta3 从mysql获取文件元信息</span>
+<span class="token keyword">func</span> <span class="token function">GetFileMeta3</span><span class="token punctuation">(</span>filehash1 <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>tfile3 TableFile<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+
+	tfile3 <span class="token operator">=</span> TableFile<span class="token punctuation">&#123;</span>FileHash<span class="token punctuation">:</span> filehash1<span class="token punctuation">&#125;</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"GetFileMeta3函数内：%p\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>tfile3<span class="token punctuation">)</span>
+	<span class="token keyword">return</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	t1 <span class="token operator">:=</span> <span class="token function">GetFileMeta1</span><span class="token punctuation">(</span><span class="token string">"1111"</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"GetFileMeta1  函数外%p\n"</span><span class="token punctuation">,</span> t1<span class="token punctuation">)</span>
+	t2 <span class="token operator">:=</span> <span class="token function">GetFileMeta2</span><span class="token punctuation">(</span><span class="token string">"1111"</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"GetFileMeta2  函数外%p\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>t2<span class="token punctuation">)</span>
+	t3 <span class="token operator">:=</span> <span class="token function">GetFileMeta3</span><span class="token punctuation">(</span><span class="token string">"1111"</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"GetFileMeta3  函数外%p\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>t3<span class="token punctuation">)</span>
+
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">//GetFileMeta1函数内：0xc00005a040</span>
+<span class="token comment">//GetFileMeta1  函数外0xc00005a040</span>
+
+<span class="token comment">//GetFileMeta2函数内：0xc00005a0c0</span>
+<span class="token comment">//GetFileMeta2  函数外0xc00005a080</span>
+
+<span class="token comment">//GetFileMeta3函数内：0xc00005a140</span>
+<span class="token comment">//GetFileMeta3  函数外0xc00005a100</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>这里可以发现：</p>
+<ul>
+<li>使用指针结构体只分配了一次内存</li>
+<li>使用结构体值却分配了两次</li>
+</ul>
+<p>由于go是值拷贝模式，指针拷贝地址，没有分配多余内存；值拷贝数值，新的变量会重新分配地址给数值。</p>
+<p>这一点了解了，可是我仍然不知道指针的性能提升在那里，虽然指针只分配了一次地址空间，可是该空间会分配在堆上发生内存逃逸，影响程序性能；</p>
+<p>值空间虽然分配了两次空间，但函数内变量空间分配在栈上，函数结束，系统内核会自动销毁，不影响性能，？难道是多次分配调度内存空间，影响更大？</p>
+<!--TODO-->
+
+<ul>
+<li><input disabled type="checkbox"> 返回结构体值与结构体指针性能问题</li>
+</ul>
 ]]></content>
       <categories>
         <category>go语言</category>
       </categories>
       <tags>
-        <tag>map</tag>
+        <tag>指针</tag>
+        <tag>结构体</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>golang学习路线，所需知识</title>
+    <url>/2022/08/17/golangStudy/</url>
+    <content><![CDATA[<h2 id="计算机基础"><a href="#计算机基础" class="headerlink" title="计算机基础"></a>计算机基础</h2><h3 id="1-操作系统"><a href="#1-操作系统" class="headerlink" title="1. 操作系统"></a>1. 操作系统</h3><ul>
+<li><h5 id="了解进程、线程、协程的区别"><a href="#了解进程、线程、协程的区别" class="headerlink" title="了解进程、线程、协程的区别"></a>了解进程、线程、协程的区别</h5></li>
+<li><h5 id="了解进程间常用的通信方式"><a href="#了解进程间常用的通信方式" class="headerlink" title="了解进程间常用的通信方式"></a>了解进程间常用的通信方式</h5><ol>
+<li>管道</li>
+<li>命名管道（FIFO）</li>
+<li>消息队列</li>
+<li>信号量</li>
+<li>共享内存</li>
+<li>套接字（Socket）</li>
+</ol>
+</li>
+<li><h5 id="了解5种网络IO模型"><a href="#了解5种网络IO模型" class="headerlink" title="了解5种网络IO模型"></a>了解5种网络IO模型</h5><ol>
+<li>阻塞 IO（blocking IO）</li>
+<li>非阻塞 IO（non-blocking IO）</li>
+<li>多路复用 IO（IO multiplexing）</li>
+<li>异步 IO（Asynchronous I/O）</li>
+<li>信号驱动 IO（signal driven I/O， SIGIO）</li>
+</ol>
+<span id="more"></span></li>
+<li><h5 id="了解并发与并行的区别"><a href="#了解并发与并行的区别" class="headerlink" title="了解并发与并行的区别"></a>了解并发与并行的区别</h5><ol>
+<li>并发是指一个处理器同时处理多个任务。</li>
+<li>并行是指多个处理器或者是多核的处理器同时处理多个不同的任务。</li>
+<li>并发是逻辑上的同时发生（simultaneous），而并行是物理上的同时发生。</li>
+<li>并行在多处理器系统中存在，而并发可以在单处理器和多处理器系统中都存在，</li>
+<li>并发能够在单处理器系统中存在是因为并发是并行的假象，并行要求程序能够同时执行多个操作，而并发只是要求程序假装同时执行多个操作（每个小时间片执行一个操作，多个操作快速切换执行）。</li>
+</ol>
+</li>
+<li><h5 id="了解同步与异步的区别"><a href="#了解同步与异步的区别" class="headerlink" title="了解同步与异步的区别"></a>了解同步与异步的区别</h5><ol>
+<li>同步：同步是指一个进程在执行某个请求的时候，如果该请求需要一段时间才能返回信息，那么这个进程会一直等待下去，直到收到返回信息才继续执行下去。</li>
+<li>异步：异步是指进程不需要一直等待下去，而是继续执行下面的操作，不管其他进程的状态，当有信息返回的时候会通知进程进行处理，这样就可以提高执行的效率了，即异步是我们发出的一个请求，该请求会在后台自动发出并获取数据，然后对数据进行处理，在此过程中，我们可以继续做其他操作，不管它怎么发出请求，不关心它怎么处理数据。</li>
+<li>以上总结起来，通俗地讲，也就是说，同步需要按部就班地走完一整个流程，完成一整个动作，打个比方：同步的时候，你在写程序，然后你妈妈叫你马上拖地，你就必须停止写程序然后拖地，没法同时进行。而异步则不需要按部就班，可以在等待那个动作的时候同时做别的动作，</li>
+</ol>
+</li>
+<li><h5 id="了解阻塞与非阻塞的区别"><a href="#了解阻塞与非阻塞的区别" class="headerlink" title="了解阻塞与非阻塞的区别"></a>了解阻塞与非阻塞的区别</h5></li>
+<li><h5 id="了解常见缓存淘汰算法："><a href="#了解常见缓存淘汰算法：" class="headerlink" title="了解常见缓存淘汰算法："></a>了解常见缓存淘汰算法：</h5><ol>
+<li>LRU（Least Recently Used）最近最少使用算法 </li>
+<li>LFU（Least Frequently Used）最近频次最少算法 </li>
+<li>FIFO（First In First Out）先入先出算法 </li>
+<li>ARC（Adjustable Replacement Cache）自适应缓存替换算法</li>
+</ol>
+</li>
+</ul>
+<h3 id="2-计算机网络"><a href="#2-计算机网络" class="headerlink" title="2. 计算机网络"></a>2. 计算机网络</h3><ul>
+<li><h5 id="了解网络协议"><a href="#了解网络协议" class="headerlink" title="了解网络协议"></a>了解网络协议</h5></li>
+<li><h5 id="了解序列化协议"><a href="#了解序列化协议" class="headerlink" title="了解序列化协议"></a>了解序列化协议</h5></li>
+<li><h5 id="了解七层体系结构"><a href="#了解七层体系结构" class="headerlink" title="了解七层体系结构"></a>了解七层体系结构</h5></li>
+<li><h5 id="了解四层体系结构"><a href="#了解四层体系结构" class="headerlink" title="了解四层体系结构"></a>了解四层体系结构</h5></li>
+</ul>
+<h3 id="3-计算机组成原理（冯诺依曼体系）-了解"><a href="#3-计算机组成原理（冯诺依曼体系）-了解" class="headerlink" title="3. 计算机组成原理（冯诺依曼体系）[了解]"></a>3. 计算机组成原理（冯诺依曼体系）[了解]</h3><h3 id="4-数据结构与算法"><a href="#4-数据结构与算法" class="headerlink" title="4. 数据结构与算法"></a>4. 数据结构与算法</h3><ul>
+<li><h5 id="了解时间-空间复杂度"><a href="#了解时间-空间复杂度" class="headerlink" title="了解时间/空间复杂度"></a>了解时间/空间复杂度</h5></li>
+<li><h5 id="熟悉常用数据结构"><a href="#熟悉常用数据结构" class="headerlink" title="熟悉常用数据结构"></a>熟悉常用数据结构</h5><p>字符串<br>数组<br>链表<br>队列<br>二叉树<br>栈<br>堆</p>
+</li>
+<li><h5 id="熟悉常用算法"><a href="#熟悉常用算法" class="headerlink" title="熟悉常用算法"></a>熟悉常用算法</h5><p>双指针<br>左右指针<br>排序<br>二叉查找<br>递归<br>回溯<br>贪心<br>动态规划</p>
+</li>
+</ul>
+<h3 id="5-互联网（Internet）"><a href="#5-互联网（Internet）" class="headerlink" title="5. 互联网（Internet）"></a>5. 互联网（Internet）</h3><ul>
+<li><h5 id="互联网是如何工作的"><a href="#互联网是如何工作的" class="headerlink" title="互联网是如何工作的"></a>互联网是如何工作的</h5></li>
+<li><h5 id="HTTP是什么"><a href="#HTTP是什么" class="headerlink" title="HTTP是什么"></a>HTTP是什么</h5></li>
+<li><h5 id="浏览器以及浏览器如何运作"><a href="#浏览器以及浏览器如何运作" class="headerlink" title="浏览器以及浏览器如何运作"></a>浏览器以及浏览器如何运作</h5></li>
+<li><h5 id="域名是什么"><a href="#域名是什么" class="headerlink" title="域名是什么"></a>域名是什么</h5></li>
+<li><h5 id="hosting是什么"><a href="#hosting是什么" class="headerlink" title="hosting是什么"></a>hosting是什么</h5></li>
+</ul>
+<h3 id="6-数据库"><a href="#6-数据库" class="headerlink" title="6. 数据库"></a>6. 数据库</h3><ul>
+<li><h5 id="关系型数据库"><a href="#关系型数据库" class="headerlink" title="关系型数据库"></a>关系型数据库</h5><p>Mysql</p>
+</li>
+<li><h5 id="NoSQL"><a href="#NoSQL" class="headerlink" title="NoSQL"></a>NoSQL</h5><p>Redis</p>
+</li>
+</ul>
+<h2 id="Golang编程基础"><a href="#Golang编程基础" class="headerlink" title="Golang编程基础"></a>Golang编程基础</h2><ul>
+<li>字符串</li>
+<li>常量</li>
+<li>变量</li>
+<li>类型</li>
+<li>操作符</li>
+<li>表达式</li>
+<li>语句</li>
+<li>错误处理</li>
+</ul>
+<h3 id="1-代码组织"><a href="#1-代码组织" class="headerlink" title="1. 代码组织"></a>1. 代码组织</h3><h3 id="2-标准库"><a href="#2-标准库" class="headerlink" title="2. 标准库"></a>2. 标准库</h3><ul>
+<li><h5 id="功能性"><a href="#功能性" class="headerlink" title="功能性"></a>功能性</h5><p>net<br>errors<br>os<br>sync<br>time</p>
+</li>
+<li><h5 id="输入输出型"><a href="#输入输出型" class="headerlink" title="输入输出型"></a>输入输出型</h5><p>io<br>fmt<br>log</p>
+</li>
+</ul>
+<h3 id="3-版本控制"><a href="#3-版本控制" class="headerlink" title="3. 版本控制"></a>3. 版本控制</h3><ul>
+<li><h5 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h5></li>
+</ul>
+<h2 id="Go编程进阶"><a href="#Go编程进阶" class="headerlink" title="Go编程进阶"></a>Go编程进阶</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><ul>
+<li><strong>map</strong></li>
+<li><strong>channel</strong></li>
+<li><strong>goroutine</strong></li>
+<li><strong>slice</strong></li>
+<li><strong>runtime</strong></li>
+</ul>
+<h3 id="GMP"><a href="#GMP" class="headerlink" title="GMP"></a>GMP</h3><h3 id="GC-√"><a href="#GC-√" class="headerlink" title="GC √"></a>GC √</h3><h3 id="CGO"><a href="#CGO" class="headerlink" title="CGO"></a>CGO</h3><h3 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h3><h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><ul>
+<li><strong>单元测试</strong></li>
+<li><strong>压力测试</strong></li>
+<li><strong>覆盖测试</strong></li>
+<li><strong>性能测试</strong></li>
+</ul>
+<h3 id="并发编程"><a href="#并发编程" class="headerlink" title="并发编程"></a>并发编程</h3><ul>
+<li><p><strong>goroutine调度</strong></p>
+</li>
+<li><p><strong>channel调度</strong></p>
+</li>
+<li><p><strong>锁</strong></p>
+</li>
+<li><p><strong>waitGroup</strong></p>
+</li>
+<li><p><strong>context</strong></p>
+</li>
+<li><p><strong>sync</strong></p>
+</li>
+<li><p><strong>atomic</strong></p>
+</li>
+</ul>
+<h2 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h2><p><img src="/golangStudy/image-20220805143702043.png" alt="image-20220805143702043"></p>
+<h2 id="数据结构与算法（熟练掌握）"><a href="#数据结构与算法（熟练掌握）" class="headerlink" title="数据结构与算法（熟练掌握）"></a>数据结构与算法（熟练掌握）</h2><h2 id="计算机原理与网络"><a href="#计算机原理与网络" class="headerlink" title="计算机原理与网络"></a>计算机原理与网络</h2><p><img src="/golangStudy/image-20220805143827008.png" alt="image-20220805143827008"></p>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><p><img src="/golangStudy/image-20220805143839926.png" alt="image-20220805143839926"></p>
+<h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><p><img src="/golangStudy/image-20220805143854645.png" alt="image-20220805143854645"></p>
+<h2 id="设计模式"><a href="#设计模式" class="headerlink" title="设计模式"></a>设计模式</h2><p><img src="/golangStudy/image-20220805143913401.png" alt="image-20220805143913401"></p>
+<p><img src="/golangStudy/image-20220805143922828.png" alt="image-20220805143922828"></p>
+<h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><p><img src="/golangStudy/image-20220805143950466.png" alt="image-20220805143950466"></p>
+<h2 id="工程化"><a href="#工程化" class="headerlink" title="工程化"></a>工程化</h2><h3 id="微服务"><a href="#微服务" class="headerlink" title="微服务"></a>微服务</h3><p><img src="/golangStudy/image-20220805144025693.png" alt="image-20220805144025693"></p>
+<h3 id="Web框架"><a href="#Web框架" class="headerlink" title="Web框架"></a>Web框架</h3><p><img src="/golangStudy/image-20220805144030069.png" alt="image-20220805144030069"></p>
+<h3 id="中间件"><a href="#中间件" class="headerlink" title="中间件"></a>中间件</h3><p><img src="/golangStudy/image-20220805144116432.png" alt="image-20220805144116432"></p>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>golang学习路线</tag>
       </tags>
   </entry>
 </search>
