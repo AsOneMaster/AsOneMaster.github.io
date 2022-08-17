@@ -208,7 +208,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-08-17 13:16:20 / 修改时间：13:27:34" itemprop="dateCreated datePublished" datetime="2022-08-17T13:16:20+08:00">2022-08-17</time>
+              <time title="创建时间：2022-08-17 13:16:20 / 修改时间：13:54:45" itemprop="dateCreated datePublished" datetime="2022-08-17T13:16:20+08:00">2022-08-17</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -245,10 +245,22 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>1. golang中make和new的区别 2. 数组和切片的区别</p>
+          <h3 id="一、基础"><a href="#一、基础" class="headerlink" title="一、基础"></a>一、基础</h3><h5 id="golang中make和new的区别-（必问）"><a href="#golang中make和new的区别-（必问）" class="headerlink" title="golang中make和new的区别 （必问）"></a>golang中make和new的区别 （必问）</h5><p>共同点：都是给变量分配内存；<br>不同点：</p>
+<ol>
+<li><p>返回类型不同： new创建返回指针，指向分配类型的指针，分配的空间置为零，该类型的零值；make返回变量本身，分配空间后会进行初始；</p>
+</li>
+<li><p>分配类型：new可以为任意类型进行分配；make只能为slice，map，chan引用类型数据进行分配空间。</p>
+</li>
+</ol>
+<h5 id="数组和切片的区别-（必问）"><a href="#数组和切片的区别-（必问）" class="headerlink" title="数组和切片的区别 （必问）"></a>数组和切片的区别 （必问）</h5><p>共同点：都是通过下标访问，并且都有容量长度；</p>
+<p>不同点：</p>
+<ol>
+<li>定义方式不同：数组必须指定大小，定义后不能增加容量和长度；切片不用，定义后切片数据增多，会自动扩容（当原切片长度小于1024时，新切片的容量会直接翻倍；超过1024会反复地增加25%，直到新容量超过所需要的容量）；</li>
+<li>类型不同：数值为值类型；切片为引用类型，每个切片底层引用一个数组，所以切片扩容后，便会指向一个新的底层数组，内存地址跟着改变。</li>
+</ol>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/08/17/go%E5%9F%BA%E7%A1%80/">
+              <a class="btn" href="/2022/08/17/go%E5%9F%BA%E7%A1%80/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -297,7 +309,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-08-17 09:50:07 / 修改时间：13:26:28" itemprop="dateCreated datePublished" datetime="2022-08-17T09:50:07+08:00">2022-08-17</time>
+              <time title="创建时间：2022-08-17 09:50:07 / 修改时间：13:55:09" itemprop="dateCreated datePublished" datetime="2022-08-17T09:50:07+08:00">2022-08-17</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -334,10 +346,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>测试概述，测试被隐藏。</p>
+          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo new <span class="token string">"My New Post"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo server<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/08/17/hello-world/">
+              <a class="btn" href="/2022/08/17/hello-world/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

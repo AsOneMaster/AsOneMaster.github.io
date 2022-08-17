@@ -16,6 +16,8 @@
 <li>定义方式不同：数组必须指定大小，定义后不能增加容量和长度；切片不用，定义后切片数据增多，会自动扩容（当原切片长度小于1024时，新切片的容量会直接翻倍；超过1024会反复地增加25%，直到新容量超过所需要的容量）；</li>
 <li>类型不同：数值为值类型；切片为引用类型，每个切片底层引用一个数组，所以切片扩容后，便会指向一个新的底层数组，内存地址跟着改变。</li>
 </ol>
+<span id="more"></span>
+
 <h5 id="for-range-的时候它的地址会发生变化么？"><a href="#for-range-的时候它的地址会发生变化么？" class="headerlink" title="for range 的时候它的地址会发生变化么？"></a>for range 的时候它的地址会发生变化么？</h5><p>在 for a,b := range c 遍历中，a,b只会存一份地址，循环后会重新赋值，内存地址不变；因此for中创建协程后不要传入a或b的地址，可以再循环中通过创建临时变量解决。</p>
 ]]></content>
       <categories>
@@ -38,6 +40,8 @@
 <h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo generate<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<span id="more"></span>
+
 <h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ hexo deploy<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
