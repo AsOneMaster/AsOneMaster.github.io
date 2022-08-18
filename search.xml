@@ -133,42 +133,6 @@
       </tags>
   </entry>
   <entry>
-    <title>go语言基础4——Channel相关</title>
-    <url>/2022/08/18/go5/</url>
-    <content><![CDATA[<h5 id="channel有了解吗？"><a href="#channel有了解吗？" class="headerlink" title="channel有了解吗？"></a>channel有了解吗？</h5><p>它的作用是在上下文中传递除了业务参数之外的额外信息，这个额外信息是为了全局而考虑使用的，例如在微服务业务中，我们需要整个业务链条整体的超时时间信息。不过 go 标准库中的 Context 还提供了超时 Timeout 和 Cancel 机制。总的来说，在下面这些场景中，可以考虑使用 Context：</p>
-<ul>
-<li>上下文信息传递</li>
-<li>控制子 goroutine 的运行</li>
-<li>超时控制的方法调用</li>
-<li>可以取消的方法调用</li>
-</ul>
-<p>更具体的场景就是：</p>
-<ul>
-<li>场景一：RPC调用</li>
-<li>场景二：超时请求</li>
-<li>场景三：HTTP服务器的request互相传递数据</li>
-<li>场景四：PipeLine</li>
-</ul>
-<span id="more"></span>
-
-<h5 id="go-channel-的底层实现原理-（数据结构）"><a href="#go-channel-的底层实现原理-（数据结构）" class="headerlink" title="go channel 的底层实现原理 （数据结构）"></a>go channel 的底层实现原理 （数据结构）</h5><p>总结hchan结构体的主要组成部分有四个：</p>
-<ul>
-<li>用来保存goroutine之间传递数据的循环数组：buf</li>
-<li>用来记录此循环数组当前发送或接收数据的下标值：sendx（发送队列）和recvx（接受队列）</li>
-<li>用于保存向该chan发送和从该chan接收数据被阻塞的goroutine队列： sendq 和 recvq</li>
-<li>保证channel写入和读取数据时线程安全的锁：lock</li>
-</ul>
-<h5 id="go-channel为什么设计成线程安全？"><a href="#go-channel为什么设计成线程安全？" class="headerlink" title="go channel为什么设计成线程安全？"></a>go channel为什么设计成线程安全？</h5><p>不同协程通过channel进行通信，本身的使用场景就是多线程，为了保证数据的一致性，必须实现线程安全</p>
-<h5 id="如何实现线程安全的？"><a href="#如何实现线程安全的？" class="headerlink" title="如何实现线程安全的？"></a>如何实现线程安全的？</h5><p>channel的底层实现中，hchan结构体中采用Mutex锁来保证数据读写安全。在对循环数组buf中的数据进行入队和出队操作时，必须先获取互斥锁，才能操作channel数据</p>
-]]></content>
-      <categories>
-        <category>go语言</category>
-      </categories>
-      <tags>
-        <tag>Channel</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>go语言基础3——GC相关</title>
     <url>/2022/08/18/go4/</url>
     <content><![CDATA[<h5 id="什么是GC"><a href="#什么是GC" class="headerlink" title="什么是GC"></a>什么是GC</h5><p>垃圾回收就是对程序中不再使用的内存资源进行自动回收的操作。</p>
@@ -260,6 +224,42 @@
       </categories>
       <tags>
         <tag>GC垃圾回收</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>go语言基础4——Channel相关</title>
+    <url>/2022/08/18/go5/</url>
+    <content><![CDATA[<h5 id="channel有了解吗？"><a href="#channel有了解吗？" class="headerlink" title="channel有了解吗？"></a>channel有了解吗？</h5><p>它的作用是在上下文中传递除了业务参数之外的额外信息，这个额外信息是为了全局而考虑使用的，例如在微服务业务中，我们需要整个业务链条整体的超时时间信息。不过 go 标准库中的 Context 还提供了超时 Timeout 和 Cancel 机制。总的来说，在下面这些场景中，可以考虑使用 Context：</p>
+<ul>
+<li>上下文信息传递</li>
+<li>控制子 goroutine 的运行</li>
+<li>超时控制的方法调用</li>
+<li>可以取消的方法调用</li>
+</ul>
+<p>更具体的场景就是：</p>
+<ul>
+<li>场景一：RPC调用</li>
+<li>场景二：超时请求</li>
+<li>场景三：HTTP服务器的request互相传递数据</li>
+<li>场景四：PipeLine</li>
+</ul>
+<span id="more"></span>
+
+<h5 id="go-channel-的底层实现原理-（数据结构）"><a href="#go-channel-的底层实现原理-（数据结构）" class="headerlink" title="go channel 的底层实现原理 （数据结构）"></a>go channel 的底层实现原理 （数据结构）</h5><p>总结hchan结构体的主要组成部分有四个：</p>
+<ul>
+<li>用来保存goroutine之间传递数据的循环数组：buf</li>
+<li>用来记录此循环数组当前发送或接收数据的下标值：sendx（发送队列）和recvx（接受队列）</li>
+<li>用于保存向该chan发送和从该chan接收数据被阻塞的goroutine队列： sendq 和 recvq</li>
+<li>保证channel写入和读取数据时线程安全的锁：lock</li>
+</ul>
+<h5 id="go-channel为什么设计成线程安全？"><a href="#go-channel为什么设计成线程安全？" class="headerlink" title="go channel为什么设计成线程安全？"></a>go channel为什么设计成线程安全？</h5><p>不同协程通过channel进行通信，本身的使用场景就是多线程，为了保证数据的一致性，必须实现线程安全</p>
+<h5 id="如何实现线程安全的？"><a href="#如何实现线程安全的？" class="headerlink" title="如何实现线程安全的？"></a>如何实现线程安全的？</h5><p>channel的底层实现中，hchan结构体中采用Mutex锁来保证数据读写安全。在对循环数组buf中的数据进行入队和出队操作时，必须先获取互斥锁，才能操作channel数据</p>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>Channel</tag>
       </tags>
   </entry>
   <entry>
