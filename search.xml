@@ -1,36 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>go语言基础1</title>
-    <url>/2022/08/17/goBase/</url>
-    <content><![CDATA[<h5 id="golang中make和new的区别"><a href="#golang中make和new的区别" class="headerlink" title="golang中make和new的区别"></a>golang中make和new的区别</h5><p>共同点：都是给变量分配内存；<br>不同点：</p>
-<ol>
-<li><p>返回类型不同： new创建返回指针，指向分配类型的指针，分配的空间置为零，该类型的零值；make返回变量本身，分配空间后会进行初始；</p>
-</li>
-<li><p>分配类型：new可以为任意类型进行分配；make只能为slice，map，chan引用类型数据进行分配空间。</p>
-</li>
-</ol>
-<h5 id="数组和切片的区别"><a href="#数组和切片的区别" class="headerlink" title="数组和切片的区别"></a>数组和切片的区别</h5><p>共同点：都是通过下标访问，并且都有容量长度；</p>
-<p>不同点：</p>
-<ol>
-<li>定义方式不同：数组必须指定大小，定义后不能增加容量和长度；切片不用，定义后切片数据增多，会自动扩容（当原切片长度小于1024时，新切片的容量会直接翻倍；超过1024会反复地增加25%，直到新容量超过所需要的容量）；</li>
-<li>类型不同：数值为值类型；切片为引用类型，每个切片底层引用一个数组，所以切片扩容后，便会指向一个新的底层数组，内存地址跟着改变。</li>
-</ol>
-<span id="more"></span>
-
-<h5 id="for-range-的时候它的地址会发生变化么？"><a href="#for-range-的时候它的地址会发生变化么？" class="headerlink" title="for range 的时候它的地址会发生变化么？"></a>for range 的时候它的地址会发生变化么？</h5><p>在 for a,b := range c 遍历中，a,b只会存一份地址，循环后会重新赋值，内存地址不变；因此for中创建协程后不要传入a或b的地址，可以再循环中通过创建临时变量解决。</p>
-]]></content>
-      <categories>
-        <category>go语言</category>
-      </categories>
-      <tags>
-        <tag>数组</tag>
-        <tag>切片</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>为什么代码中实例化结构体时大多要返回结构体指针 而不是结构体值</title>
-    <url>/2022/08/17/goBase2/</url>
+    <url>/2022/08/17/go2/</url>
     <content><![CDATA[<p>在学习 go 语言项目时，遇到这样一个问题：</p>
 <p>通过struct结构体作为一个model，数据绑定等操作都是返回一个结构体指针，那么返回一个结构体变量，或者返回一个结构体指针，他们的区别是什么？</p>
 <p>因为二者都可以让我们生成我们所需要的结构体，<strong>那为什么还要去使用返回结构体指针呢</strong>？</p>
@@ -107,6 +79,187 @@
       <tags>
         <tag>指针</tag>
         <tag>结构体</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>go语言基础1——make和new</title>
+    <url>/2022/08/17/go1/</url>
+    <content><![CDATA[<h5 id="golang中make和new的区别"><a href="#golang中make和new的区别" class="headerlink" title="golang中make和new的区别"></a>golang中make和new的区别</h5><p>共同点：都是给变量分配内存；<br>不同点：</p>
+<ol>
+<li><p>返回类型不同： new创建返回指针，指向分配类型的指针，分配的空间置为零，该类型的零值；make返回变量本身，分配空间后会进行初始；</p>
+</li>
+<li><p>分配类型：new可以为任意类型进行分配；make只能为slice，map，chan引用类型数据进行分配空间。</p>
+</li>
+</ol>
+<h5 id="数组和切片的区别"><a href="#数组和切片的区别" class="headerlink" title="数组和切片的区别"></a>数组和切片的区别</h5><p>共同点：都是通过下标访问，并且都有容量长度；</p>
+<p>不同点：</p>
+<ol>
+<li>定义方式不同：数组必须指定大小，定义后不能增加容量和长度；切片不用，定义后切片数据增多，会自动扩容（当原切片长度小于1024时，新切片的容量会直接翻倍；超过1024会反复地增加25%，直到新容量超过所需要的容量）；</li>
+<li>类型不同：数值为值类型；切片为引用类型，每个切片底层引用一个数组，所以切片扩容后，便会指向一个新的底层数组，内存地址跟着改变。</li>
+</ol>
+<span id="more"></span>
+
+<h5 id="for-range-的时候它的地址会发生变化么？"><a href="#for-range-的时候它的地址会发生变化么？" class="headerlink" title="for range 的时候它的地址会发生变化么？"></a>for range 的时候它的地址会发生变化么？</h5><p>在 for a,b := range c 遍历中，a,b只会存一份地址，循环后会重新赋值，内存地址不变；因此for中创建协程后不要传入a或b的地址，可以再循环中通过创建临时变量解决。</p>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>数组</tag>
+        <tag>切片</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>go语言基础2——map相关</title>
+    <url>/2022/08/18/go3/</url>
+    <content><![CDATA[<h5 id="map-中删除一个-key，它的内存会释放么？"><a href="#map-中删除一个-key，它的内存会释放么？" class="headerlink" title="map 中删除一个 key，它的内存会释放么？"></a>map 中删除一个 key，它的内存会释放么？</h5><p>两种情况：</p>
+<ol>
+<li>value元素为值类型时，不会释放内存</li>
+<li>value元素为引用类型时，会释放内存，释放该元素类型所占内存</li>
+</ol>
+<p>当map置为nil时，内存被回收 [（go垃圾回收)](<a href="https://www.bilibili.com/video/BV1B34y1h73h?spm_id_from=333.337.search-card.all.click">[Go面试]Go GC实现原理?_哔哩哔哩_bilibili</a>)</p>
+<span id="more"></span>
+
+<h5 id="map-使用注意的点，是否并发安全？"><a href="#map-使用注意的点，是否并发安全？" class="headerlink" title="map 使用注意的点，是否并发安全？"></a>map 使用注意的点，是否并发安全？</h5><ol>
+<li>一定要先初始化，否则panic</li>
+<li>map类型(引用类型)是容易发生并发访问问题的。不注意就容易发生程序运行时并发读写导致的panic。 Go语言内建的map对象不是线程安全的，并发读写的时候运行时会有检查，遇到并发问题就会导致panic。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>map</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>go语言基础4——Channel相关</title>
+    <url>/2022/08/18/go5/</url>
+    <content><![CDATA[<h5 id="channel有了解吗？"><a href="#channel有了解吗？" class="headerlink" title="channel有了解吗？"></a>channel有了解吗？</h5><p>它的作用是在上下文中传递除了业务参数之外的额外信息，这个额外信息是为了全局而考虑使用的，例如在微服务业务中，我们需要整个业务链条整体的超时时间信息。不过 go 标准库中的 Context 还提供了超时 Timeout 和 Cancel 机制。总的来说，在下面这些场景中，可以考虑使用 Context：</p>
+<ul>
+<li>上下文信息传递</li>
+<li>控制子 goroutine 的运行</li>
+<li>超时控制的方法调用</li>
+<li>可以取消的方法调用</li>
+</ul>
+<p>更具体的场景就是：</p>
+<ul>
+<li>场景一：RPC调用</li>
+<li>场景二：超时请求</li>
+<li>场景三：HTTP服务器的request互相传递数据</li>
+<li>场景四：PipeLine</li>
+</ul>
+<span id="more"></span>
+
+<h5 id="go-channel-的底层实现原理-（数据结构）"><a href="#go-channel-的底层实现原理-（数据结构）" class="headerlink" title="go channel 的底层实现原理 （数据结构）"></a>go channel 的底层实现原理 （数据结构）</h5><p>总结hchan结构体的主要组成部分有四个：</p>
+<ul>
+<li>用来保存goroutine之间传递数据的循环数组：buf</li>
+<li>用来记录此循环数组当前发送或接收数据的下标值：sendx（发送队列）和recvx（接受队列）</li>
+<li>用于保存向该chan发送和从该chan接收数据被阻塞的goroutine队列： sendq 和 recvq</li>
+<li>保证channel写入和读取数据时线程安全的锁：lock</li>
+</ul>
+<h5 id="go-channel为什么设计成线程安全？"><a href="#go-channel为什么设计成线程安全？" class="headerlink" title="go channel为什么设计成线程安全？"></a>go channel为什么设计成线程安全？</h5><p>不同协程通过channel进行通信，本身的使用场景就是多线程，为了保证数据的一致性，必须实现线程安全</p>
+<h5 id="如何实现线程安全的？"><a href="#如何实现线程安全的？" class="headerlink" title="如何实现线程安全的？"></a>如何实现线程安全的？</h5><p>channel的底层实现中，hchan结构体中采用Mutex锁来保证数据读写安全。在对循环数组buf中的数据进行入队和出队操作时，必须先获取互斥锁，才能操作channel数据</p>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>Channel</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>go语言基础3——GC相关</title>
+    <url>/2022/08/18/go4/</url>
+    <content><![CDATA[<h5 id="什么是GC"><a href="#什么是GC" class="headerlink" title="什么是GC"></a>什么是GC</h5><p>垃圾回收就是对程序中不再使用的内存资源进行自动回收的操作。</p>
+<p>堆<a href="https://so.csdn.net/so/search?q=%E5%86%85%E5%AD%98&spm=1001.2101.3001.7020">内存</a>上分配的数据对象，不会再使用时，不会自动释放内存，就变成垃圾，在程序的运行过程中，如果不能及时清理，会导致越来越多的内存空间被浪费，导致系统性能下降。</p>
+<p>因此需要<strong>内存回收</strong>，内存回收分为两种方式:</p>
+<ol>
+<li><p>手动释放占用内存空间</p>
+<p>可能会出现的问题：<br><strong>悬挂指针：</strong> 释放的早了，后续对数据的访问就会出错，因为对应的内存空间可能已经清空，重新分配，甚至是归还给操作系统了。<br><strong>内存泄漏：</strong> 如果忘了释放，一直占用内存，导致内存泄漏。</p>
+</li>
+<li><p>自动内存回收</p>
+<p>程序自动检测对象决定是否要回收其内存。</p>
+<p><strong>核心思想：</strong>程序中用得到的数据，一定是可以从栈或数据段这些根节点追踪得到的数据，追踪不到的数据，肯定用不到，也就是垃圾。</p>
+<span id="more"></span></li>
+</ol>
+<h5 id="go-gc-是怎么实现的？"><a href="#go-gc-是怎么实现的？" class="headerlink" title="go gc 是怎么实现的？"></a>go gc 是怎么实现的？</h5><hr>
+<p>一次完整的垃圾回收会分为四个阶段，分别是标记准备、标记开始、标记终止、清理：</p>
+<ol>
+<li><strong>标记准备（Mark Setup）</strong>：打开写屏障（Write Barrier），需 STW（stop the world)</li>
+<li><strong>标记开始（Marking）</strong>：使用三色标记法并发标记 ，与用户程序并发执行</li>
+<li><strong>标记终止（Mark Termination</strong>）：对触发写屏障的对象进行重新扫描标记，关闭写屏障（Write Barrier），需 STW（stop the world)</li>
+<li><strong>清理（Sweeping）</strong>：将需要回收的内存归还到堆中，将过多的内存归还给操作系统，与用户程序并发执行</li>
+</ol>
+<hr>
+<ol>
+<li><p><strong>GC机制随着golang版本变化如何变化的？</strong></p>
+<p>go 1.3 之前采用<strong>标记清除法</strong>，需要<strong>STW</strong><br>go 1.5 采用<strong>三色标记法</strong>，插入<strong>写屏障机制</strong>（只在堆内存中生效），最后仍需对栈内存进行STW<br>go 1.8 采用混合写屏障机制**，屏障限制只在堆内存中生效。避免了最后节点对栈进行STW的问题，提升了GC效率</p>
+</li>
+<li><p>一个概念：<strong>STW</strong>：stop the word，指程序执行过程中，中断暂停程序逻辑，专门去进行<a href="https://so.csdn.net/so/search?q=%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6&spm=1001.2101.3001.7020">垃圾回收</a>。（STW<strong>目的是为了防止GC扫描时内存变化引起的混乱</strong>）</p>
+</li>
+<li><p><strong>标记清除法</strong></p>
+<p>从根变量开始遍历所有引用的对象，标记引用的对象，没有被标记的进行回收。</p>
+<ul>
+<li>开启STW，</li>
+<li>从根节点出发，标记所有可达对象 </li>
+<li>停止STW，然后回收所有未标记的对象。</li>
+<li>优点：解决了引用计数的缺点。</li>
+<li>缺点：需要 STW，暂时停掉程序运行。</li>
+</ul>
+</li>
+<li><p><strong>三色标记法【改进的标记清除法】+写屏障机制的流程</strong></p>
+</li>
+</ol>
+<p>三色标记法是对标记阶段的改进，原理如下：</p>
+<ul>
+<li>初始状态所有对象都是白色。</li>
+<li>从root根出发扫描所有根对象（下图a,b），将他们引用的对象标记为灰色（图中A，B）</li>
+</ul>
+<blockquote>
+<p>那么什么是root呢？ 看了很多文章都没解释这这个概念，在这儿说明下：root区域主要是程序运行到当前时刻的栈、寄存器和全局变量。</p>
+<p><img src="/2022/08/18/go4/image-20220802113108020.png" alt="image-20220802113108020"></p>
+</blockquote>
+<ul>
+<li><p>遍历灰色对象，将灰色对象引用的对象由白色  也变成灰色对象，然后将遍历过的灰色对象变成黑色对象。</p>
+</li>
+<li><p>循环步骤3，直到灰色对象全部变黑色。重复以上操作</p>
+<blockquote>
+<p>其中通过<strong>写屏障</strong>(write-barrier)【<strong>写屏障就是让goroutine与GC同时运行的手段，大大减少STW的时间</strong>，开启后指针传递时会把指针标记，本轮不回收，下轮GC时回收】检测对象有变化；还有一个<strong>辅助GC</strong>(mutator assist)机制【<strong>为防止内存分配过快，GC过程中，辅助GC线程并发运行，协助GC做一部分工作</strong>，先做一部分标记工作】，</p>
+</blockquote>
+</li>
+<li><p>收集所有白色对象（垃圾）。</p>
+</li>
+</ul>
+<p><strong>插入写屏障</strong></p>
+<p>对象被引用时触发的机制（只在堆内存中生效）：赋值器这一行为通知给并发执行的回收器，被引用的对象标记为灰色</p>
+<p>缺点：结束时需要STW来重新扫描栈，标记栈上引用的白色对象的存活</p>
+<p><strong>删除写屏障</strong></p>
+<p>对象被删除时触发的机制（只在堆内存中生效）：赋值器将这一行为通知给并发执行的回收器，被删除的对象，如果自身为灰色或者白色，那么标记为灰色</p>
+<p>缺点：一个对象的引用被删除后，即使没有其他存活的对象引用它，它仍然会活到下一轮，会产生很大冗余扫描成本，且降低了回收精度</p>
+<p><strong>混合写屏障</strong></p>
+<p>GC没有混合写屏障前，一直是插入写屏障；混合写屏障是插入写屏障 + 删除写屏障，写屏障只应用在堆上应用，栈上不启用（栈上启用成本很高）</p>
+<ul>
+<li>GC开始将栈上的对象全部扫描并标记为黑色。</li>
+<li>GC期间，任何在栈上创建的新对象，均为黑色。</li>
+<li>被删除的对象标记为灰色。</li>
+<li>被添加的对象标记为灰色。</li>
+</ul>
+<h5 id="GC-的触发时机"><a href="#GC-的触发时机" class="headerlink" title="GC 的触发时机"></a>GC 的触发时机</h5><p><strong>主动触发</strong>：</p>
+<ul>
+<li>调用 runtime.GC() 方法，触发 GC</li>
+</ul>
+<p><strong>被动触发：</strong></p>
+<ul>
+<li>定时触发，该触发条件由 <code>runtime.forcegcperiod</code> 变量控制，默认为 2 分 钟。当超过两分钟没有产生任何 GC 时，触发 GC</li>
+<li>根据内存分配阈值触发，该触发条件由环境变量GOGC控制，默认值为100（100%），当前堆内存占用是上次GC结束后占用内存的2倍时，触发GC</li>
+</ul>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>GC垃圾回收</tag>
       </tags>
   </entry>
   <entry>
