@@ -99,9 +99,7 @@
 <p>值空间虽然分配了两次空间，但函数内变量空间分配在栈上，函数结束，系统内核会自动销毁，不影响性能，？难道是多次分配调度内存空间，影响更大？</p>
 <!--TODO-->
 
-<ul>
-<li><input disabled type="checkbox"> 返回结构体值与结构体指针性能问题</li>
-</ul>
+<p>返回结构体值与结构体指针性能问题</p>
 ]]></content>
       <categories>
         <category>go语言</category>
