@@ -359,7 +359,7 @@
 <li><strong>slice</strong></li>
 <li><strong>runtime</strong></li>
 </ul>
-<h3 id="GMP"><a href="#GMP" class="headerlink" title="GMP"></a>GMP</h3><h3 id="GC-√"><a href="#GC-√" class="headerlink" title="GC √"></a>GC √</h3><h3 id="CGO"><a href="#CGO" class="headerlink" title="CGO"></a>CGO</h3><h3 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h3><h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><ul>
+<h3 id="GMP"><a href="#GMP" class="headerlink" title="GMP"></a>GMP</h3><h3 id="GC"><a href="#GC" class="headerlink" title="GC"></a>GC</h3><h3 id="CGO"><a href="#CGO" class="headerlink" title="CGO"></a>CGO</h3><h3 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h3><h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><ul>
 <li><strong>单元测试</strong></li>
 <li><strong>压力测试</strong></li>
 <li><strong>覆盖测试</strong></li>
@@ -397,6 +397,112 @@
       </categories>
       <tags>
         <tag>golang学习路线</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>为什么InnoDB存储引擎选择使用B+tree索引结构?</title>
+    <url>/2022/08/18/mysql2/</url>
+    <content><![CDATA[<p>由于B+tree所有数据都在叶子节点，上层节点仅仅起到索引结构，相对于二叉树，层级更少，搜索效率更高！</p>
+<p><strong>如图：</strong></p>
+<p><img src="/2022/08/18/mysql2/image-20220818153400906.png" alt="image-20220818153400906"></p>
+<p>其他结构讲解，链接—-<a href="https://www.bilibili.com/video/BV1Kr4y1i7ru?p=68&vd_source=5d110a858f2be0cfcf644f3a61ef01c8">11. 进阶-索引-结构-Btree_哔哩哔哩_bilibili</a></p>
+]]></content>
+      <categories>
+        <category>Mysql</category>
+      </categories>
+      <tags>
+        <tag>索引</tag>
+        <tag>Mysql存储引擎</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql进阶1——Mysql存储引擎与索引相关</title>
+    <url>/2022/08/18/mysql1/</url>
+    <content><![CDATA[<h3 id="MySql存储引擎"><a href="#MySql存储引擎" class="headerlink" title="MySql存储引擎"></a>MySql存储引擎</h3><h4 id="Mysql体系结构"><a href="#Mysql体系结构" class="headerlink" title="Mysql体系结构"></a>Mysql体系结构</h4><ul>
+<li>连接层</li>
+<li>服务层</li>
+<li>引擎层</li>
+<li>存储层</li>
+</ul>
+<h4 id="什么是存储引擎"><a href="#什么是存储引擎" class="headerlink" title="什么是存储引擎"></a>什么是存储引擎</h4><blockquote>
+<p>存储引擎就是存储数据、建立索引、更新/查询数据等技术的实现方式。存储引擎是基于表的，而不是基于库的，所以存储引擎也可被称为表类型。</p>
+</blockquote>
+<span id="more"></span>
+
+<h4 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h4><ul>
+<li><p>InnoDB</p>
+<pre><code>➢介绍：
+      InnoDB是一种兼顾高可靠性和高性能的通用存储引擎,在MySQL 5.5之后, InnoDB是默认的MySQL存储引擎。
+  ➢特点：
+      DML操作遵循ACID模型，支持事务;
+      行级锁，提高并发访问性能; 
+      支持外键FOREIGN KEY约束,保证数据的完整性和正确性;
+</code></pre>
+<p>​    ➢文件：</p>
+<p>​        xxx.ibd: xxx代表的是表名, innoDB引擎的每张表都会对应这样一个表空间文件, 存储该表的表结构(frm、 sdi) 、数据和索引。<br>​        参数: innpdb_ file_ per_ table    </p>
+<p>​    ➢逻辑存储结构：</p>
+<p>​        TableSpece:     表空间</p>
+<p>​        |</p>
+<p>​        segment:          段<br>​        |</p>
+<p>​        Extent:I             区[1M—一个区可以有64个页]<br>​        |</p>
+<p>​        Page:                 页[16K]<br>​        |</p>
+<p>​        Row:                  行</p>
+</li>
+</ul>
+<p><img src="/2022/08/18/mysql1/image-20220818151444624.png" alt="image-20220818151444624"></p>
+<ul>
+<li><p>MyISAM</p>
+<pre><code>        ➢介绍
+              MyISAM是MySQL早期的默认存储引擎。
+          ➢特点
+              不支持事务,不支持外键
+              支持表锁，不支持行锁
+              访问速度快
+          ➢文件
+              xxx.sdi:存储表结构信息
+              XXX.MYD:存储数据
+              XXX.MYI:存储索引
+</code></pre>
+</li>
+<li><p>Memory</p>
+<pre><code>        ➢介绍
+              Memory引擎的表数据时存储在内存中的，由于受到硬件问题、或断电问题的影响，只能将这些表作为临时表或缓存使用。
+          ➢特点
+              内存存放
+              hash索引( 默认)
+          ➢文件
+              xxx.sdi:存储表结构信息
+</code></pre>
+</li>
+</ul>
+<p><strong>MySql存储引擎特点总结：</strong></p>
+<p><img src="/2022/08/18/mysql1/image-20220818151922258.png" alt="image-20220818151922258"></p>
+<h4 id="存储引擎选择"><a href="#存储引擎选择" class="headerlink" title="存储引擎选择"></a>存储引擎选择</h4><p>在选择存储引擎时，应该根据应用系统的特点选择合适的存储引擎。对于复杂的应用系统，还可以根据实际情况选择多种存储引擎进行组合。</p>
+<p>​            ➢InnoDB ：是Mysql的默认存储引擎， 支持事务、外键。如果应用对事务的完整性有比较高的要求，在并发条件下要求数据的-致</p>
+<p>​                                性，数据操作除了插入和查询之外，还包含很多的更新、删除操作，那么InnoDB存储 引擎是比较合适的选择。</p>
+<p>​            ➢MyISAM：如果应用是以读操作和插入操作为主，只有很少的更新和删除操作，并且对事务的完整性、并发性要求不是很高，那</p>
+<p>​                                么选择这个存储引擎是非常合适的。<strong>（现如今被NOSQL-MongoDB替代）</strong></p>
+<p>​            ➢MEMORY：将所有数据保存在内存中，访问速度快，通常用于临时表及缓存。MEMORY的缺陷就是对表的大小有限制，太大的表</p>
+<p>​                                无法缓存在内存中，而且无法保障数据的安全性。<strong>（现如今被NOSQL-Redis替代）</strong></p>
+<h3 id="Mysql索引（存储引擎层）"><a href="#Mysql索引（存储引擎层）" class="headerlink" title="Mysql索引（存储引擎层）"></a>Mysql索引（存储引擎层）</h3><h4 id="什么是索引"><a href="#什么是索引" class="headerlink" title="什么是索引"></a>什么是索引</h4><blockquote>
+<p>索引(index)是帮助MySQL高效获取数据的数据结构(有序)。在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用(指向)数据，这样就可以在这些数据结构上实现高级的查找算法，这种数据结构就是索引。</p>
+<p><strong>简单的说，索引是一种数据结构，一种实现高级查找算法的数据结构。</strong></p>
+</blockquote>
+<h4 id="索引结构"><a href="#索引结构" class="headerlink" title="索引结构"></a>索引结构</h4><p>MySQL的索引是在存储引擎层实现的，不同的存储引擎有不同的结构,主要包含以下几种:</p>
+<ul>
+<li>B+Tree    ——    最常见的索引类型，大部分引擎都支持B+树索引</li>
+<li>Hash       ——    底层数据结构是用哈希表实现的，只有精确匹配索引列的查询才有效，不支持范围查询</li>
+<li>R-tree(空间索引)       ——  空间索引是MyISAM弓|擎的一个特殊索引类型，主要用于地理空间数据类型，通常使用较少</li>
+<li>Full-text(全文索引)   ——  是一种通过建立倒排索引,快速匹配文档的方式。类似于Lucene，Solr，ES</li>
+</ul>
+<h4 id="索引结构与对应支持引擎"><a href="#索引结构与对应支持引擎" class="headerlink" title="索引结构与对应支持引擎"></a>索引结构与对应支持引擎</h4><p><img src="/2022/08/18/mysql1/image-20220818150013108.png" alt="image-20220818150013108"></p>
+]]></content>
+      <categories>
+        <category>Mysql</category>
+      </categories>
+      <tags>
+        <tag>索引</tag>
+        <tag>Mysql存储引擎</tag>
       </tags>
   </entry>
 </search>
