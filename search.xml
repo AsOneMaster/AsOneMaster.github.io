@@ -505,4 +505,48 @@
         <tag>Mysql存储引擎</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Redis基础1</title>
+    <url>/2022/08/19/redis1/</url>
+    <content><![CDATA[<h1 id="Redis是什么"><a href="#Redis是什么" class="headerlink" title="Redis是什么"></a>Redis是什么</h1><blockquote>
+<p> Redis是基于内存运行的高性能 K-V 数据库</p>
+</blockquote>
+<h1 id="Redis存储位置"><a href="#Redis存储位置" class="headerlink" title="Redis存储位置"></a>Redis存储位置</h1><blockquote>
+<p> 内存中，所以效率高 </p>
+</blockquote>
+<h1 id="Redis的五种数据结构"><a href="#Redis的五种数据结构" class="headerlink" title="Redis的五种数据结构"></a>Redis的五种数据结构</h1><blockquote>
+</blockquote>
+<ul>
+<li>String：Redis最基本的数据类型，一个键对应一个值，一个键值最大存储512MB</li>
+<li>set：是String字符串类型的无序集合，也不可重复</li>
+<li>zset：是String类型的有序集合，也不可重复。有序集合中的每个元素都需要指定一个分数，根据分数对元素进行升序排序</li>
+<li>hash：hash是一个键值对的集合，是一个String类型的field和value的映射表，适合用于存储对象</li>
+<li>list：是redis的简单的字符串列表，按插入顺序排序</li>
+</ul>
+<h1 id="Redis应用场景（可以用来做什么）"><a href="#Redis应用场景（可以用来做什么）" class="headerlink" title="Redis应用场景（可以用来做什么）"></a>Redis应用场景（可以用来做什么）</h1><blockquote>
+<p> 可用于缓存，事件发布或订阅，高速队列等场景  众多语言都支持Redis，因为Redis交换数据快，在服务器中常用来存储一些需要频繁调取的数据，节省内存开销，也极大的提升了速度。 将一些热点数据存储到Redis中，要用的时候，直接从内存取，极大的提高了速度和节约了服务器的开销。  </p>
+</blockquote>
+<ul>
+<li>会话缓存（最常用）</li>
+<li>消息队列（支付）</li>
+<li>活动排行榜或计数</li>
+<li>发布，订阅消息（消息通知）</li>
+<li>商品列表，评论列表</li>
+</ul>
+<h1 id="为什么使用Redis"><a href="#为什么使用Redis" class="headerlink" title="为什么使用Redis"></a>为什么使用Redis</h1><blockquote>
+</blockquote>
+<ul>
+<li>完全基于内存，数据存在内存中，绝大部分请求是纯粹的内存操作，非常快速，跟传统的磁盘文件数据存储相比，避免了通过磁盘IO读取到内存这部分的开销。</li>
+<li>数据结构简单，对数据操作也简单。Redis中的数据结构是专门进行设计的，每种数据结构都有一种或多种数据结构来支持。Redis正是依赖这些灵活的数据结构，来提升读取和写入的性能。</li>
+<li>采用单线程，省去了很多上下文切换的时间以及CPU消耗，不存在竞争条件，不用去考虑各种锁的问题，不存在加锁释放锁操作，也不会出现死锁而导致的性能消耗。</li>
+<li>使用基于IO多路复用机制的线程模型，可以处理并发的链接。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Redis</category>
+      </categories>
+      <tags>
+        <tag>概念</tag>
+      </tags>
+  </entry>
 </search>

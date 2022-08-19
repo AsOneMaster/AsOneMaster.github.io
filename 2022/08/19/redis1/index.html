@@ -22,25 +22,20 @@
     var CONFIG = {"hostname":"asonemaster.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="MySql存储引擎Mysql体系结构 连接层 服务层 引擎层 存储层  什么是存储引擎 存储引擎就是存储数据、建立索引、更新&#x2F;查询数据等技术的实现方式。存储引擎是基于表的，而不是基于库的，所以存储引擎也可被称为表类型。">
+  <meta name="description" content="Redis是什么  Redis是基于内存运行的高性能 K-V 数据库  Redis存储位置  内存中，所以效率高   Redis的五种数据结构   String：Redis最基本的数据类型，一个键对应一个值，一个键值最大存储512MB set：是String字符串类型的无序集合，也不可重复 zset：是String类型的有序集合，也不可重复。有序集合中的每个元素都需要指定一个分数，根据分数对元素进">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Mysql进阶1——Mysql存储引擎与索引相关">
-<meta property="og:url" content="https://asonemaster.github.io/2022/08/18/mysql1/index.html">
+<meta property="og:title" content="Redis基础1">
+<meta property="og:url" content="https://asonemaster.github.io/2022/08/19/redis1/index.html">
 <meta property="og:site_name" content="迅的个人博客">
-<meta property="og:description" content="MySql存储引擎Mysql体系结构 连接层 服务层 引擎层 存储层  什么是存储引擎 存储引擎就是存储数据、建立索引、更新&#x2F;查询数据等技术的实现方式。存储引擎是基于表的，而不是基于库的，所以存储引擎也可被称为表类型。">
+<meta property="og:description" content="Redis是什么  Redis是基于内存运行的高性能 K-V 数据库  Redis存储位置  内存中，所以效率高   Redis的五种数据结构   String：Redis最基本的数据类型，一个键对应一个值，一个键值最大存储512MB set：是String字符串类型的无序集合，也不可重复 zset：是String类型的有序集合，也不可重复。有序集合中的每个元素都需要指定一个分数，根据分数对元素进">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://asonemaster.github.io/2022/08/18/mysql1/image-20220818151444624.png">
-<meta property="og:image" content="https://asonemaster.github.io/2022/08/18/mysql1/image-20220818151922258.png">
-<meta property="og:image" content="https://asonemaster.github.io/2022/08/18/mysql1/image-20220818150013108.png">
-<meta property="article:published_time" content="2022-08-18T06:42:08.272Z">
-<meta property="article:modified_time" content="2022-08-18T07:37:45.025Z">
+<meta property="article:published_time" content="2022-08-19T13:12:39.632Z">
+<meta property="article:modified_time" content="2022-08-19T13:14:19.978Z">
 <meta property="article:author" content="asOneMaster">
-<meta property="article:tag" content="索引">
-<meta property="article:tag" content="Mysql存储引擎">
+<meta property="article:tag" content="概念">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://asonemaster.github.io/2022/08/18/mysql1/image-20220818151444624.png">
 
-<link rel="canonical" href="https://asonemaster.github.io/2022/08/18/mysql1/">
+<link rel="canonical" href="https://asonemaster.github.io/2022/08/19/redis1/">
 
 
 <script id="page-configurations">
@@ -53,7 +48,7 @@
   };
 </script>
 
-  <title>Mysql进阶1——Mysql存储引擎与索引相关 | 迅的个人博客</title>
+  <title>Redis基础1 | 迅的个人博客</title>
   
 
 
@@ -196,7 +191,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/18/mysql1/">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/19/redis1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/me.jpg">
@@ -209,7 +204,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Mysql进阶1——Mysql存储引擎与索引相关
+          Redis基础1
         </h1>
 
         <div class="post-meta">
@@ -220,7 +215,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-08-18 14:42:08 / 修改时间：15:37:45" itemprop="dateCreated datePublished" datetime="2022-08-18T14:42:08+08:00">2022-08-18</time>
+              <time title="创建时间：2022-08-19 21:12:39 / 修改时间：21:14:19" itemprop="dateCreated datePublished" datetime="2022-08-19T21:12:39+08:00">2022-08-19</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -228,7 +223,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
                 </span>
             </span>
 
@@ -245,7 +240,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.4k</span>
+              <span>743</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -264,84 +259,39 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="MySql存储引擎"><a href="#MySql存储引擎" class="headerlink" title="MySql存储引擎"></a>MySql存储引擎</h3><h4 id="Mysql体系结构"><a href="#Mysql体系结构" class="headerlink" title="Mysql体系结构"></a>Mysql体系结构</h4><ul>
-<li>连接层</li>
-<li>服务层</li>
-<li>引擎层</li>
-<li>存储层</li>
-</ul>
-<h4 id="什么是存储引擎"><a href="#什么是存储引擎" class="headerlink" title="什么是存储引擎"></a>什么是存储引擎</h4><blockquote>
-<p>存储引擎就是存储数据、建立索引、更新/查询数据等技术的实现方式。存储引擎是基于表的，而不是基于库的，所以存储引擎也可被称为表类型。</p>
+        <h1 id="Redis是什么"><a href="#Redis是什么" class="headerlink" title="Redis是什么"></a>Redis是什么</h1><blockquote>
+<p> Redis是基于内存运行的高性能 K-V 数据库</p>
 </blockquote>
-<span id="more"></span>
-
-<h4 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h4><ul>
-<li><p>InnoDB</p>
-<pre><code>➢介绍：
-      InnoDB是一种兼顾高可靠性和高性能的通用存储引擎,在MySQL 5.5之后, InnoDB是默认的MySQL存储引擎。
-  ➢特点：
-      DML操作遵循ACID模型，支持事务;
-      行级锁，提高并发访问性能; 
-      支持外键FOREIGN KEY约束,保证数据的完整性和正确性;
-</code></pre>
-<p>​    ➢文件：</p>
-<p>​        xxx.ibd: xxx代表的是表名, innoDB引擎的每张表都会对应这样一个表空间文件, 存储该表的表结构(frm、 sdi) 、数据和索引。<br>​        参数: innpdb_ file_ per_ table    </p>
-<p>​    ➢逻辑存储结构：</p>
-<p>​        TableSpece:     表空间</p>
-<p>​        |</p>
-<p>​        segment:          段<br>​        |</p>
-<p>​        Extent:I             区[1M—一个区可以有64个页]<br>​        |</p>
-<p>​        Page:                 页[16K]<br>​        |</p>
-<p>​        Row:                  行</p>
-</li>
-</ul>
-<p><img src="/2022/08/18/mysql1/image-20220818151444624.png" alt="image-20220818151444624"></p>
-<ul>
-<li><p>MyISAM</p>
-<pre><code>        ➢介绍
-              MyISAM是MySQL早期的默认存储引擎。
-          ➢特点
-              不支持事务,不支持外键
-              支持表锁，不支持行锁
-              访问速度快
-          ➢文件
-              xxx.sdi:存储表结构信息
-              XXX.MYD:存储数据
-              XXX.MYI:存储索引
-</code></pre>
-</li>
-<li><p>Memory</p>
-<pre><code>        ➢介绍
-              Memory引擎的表数据时存储在内存中的，由于受到硬件问题、或断电问题的影响，只能将这些表作为临时表或缓存使用。
-          ➢特点
-              内存存放
-              hash索引( 默认)
-          ➢文件
-              xxx.sdi:存储表结构信息
-</code></pre>
-</li>
-</ul>
-<p><strong>MySql存储引擎特点总结：</strong></p>
-<p><img src="/2022/08/18/mysql1/image-20220818151922258.png" alt="image-20220818151922258"></p>
-<h4 id="存储引擎选择"><a href="#存储引擎选择" class="headerlink" title="存储引擎选择"></a>存储引擎选择</h4><p>在选择存储引擎时，应该根据应用系统的特点选择合适的存储引擎。对于复杂的应用系统，还可以根据实际情况选择多种存储引擎进行组合。</p>
-<p>​            ➢InnoDB ：是Mysql的默认存储引擎， 支持事务、外键。如果应用对事务的完整性有比较高的要求，在并发条件下要求数据的-致</p>
-<p>​                                性，数据操作除了插入和查询之外，还包含很多的更新、删除操作，那么InnoDB存储 引擎是比较合适的选择。</p>
-<p>​            ➢MyISAM：如果应用是以读操作和插入操作为主，只有很少的更新和删除操作，并且对事务的完整性、并发性要求不是很高，那</p>
-<p>​                                么选择这个存储引擎是非常合适的。<strong>（现如今被NOSQL-MongoDB替代）</strong></p>
-<p>​            ➢MEMORY：将所有数据保存在内存中，访问速度快，通常用于临时表及缓存。MEMORY的缺陷就是对表的大小有限制，太大的表</p>
-<p>​                                无法缓存在内存中，而且无法保障数据的安全性。<strong>（现如今被NOSQL-Redis替代）</strong></p>
-<h3 id="Mysql索引（存储引擎层）"><a href="#Mysql索引（存储引擎层）" class="headerlink" title="Mysql索引（存储引擎层）"></a>Mysql索引（存储引擎层）</h3><h4 id="什么是索引"><a href="#什么是索引" class="headerlink" title="什么是索引"></a>什么是索引</h4><blockquote>
-<p>索引(index)是帮助MySQL高效获取数据的数据结构(有序)。在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用(指向)数据，这样就可以在这些数据结构上实现高级的查找算法，这种数据结构就是索引。</p>
-<p><strong>简单的说，索引是一种数据结构，一种实现高级查找算法的数据结构。</strong></p>
+<h1 id="Redis存储位置"><a href="#Redis存储位置" class="headerlink" title="Redis存储位置"></a>Redis存储位置</h1><blockquote>
+<p> 内存中，所以效率高 </p>
 </blockquote>
-<h4 id="索引结构"><a href="#索引结构" class="headerlink" title="索引结构"></a>索引结构</h4><p>MySQL的索引是在存储引擎层实现的，不同的存储引擎有不同的结构,主要包含以下几种:</p>
+<h1 id="Redis的五种数据结构"><a href="#Redis的五种数据结构" class="headerlink" title="Redis的五种数据结构"></a>Redis的五种数据结构</h1><blockquote>
+</blockquote>
 <ul>
-<li>B+Tree    ——    最常见的索引类型，大部分引擎都支持B+树索引</li>
-<li>Hash       ——    底层数据结构是用哈希表实现的，只有精确匹配索引列的查询才有效，不支持范围查询</li>
-<li>R-tree(空间索引)       ——  空间索引是MyISAM弓|擎的一个特殊索引类型，主要用于地理空间数据类型，通常使用较少</li>
-<li>Full-text(全文索引)   ——  是一种通过建立倒排索引,快速匹配文档的方式。类似于Lucene，Solr，ES</li>
+<li>String：Redis最基本的数据类型，一个键对应一个值，一个键值最大存储512MB</li>
+<li>set：是String字符串类型的无序集合，也不可重复</li>
+<li>zset：是String类型的有序集合，也不可重复。有序集合中的每个元素都需要指定一个分数，根据分数对元素进行升序排序</li>
+<li>hash：hash是一个键值对的集合，是一个String类型的field和value的映射表，适合用于存储对象</li>
+<li>list：是redis的简单的字符串列表，按插入顺序排序</li>
 </ul>
-<h4 id="索引结构与对应支持引擎"><a href="#索引结构与对应支持引擎" class="headerlink" title="索引结构与对应支持引擎"></a>索引结构与对应支持引擎</h4><p><img src="/2022/08/18/mysql1/image-20220818150013108.png" alt="image-20220818150013108"></p>
+<h1 id="Redis应用场景（可以用来做什么）"><a href="#Redis应用场景（可以用来做什么）" class="headerlink" title="Redis应用场景（可以用来做什么）"></a>Redis应用场景（可以用来做什么）</h1><blockquote>
+<p> 可用于缓存，事件发布或订阅，高速队列等场景  众多语言都支持Redis，因为Redis交换数据快，在服务器中常用来存储一些需要频繁调取的数据，节省内存开销，也极大的提升了速度。 将一些热点数据存储到Redis中，要用的时候，直接从内存取，极大的提高了速度和节约了服务器的开销。  </p>
+</blockquote>
+<ul>
+<li>会话缓存（最常用）</li>
+<li>消息队列（支付）</li>
+<li>活动排行榜或计数</li>
+<li>发布，订阅消息（消息通知）</li>
+<li>商品列表，评论列表</li>
+</ul>
+<h1 id="为什么使用Redis"><a href="#为什么使用Redis" class="headerlink" title="为什么使用Redis"></a>为什么使用Redis</h1><blockquote>
+</blockquote>
+<ul>
+<li>完全基于内存，数据存在内存中，绝大部分请求是纯粹的内存操作，非常快速，跟传统的磁盘文件数据存储相比，避免了通过磁盘IO读取到内存这部分的开销。</li>
+<li>数据结构简单，对数据操作也简单。Redis中的数据结构是专门进行设计的，每种数据结构都有一种或多种数据结构来支持。Redis正是依赖这些灵活的数据结构，来提升读取和写入的性能。</li>
+<li>采用单线程，省去了很多上下文切换的时间以及CPU消耗，不存在竞争条件，不用去考虑各种锁的问题，不存在加锁释放锁操作，也不会出现死锁而导致的性能消耗。</li>
+<li>使用基于IO多路复用机制的线程模型，可以处理并发的链接。</li>
+</ul>
 
     </div>
     <div>
@@ -386,7 +336,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://asonemaster.github.io/2022/08/18/mysql1/" title="Mysql进阶1——Mysql存储引擎与索引相关">https://asonemaster.github.io/2022/08/18/mysql1/</a>
+    <a href="https://asonemaster.github.io/2022/08/19/redis1/" title="Redis基础1">https://asonemaster.github.io/2022/08/19/redis1/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -398,8 +348,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/%E7%B4%A2%E5%BC%95/" rel="tag"><i class="fa fa-tag"></i> 索引</a>
-              <a href="/tags/Mysql%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/" rel="tag"><i class="fa fa-tag"></i> Mysql存储引擎</a>
+              <a href="/tags/%E6%A6%82%E5%BF%B5/" rel="tag"><i class="fa fa-tag"></i> 概念</a>
           </div>
 
         
@@ -408,13 +357,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/08/18/go5/" rel="prev" title="go语言基础4——Channel相关">
-      <i class="fa fa-chevron-left"></i> go语言基础4——Channel相关
+    <a href="/2022/08/18/mysql2/" rel="prev" title="为什么InnoDB存储引擎选择使用B+tree索引结构?">
+      <i class="fa fa-chevron-left"></i> 为什么InnoDB存储引擎选择使用B+tree索引结构?
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/08/18/mysql2/" rel="next" title="为什么InnoDB存储引擎选择使用B+tree索引结构?">
-      为什么InnoDB存储引擎选择使用B+tree索引结构? <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -473,7 +419,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySql%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.</span> <span class="nav-text">MySql存储引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Mysql%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">Mysql体系结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.2.</span> <span class="nav-text">什么是存储引擎</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.3.</span> <span class="nav-text">存储引擎</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E9%80%89%E6%8B%A9"><span class="nav-number">1.4.</span> <span class="nav-text">存储引擎选择</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql%E7%B4%A2%E5%BC%95%EF%BC%88%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%B1%82%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">Mysql索引（存储引擎层）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%B4%A2%E5%BC%95"><span class="nav-number">2.1.</span> <span class="nav-text">什么是索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%BB%93%E6%9E%84"><span class="nav-number">2.2.</span> <span class="nav-text">索引结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E5%BA%94%E6%94%AF%E6%8C%81%E5%BC%95%E6%93%8E"><span class="nav-number">2.3.</span> <span class="nav-text">索引结构与对应支持引擎</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">Redis是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E5%AD%98%E5%82%A8%E4%BD%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">Redis存储位置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E7%9A%84%E4%BA%94%E7%A7%8D%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">3.</span> <span class="nav-text">Redis的五种数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%EF%BC%88%E5%8F%AF%E4%BB%A5%E7%94%A8%E6%9D%A5%E5%81%9A%E4%BB%80%E4%B9%88%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">Redis应用场景（可以用来做什么）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8Redis"><span class="nav-number">5.</span> <span class="nav-text">为什么使用Redis</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
