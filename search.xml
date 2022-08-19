@@ -514,12 +514,14 @@
 <h1 id="Redis存储位置"><a href="#Redis存储位置" class="headerlink" title="Redis存储位置"></a>Redis存储位置</h1><blockquote>
 <p> 内存中，所以效率高 </p>
 </blockquote>
-<h1 id="Redis的五种数据结构"><a href="#Redis的五种数据结构" class="headerlink" title="Redis的五种数据结构"></a>Redis的五种数据结构</h1><blockquote>
-</blockquote>
-<ul>
+<h1 id="Redis的五种数据结构"><a href="#Redis的五种数据结构" class="headerlink" title="Redis的五种数据结构"></a>Redis的五种数据结构</h1><ul>
 <li>String：Redis最基本的数据类型，一个键对应一个值，一个键值最大存储512MB</li>
 <li>set：是String字符串类型的无序集合，也不可重复</li>
 <li>zset：是String类型的有序集合，也不可重复。有序集合中的每个元素都需要指定一个分数，根据分数对元素进行升序排序</li>
+</ul>
+<span id="more"></span>
+
+<ul>
 <li>hash：hash是一个键值对的集合，是一个String类型的field和value的映射表，适合用于存储对象</li>
 <li>list：是redis的简单的字符串列表，按插入顺序排序</li>
 </ul>
@@ -533,9 +535,7 @@
 <li>发布，订阅消息（消息通知）</li>
 <li>商品列表，评论列表</li>
 </ul>
-<h1 id="为什么使用Redis"><a href="#为什么使用Redis" class="headerlink" title="为什么使用Redis"></a>为什么使用Redis</h1><blockquote>
-</blockquote>
-<ul>
+<h1 id="为什么使用Redis"><a href="#为什么使用Redis" class="headerlink" title="为什么使用Redis"></a>为什么使用Redis</h1><ul>
 <li>完全基于内存，数据存在内存中，绝大部分请求是纯粹的内存操作，非常快速，跟传统的磁盘文件数据存储相比，避免了通过磁盘IO读取到内存这部分的开销。</li>
 <li>数据结构简单，对数据操作也简单。Redis中的数据结构是专门进行设计的，每种数据结构都有一种或多种数据结构来支持。Redis正是依赖这些灵活的数据结构，来提升读取和写入的性能。</li>
 <li>采用单线程，省去了很多上下文切换的时间以及CPU消耗，不存在竞争条件，不用去考虑各种锁的问题，不存在加锁释放锁操作，也不会出现死锁而导致的性能消耗。</li>
@@ -547,6 +547,29 @@
       </categories>
       <tags>
         <tag>概念</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>go语言的并发机制</title>
+    <url>/2022/08/19/goRoutine/</url>
+    <content><![CDATA[<h2 id="go语言并发原理"><a href="#go语言并发原理" class="headerlink" title="go语言并发原理"></a>go语言并发原理</h2><blockquote>
+<p>Go不推荐用共享内存的方式传递数据，而推荐使用channel(或称“通道” )。channel主要用来在多个goroutine之间传递数据，并且还</p>
+<p>会保证整个过程的并发安全性。不过，作为可选方法，Go依然提供了一些传统的同步方法 (比如互斥量、 条件变量等)。</p>
+<p><strong>Go的并发机制</strong>指的是用于支撑goroutine 和channel的底层原理，说到这个就不得不提go语言的调度模型，GMP。</p>
+</blockquote>
+<h3 id="GMP调度模型"><a href="#GMP调度模型" class="headerlink" title="GMP调度模型"></a>GMP调度模型</h3><p>说起Go的线程实现模型,有3个必知的核心元素,它们支撑起了这个模型的主框架，<br>简要说明如下：</p>
+<ul>
+<li>M: machine的缩写。一个M代表一个内核线程，或称“工作线程”。</li>
+<li>P: processor的缩写。一个P代表执行一个Go代码片段所必需的资源(或称“上下文环境”)。</li>
+<li>G: goroutine的缩写。一个G代表一 个Go代码片段。前者是对后者的一种封装。</li>
+</ul>
+<p>.未完待续~~~~</p>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
       </tags>
   </entry>
 </search>
