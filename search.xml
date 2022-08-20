@@ -69,9 +69,9 @@
 <p>由于go是值拷贝模式，指针拷贝地址，没有分配多余内存；值拷贝数值，新的变量会重新分配地址给数值。</p>
 <p>这一点了解了，可是我仍然不知道指针的性能提升在那里，虽然指针只分配了一次地址空间，可是该空间会分配在堆上发生内存逃逸，影响程序性能；</p>
 <p>值空间虽然分配了两次空间，但函数内变量空间分配在栈上，函数结束，系统内核会自动销毁，不影响性能，？难道是多次分配调度内存空间，影响更大？</p>
-<!--TODO-->
-
-<p>返回结构体值与结构体指针性能问题</p>
+<p>返回结构体值与结构体指针性能问题:</p>
+<p><strong>传值 VS 传指针</strong>： 传值会拷贝整个对象，而传指针只会拷贝指针地址，指向的对象是同一个。传指针可以减少值的拷贝，但是会导致内存分配逃逸到堆中，增加垃圾回收(GC)的负担。在对象频繁创建和删除的场景下，传递指针导致的 GC 开销可能会严重影响性能。</p>
+<p> 一般情况下，对于需要修改原对象值，或占用内存比较大的结构体，选择传指针。对于只读的占用内存较小的结构体，直接传值能够获得更好的性能</p>
 ]]></content>
       <categories>
         <category>go语言</category>
@@ -593,7 +593,7 @@
 <li><p>G: go协程</p>
 </li>
 </ul>
-<h5 id="G，M，P的个数"><a href="#G，M，P的个数" class="headerlink" title="G，M，P的个数"></a>G，M，P的个数</h5><ul>
+<h4 id="G，M，P的个数"><a href="#G，M，P的个数" class="headerlink" title="G，M，P的个数"></a>G，M，P的个数</h4><ul>
 <li>M 的数据默认启动的时候是 10000，内核很难支持这么多线程数，所以整个限制客户忽略，M 一般不做设置，设置好 P，M 一般都是要大于 P。</li>
 <li>P 的数量一般建议是逻辑 CPU 数量的 2 倍。——使用<strong>runtime.GOMAXPROCS()</strong> 变量数一般是cpu核数的2倍，具体看性能分析。</li>
 <li>G 的个数理论上是无限制的，但是受内存限制。</li>
@@ -610,13 +610,46 @@
 <li>若全局队列也未找到可运行的G时候，M会随机从其他 P 的本地队列偷一半放到自己 P 的本地队列。</li>
 <li>拿到可运行的G之后，M 运行 G，G 执行之后，M 会从 P 获取下一个 G，不断重复下去。</li>
 </ul>
-]]></content>
+<h4 id="Go如何有效控制Goroutine并发数量"><a href="#Go如何有效控制Goroutine并发数量" class="headerlink" title="Go如何有效控制Goroutine并发数量"></a>Go如何有效控制Goroutine并发数量</h4>]]></content>
       <categories>
         <category>go语言</category>
       </categories>
       <tags>
         <tag>并发</tag>
         <tag>goroutine</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>逃逸分析能做什么？如何进行逃逸分析？</title>
+    <url>/2022/08/20/go7/</url>
+    <content><![CDATA[<blockquote>
+<p>（上级垃圾回收 问题逻辑- 垃圾回收-&gt;逃逸分析-&gt;内存逃逸）</p>
+</blockquote>
+<blockquote>
+<p>逃逸分析是什么：编译器决定内存分配位置的方式，就称之为逃逸分析(escape analysis)。逃逸分析由编译器完成，作用于编译阶段。</p>
+<p>逃逸分析能做什么：可以了解程序哪些内存在栈上，哪些在堆上，从而优化减少垃圾回收提升性能。</p>
+<p>如何进行逃逸分析：go语言可以使用<strong>go build -gcflags ‘-m -N -l’</strong>  test.go 的方式 查看编译结果中的逃逸情况</p>
+</blockquote>
+<p> <strong>必然不会发生逃逸的情况：</strong></p>
+<ol>
+<li>指针被没有发生逃逸的变量引用</li>
+<li>仅仅在函数被对变量进行取地址操作，没有将指针传出</li>
+</ol>
+<p> <strong>一定逃逸</strong></p>
+<ol>
+<li>构造函数new/make 返回的指针变量一定逃逸</li>
+<li>被已经逃逸指针变量引用指针，一定发生逃逸</li>
+<li>指针类型是slice，map,chan 引用指针一定发生逃逸</li>
+</ol>
+<p><strong>Maybe 逃逸</strong><br> 将指针作为入参传给别的函数，这里看指针在被传入函数的处理过程，如果发生上边三种情况会逃逸，否则不会</p>
+<p><strong>传值 VS 传指针</strong>： 传值会拷贝整个对象，而传指针只会拷贝指针地址，指向的对象是同一个。传指针可以减少值的拷贝，但是会导致内存分配逃逸到堆中，增加垃圾回收(GC)的负担。在对象频繁创建和删除的场景下，传递指针导致的 GC 开销可能会严重影响性能。</p>
+<p> 一般情况下，对于需要修改原对象值，或占用内存比较大的结构体，选择传指针。对于只读的占用内存较小的结构体，直接传值能够获得更好的性能</p>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>内存逃逸</tag>
       </tags>
   </entry>
 </search>
