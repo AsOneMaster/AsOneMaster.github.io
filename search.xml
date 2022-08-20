@@ -229,17 +229,23 @@
   <entry>
     <title>go语言基础4——Channel相关</title>
     <url>/2022/08/18/go5/</url>
-    <content><![CDATA[<h5 id="go-channel-的底层实现原理-（数据结构）"><a href="#go-channel-的底层实现原理-（数据结构）" class="headerlink" title="go channel 的底层实现原理 （数据结构）"></a>go channel 的底层实现原理 （数据结构）</h5><p>总结hchan结构体的主要组成部分有四个：</p>
+    <content><![CDATA[<h5 id="channel-是否线程安全？锁用在什么地方？"><a href="#channel-是否线程安全？锁用在什么地方？" class="headerlink" title="channel 是否线程安全？锁用在什么地方？"></a>channel 是否线程安全？锁用在什么地方？</h5><blockquote>
+<p>Golang的Channel,发送一个数据到Channel 和 从Channel接收一个数据都是原子性的。</p>
+<p>如果把线程安全定义为允许多个goroutine同时去读写，那么golang 的channel 是线程安全的，因为channel底层数据结构中是带有lock的，不需要在并发读写同一个channe时再加锁。</p>
+<p>而且Go的设计思想就是：不要通过共享内存来通信，而是通过通信来共享内存，前者就是传统的加锁（共享内存通信），后者就是Channel。</p>
+<p>也就是说，设计Channel的主要目的就是在多任务间传递数据的，这当然是安全的</p>
+</blockquote>
+<h5 id="go-channel-的底层实现原理-（数据结构）"><a href="#go-channel-的底层实现原理-（数据结构）" class="headerlink" title="go channel 的底层实现原理 （数据结构）"></a>go channel 的底层实现原理 （数据结构）</h5><p>总结hchan结构体的主要组成部分有四个：</p>
 <ul>
 <li>用来保存goroutine之间传递数据的循环数组：buf</li>
 <li>用来记录此循环数组当前发送或接收数据的下标值：sendx（发送队列）和recvx（接受队列）</li>
 <li>用于保存向该chan发送和从该chan接收数据被阻塞的goroutine队列： sendq 和 recvq</li>
 <li>保证channel写入和读取数据时线程安全的锁：lock</li>
 </ul>
-<h5 id="go-channel为什么设计成线程安全？"><a href="#go-channel为什么设计成线程安全？" class="headerlink" title="go channel为什么设计成线程安全？"></a>go channel为什么设计成线程安全？</h5><p>不同协程通过channel进行通信，本身的使用场景就是多线程，为了保证数据的一致性，必须实现线程安全</p>
 <span id="more"></span>
 
-<h5 id="如何实现线程安全的？"><a href="#如何实现线程安全的？" class="headerlink" title="如何实现线程安全的？"></a>如何实现线程安全的？</h5><p>channel的底层实现中，hchan结构体中采用Mutex锁来保证数据读写安全。在对循环数组buf中的数据进行入队和出队操作时，必须先获取互斥锁，才能操作channel数据</p>
+<h5 id="go-channel为什么设计成线程安全？"><a href="#go-channel为什么设计成线程安全？" class="headerlink" title="go channel为什么设计成线程安全？"></a>go channel为什么设计成线程安全？</h5><p>不同协程通过channel进行通信，本身的使用场景就是多线程，为了保证数据的一致性，必须实现线程安全</p>
+<h5 id="如何实现线程安全的？"><a href="#如何实现线程安全的？" class="headerlink" title="如何实现线程安全的？"></a>如何实现线程安全的？</h5><p>channel的底层实现中，hchan结构体中采用Mutex（互斥）锁来保证数据读写安全。在对循环数组buf中的数据进行入队和出队操作时，必须先获取互斥锁，才能操作channel数据</p>
 <h5 id="nil、关闭的-channel、有数据的-channel，再进行读、写、关闭会怎么样？"><a href="#nil、关闭的-channel、有数据的-channel，再进行读、写、关闭会怎么样？" class="headerlink" title="nil、关闭的 channel、有数据的 channel，再进行读、写、关闭会怎么样？"></a>nil、关闭的 channel、有数据的 channel，再进行读、写、关闭会怎么样？</h5><ol>
 <li>读写值 nil 管道会永久阻塞 </li>
 <li>关闭的管道读数据仍然可以读数据 </li>
@@ -565,6 +571,42 @@
       </categories>
       <tags>
         <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>goroutine(协程)和线程是什么关系，goroutine是如何调度的？</title>
+    <url>/2022/08/20/go6/</url>
+    <content><![CDATA[<blockquote>
+<p>（上级问题并发  问题逻辑-&gt;并发机制-&gt;GMP-&gt;goroutine调度）</p>
+</blockquote>
+<h4 id="goroutine-协程-和线程"><a href="#goroutine-协程-和线程" class="headerlink" title="goroutine(协程)和线程"></a>goroutine(协程)和线程</h4><p>说线程之前，我们先说进程和线程的关系，</p>
+<p>首先线程是进程的执行体，拥有一个执行入口，以及进程虚拟地址空间中分配的栈—包括用户栈和内核栈，操作系统会记录线程控制信息，</p>
+<p>而线程会在获得cpu时间片信息后执行 ，cpu中栈指针、指令指针等寄存器都到切换到对应的线程；</p>
+<p>而协程就是线程创建的执行体，其控制信息由线程记录，由于用户程序不能操作内核空间，所以只能给协程分配用户栈，而操作系统对这个信息一无所知。</p>
+<p><strong>总结：</strong>协程是一种”用户态线程”。</p>
+<h4 id="goroutine如何调度"><a href="#goroutine如何调度" class="headerlink" title="goroutine如何调度"></a>goroutine如何调度</h4><p>说到goroutine的调度就不得不提MPG（GMP）模型</p>
+<p>M: 线程</p>
+<p>P: 执行go协程运行所必需的资源，关联本地可运行G的队列</p>
+<p>G: go协程</p>
+<span id="more"></span>
+
+<p>一开始go创建时只有MG，多个M分担多个G的执行任务时（想象整体G是一个全局队列，多个M执行G时），就会因为频繁 加锁解锁（不能让其他线程执行到同一个G）而发生等待，影响并发性能。所以，使用P，p有一个本地队列，这样只要M关联到P，就可以直接运行队列中待执行的G，不用每次从全局队列中争抢了。</p>
+<p>（注意一个问题：程序中主进程结束不管协程有没有运行完，都会结束，所以一般使用wg <strong>sync.WaitGroup</strong>  wg.Add()  go func(){    wg.Done}  wg.Wait()）</p>
+<p><strong>总结GMP调度流程：</strong></p>
+<ul>
+<li>线程M想运行任务就需得获取 P，即与P关联。</li>
+<li>然从 P 的本地队列(LRQ)获取 G</li>
+<li>若LRQ中没有可运行的G，M 会尝试从全局队列(GRQ)拿一批G放到P的本地队列，</li>
+<li>若全局队列也未找到可运行的G时候，M会随机从其他 P 的本地队列偷一半放到自己 P 的本地队列。</li>
+<li>拿到可运行的G之后，M 运行 G，G 执行之后，M 会从 P 获取下一个 G，不断重复下去。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+        <tag>goroutine</tag>
       </tags>
   </entry>
 </search>
