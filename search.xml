@@ -628,7 +628,7 @@
 <blockquote>
 <p>逃逸分析是什么：编译器决定内存分配位置的方式，就称之为逃逸分析(escape analysis)。逃逸分析由编译器完成，作用于编译阶段。</p>
 <p>逃逸分析能做什么：可以了解程序哪些内存在栈上，哪些在堆上，从而优化减少垃圾回收提升性能。</p>
-<p>如何进行逃逸分析：go语言可以使用<strong>go build -gcflags ‘-m -N -l’</strong>  test.go 的方式 查看编译结果中的逃逸情况</p>
+<p>如何进行逃逸分析：go语言可以使用<strong>go build -gcflags ‘-m -N -l’</strong>  test.go 的方式 查看编译结果中的逃逸情况 在堆上（heap）的就发生了逃逸</p>
 </blockquote>
 <p> <strong>必然不会发生逃逸的情况：</strong></p>
 <ol>
