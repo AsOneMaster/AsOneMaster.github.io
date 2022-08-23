@@ -766,7 +766,7 @@
 
 <span class="token number">1.2</span><span class="token number">.3</span><span class="token number">.4</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>valueCtx继承父Context，这种是采用匿名接口的继承实现方式，key,val用来存储携带的键值对。</p>
+<p>valueCtx继承父Context，这种是采用匿名接口的继承实现方式，key，val用来存储携带的键值对。</p>
 <p>通过上面的代码分析，可以看到添加键值对不是在原context结构体上直接添加，而是以此context作为父节点，重新创建一个新的valueCtx子节点，将键值对添加在子节点上，由此形成一条context链。</p>
 <p>获取键值过程也是层层向上调用直到最终的根节点，中间要是找到了key就会返回，否会就会找到最终的emptyCtx返回nil。画个图表示一下：</p>
 <p><img src="/2022/08/22/go9/9296c3327c96ad3d25f565bab2b8a5dee8c7ed.webp" alt="img"></p>
@@ -781,6 +781,130 @@
       </categories>
       <tags>
         <tag>context</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>计算机网络1--TCP/HTTP相关</title>
+    <url>/2022/08/23/netWork1/</url>
+    <content><![CDATA[<h3 id="TCP与UDP的区别"><a href="#TCP与UDP的区别" class="headerlink" title="TCP与UDP的区别"></a>TCP与UDP的区别</h3><ol>
+<li>TCP是面向连接的，UDP是无连接的；</li>
+</ol>
+<details>
+<summary>什么叫无连接？</summary>
+UDP发送数据之前不需要建立连接
+</details>
+
+<details>
+<summary>什么叫不可靠？</summary>
+UDP接收方收到报文后，不需要给出任何确认
+</details>
+2. TCP只支持点对点通信，UDP支持一对一、一对多、多对一、多对多；
+
+<ol start="3">
+<li>TCP是面向字节流的，UDP是面向报文的；</li>
+</ol>
+<details>
+<summary>什么意思？</summary>
+面向字节流是指发送数据时以字节为单位，一个数据包可以拆分成若干组进行发送，而UDP一个报文只能一次发完。
+</details>
+4. TCP有拥塞控制机制，UDP没有。网络出现的拥塞不会使源主机的发送速率降低，这对某些实时应用是很重要的，比如媒体通信，游戏；
+5. TCP首部开销（20字节）比UDP首部开销（8字节）要大
+6. UDP 的主机不需要维持复杂的连接状态表
+
+<h5 id="什么时候选择TCP，什么时候选UDP？"><a href="#什么时候选择TCP，什么时候选UDP？" class="headerlink" title="什么时候选择TCP，什么时候选UDP？"></a>什么时候选择TCP，什么时候选UDP？</h5><details>
+<summary>展开</summary>
+对某些实时性要求比较高的情况，选择UDP，比如游戏，媒体通信，实时视频流（直播），即使出现传输错误也可以容忍；其它大部分情况下，HTTP都是用TCP，因为要求传输的内容可靠，不出现丢失
+</details>
+
+
+<h5 id="HTTP可以使用UDP吗？"><a href="#HTTP可以使用UDP吗？" class="headerlink" title="HTTP可以使用UDP吗？"></a>HTTP可以使用UDP吗？</h5><details>
+<summary>展开</summary>
+HTTP不可以使用UDP，HTTP需要基于可靠的传输协议，而UDP不可靠
+注：http 3.0 使用udp实现
+https://zh.wikipedia.org/wiki/HTTP/3
+</details>
+
+
+
+<h5 id="面向连接和无连接的区别"><a href="#面向连接和无连接的区别" class="headerlink" title="面向连接和无连接的区别"></a>面向连接和无连接的区别</h5><details>
+<summary>展开</summary>
+
+
+<p>无连接的网络服务（数据报服务）– 面向连接的网络服务（虚电路服务）</p>
+<p>虚电路服务：首先建立连接，所有的数据包经过相同的路径，服务质量有较好的保证；</p>
+<p>数据报服务：每个数据包含目的地址，数据路由相互独立（路径可能变化）；网络尽最大努力交付数据，但不保证不丢失、不保证先后顺序、不保证在时限内交付；网络发生拥塞时，可能会将一些分组丢弃；</p>
+<p><img src="/2022/08/23/netWork1/20191201081919108_30577.png" alt="virtual circuit"></p>
+</details>
+
+<h3 id="TCP如何保证传输的可靠性"><a href="#TCP如何保证传输的可靠性" class="headerlink" title="TCP如何保证传输的可靠性"></a>TCP如何保证传输的可靠性</h3><ol>
+<li>数据包校验</li>
+<li>对失序数据包重新排序（TCP报文具有序列号）</li>
+<li>丢弃重复数据</li>
+<li>应答机制：接收方收到数据之后，会发送一个确认（通常延迟几分之一秒）；</li>
+<li>超时重发：发送方发出数据之后，启动一个定时器，超时未收到接收方的确认，则重新发送这个数据；</li>
+<li>流量控制：确保接收端能够接收发送方的数据而不会缓冲区溢出</li>
+</ol>
+<h3 id="HTTP和HTTPS有什么区别？"><a href="#HTTP和HTTPS有什么区别？" class="headerlink" title="HTTP和HTTPS有什么区别？"></a>HTTP和HTTPS有什么区别？</h3><ol>
+<li>端口不同：HTTP使用的是80端口，HTTPS使用443端口；</li>
+<li>HTTP（超文本传输协议）信息是明文传输，HTTPS运行在SSL(Secure Socket Layer)之上，添加了加密和认证机制，更加安全；</li>
+<li>HTTPS由于加密解密会带来更大的CPU和内存开销；</li>
+<li>HTTPS通信需要证书，一般需要向证书颁发机构（CA）购买</li>
+</ol>
+<h5 id="Https的连接过程？"><a href="#Https的连接过程？" class="headerlink" title="Https的连接过程？"></a>Https的连接过程？</h5><p><a href="https://www.jianshu.com/p/134ac0c381de?u_atoken=4d5e0372-5076-4d66-b619-bf0cb7b8c7ba&u_asession=011OxJ1wZGLHlyZeE3T6kil_0_KQGheqhfS2pCo8HN6r2VpxTwZqMGI4Jgyz3DfPp6X0KNBwm7Lovlpxjd_P_q4JsKWYrT3W_NKPr8w6oU7K-xlEAoBXfaV7pnQxa-NjBmnHmbkqVcEgdObpAroqY1_GBkFo3NEHBv0PZUm6pbxQU&u_asig=05wLUJhxR1Jl_DtooV63PVi3AeEVoEDBqb2ttdtc1UYFZXPd8pwXrXZqDIIH7dfPtDUI-VAILoVKJSOy8v5BmZrVv_qUFZuvgynEo3YvUpbgzomCX5DLwwoFkCNSFkORpQx5PsSUR4fXBTlHnDm7SpifDwYsofqZ_xUSvKtI9XtwL9JS7q8ZD7Xtz2Ly-b0kmuyAKRFSVJkkdwVUnyHAIJzWgKIl_KrzmkSatr2LAWjQ1GsKz2bZHzB52hkwwdR-xO6xbSxAaWh9ph0bRUFW-6vO3h9VXwMyh6PgyDIVSG1W8NAbVfL2HzgAZhMv9ZnSMcc-FijF2nFh6KRQeOtyHZY291u8H4RG9MM_EWs1ilXFUpgqTqD_xm3WQqUAZTZqrTmWspDxyAEEo4kbsryBKb9Q&u_aref=gJrmoiGyMQB75ODFyzKzHFlTnBQ=">网络协议底层原理（九）：HTTP - 简书 (jianshu.com)</a></p>
+<details>
+<summary>展开</summary>
+
+
+<ol>
+<li>客户端向服务器发送请求，同时发送客户端支持的一套加密规则（包括对称加密、非对称加密、摘要算法）；</li>
+<li>服务器从中选出一组加密算法与HASH算法，并将自己的身份信息以证书的形式发回给浏览器。证书里面包含了网站地址，<strong>加密公钥</strong>（用于非对称加密），以及证书的颁发机构等信息（证书中的私钥只能用于服务器端进行解密）；</li>
+<li>客户端验证服务器的合法性，包括：证书是否过期，CA 是否可靠，发行者证书的公钥能否正确解开服务器证书的“发行者的数字签名”，服务器证书上的域名是否和服务器的实际域名相匹配；</li>
+<li>如果证书受信任，或者用户接收了不受信任的证书，浏览器会生成一个<strong>随机密钥</strong>（用于对称算法），并用服务器提供的公钥加密（采用非对称算法对密钥加密）；使用Hash算法对握手消息进行<strong>摘要</strong>计算，并对摘要使用之前产生的密钥加密（对称算法）；将加密后的随机密钥和摘要一起发送给服务器；</li>
+<li>服务器使用自己的私钥解密，得到对称加密的密钥，用这个密钥解密出Hash摘要值，并验证握手消息是否一致；如果一致，服务器使用对称加密的密钥加密握手消息发给浏览器；</li>
+<li>浏览器解密并验证摘要，若一致，则握手结束。之后的数据传送都使用对称加密的密钥进行加密</li>
+</ol>
+<p>总结：非对称加密算法用于在握手过程中加密生成的密码；对称加密算法用于对真正传输的数据进行加密；HASH算法用于验证数据的完整性。</p>
+</details>
+
+<h5 id="输入-www-baidu-com，怎么变成-https-www-baidu-com-的，怎么确定用HTTP还是HTTPS？"><a href="#输入-www-baidu-com，怎么变成-https-www-baidu-com-的，怎么确定用HTTP还是HTTPS？" class="headerlink" title="输入 www.baidu.com，怎么变成 https://www.baidu.com 的，怎么确定用HTTP还是HTTPS？"></a>输入 <a href="http://www.baidu.com,怎么变成/">www.baidu.com，怎么变成</a> <a href="https://www.baidu.com/">https://www.baidu.com</a> 的，怎么确定用HTTP还是HTTPS？</h5><details>
+<summary>展开</summary>
+
+
+<p><a href="https://www.sohu.com/a/136637876_487516">你访问的网站是如何自动切换到 HTTPS 的？</a></p>
+<p>一种是原始的302跳转，服务器把所有的HTTp流量跳转到HTTPS。但这样有一个漏洞，就是中间人可能在第一次访问站点的时候就劫持。<br>解决方法是引入HSTS机制，用户浏览器在访问站点的时候强制使用HTTPS。</p>
+</details>
+
+<h5 id="HTTPS连接的时候，怎么确定收到的包是服务器发来的（中间人攻击）？"><a href="#HTTPS连接的时候，怎么确定收到的包是服务器发来的（中间人攻击）？" class="headerlink" title="HTTPS连接的时候，怎么确定收到的包是服务器发来的（中间人攻击）？"></a>HTTPS连接的时候，怎么确定收到的包是服务器发来的（中间人攻击）？</h5><details>
+<summary>展开</summary>
+
+
+<p>1.验证域名、有效期等信息是否正确。证书上都有包含这些信息，比较容易完成验证；</p>
+<p>2.判断证书来源是否合法。每份签发证书都可以根据验证链查找到对应的根证书，操作系统、浏览器会在本地存储权威机构的根证书，利用本地根证书可以对对应机构签发证书完成来源验证；</p>
+<p>3.判断证书是否被篡改。需要与 CA 服务器进行校验；</p>
+<p>4.判断证书是否已吊销。通过CRL（Certificate Revocation List 证书注销列表）和 OCSP（Online Certificate Status Protocol 在线证书状态协议）实现，其中 OCSP 可用于第3步中以减少与 CA 服务器的交互，提高验证效率</p>
+</details>
+
+<h5 id="什么是对称加密、非对称加密？区别是什么？"><a href="#什么是对称加密、非对称加密？区别是什么？" class="headerlink" title="什么是对称加密、非对称加密？区别是什么？"></a>什么是对称加密、非对称加密？区别是什么？</h5><details>
+<summary>展开</summary>
+
+<ul>
+<li>对称加密：加密和解密采用相同的密钥。如：DES、RC2、RC4</li>
+<li>非对称加密：需要两个密钥：公钥和私钥。如果用公钥加密，需要用私钥才能解密。如：RSA</li>
+<li>区别：对称加密速度更快，通常用于大量数据的加密；非对称加密安全性更高（不需要传送私钥）</li>
+</ul>
+</details>
+
+<h5 id="数字签名、报文摘要的原理"><a href="#数字签名、报文摘要的原理" class="headerlink" title="数字签名、报文摘要的原理"></a>数字签名、报文摘要的原理</h5><details>
+<summary>展开</summary>
+- 发送者A用私钥进行签名，接收者B用公钥验证签名。因为除A外没有人有私钥，所以B相信签名是来自A。A不可抵赖，B也不能伪造报文。
+- 摘要算法:MD5、SHA
+  </details>]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>TCP</tag>
+        <tag>HTTP</tag>
       </tags>
   </entry>
 </search>

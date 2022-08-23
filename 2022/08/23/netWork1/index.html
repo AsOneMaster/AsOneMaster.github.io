@@ -22,28 +22,36 @@
     var CONFIG = {"hostname":"asonemaster.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="迅的个人博客">
-<meta property="og:url" content="https://asonemaster.github.io/index.html">
+  <meta name="description" content="TCP与UDP的区别 TCP是面向连接的，UDP是无连接的；   什么叫无连接？ UDP发送数据之前不需要建立连接    什么叫不可靠？ UDP接收方收到报文后，不需要给出任何确认  2. TCP只支持点对点通信，UDP支持一对一、一对多、多对一、多对多；   TCP是面向字节流的，UDP是面向报文的；   什么意思？ 面向字节流是指发送数据时以字节为单位，一个数据包可以拆分成若干组进行发送，而U">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络1--TCP&#x2F;HTTP相关">
+<meta property="og:url" content="https://asonemaster.github.io/2022/08/23/netWork1/index.html">
 <meta property="og:site_name" content="迅的个人博客">
+<meta property="og:description" content="TCP与UDP的区别 TCP是面向连接的，UDP是无连接的；   什么叫无连接？ UDP发送数据之前不需要建立连接    什么叫不可靠？ UDP接收方收到报文后，不需要给出任何确认  2. TCP只支持点对点通信，UDP支持一对一、一对多、多对一、多对多；   TCP是面向字节流的，UDP是面向报文的；   什么意思？ 面向字节流是指发送数据时以字节为单位，一个数据包可以拆分成若干组进行发送，而U">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://asonemaster.github.io/2022/08/23/netWork1/20191201081919108_30577.png">
+<meta property="article:published_time" content="2022-08-23T12:39:18.028Z">
+<meta property="article:modified_time" content="2022-08-23T12:45:48.005Z">
 <meta property="article:author" content="asOneMaster">
+<meta property="article:tag" content="TCP">
+<meta property="article:tag" content="HTTP">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://asonemaster.github.io/2022/08/23/netWork1/20191201081919108_30577.png">
 
-<link rel="canonical" href="https://asonemaster.github.io/">
+<link rel="canonical" href="https://asonemaster.github.io/2022/08/23/netWork1/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>迅的个人博客</title>
+  <title>计算机网络1--TCP/HTTP相关 | 迅的个人博客</title>
   
 
 
@@ -179,9 +187,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -197,10 +206,9 @@
       <meta itemprop="name" content="迅的个人博客">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/08/23/netWork1/" class="post-title-link" itemprop="url">计算机网络1--TCP/HTTP相关</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          计算机网络1--TCP/HTTP相关
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -223,6 +231,13 @@
             </span>
 
           
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
@@ -247,7 +262,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="TCP与UDP的区别"><a href="#TCP与UDP的区别" class="headerlink" title="TCP与UDP的区别"></a>TCP与UDP的区别</h3><ol>
+        <h3 id="TCP与UDP的区别"><a href="#TCP与UDP的区别" class="headerlink" title="TCP与UDP的区别"></a>TCP与UDP的区别</h3><ol>
 <li>TCP是面向连接的，UDP是无连接的；</li>
 </ol>
 <details>
@@ -360,463 +375,82 @@ https://zh.wikipedia.org/wiki/HTTP/3
 - 发送者A用私钥进行签名，接收者B用公钥验证签名。因为除A外没有人有私钥，所以B相信签名是来自A。A不可抵赖，B也不能伪造报文。
 - 摘要算法:MD5、SHA
   </details>
-      
     </div>
     <div>
+        
+           <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
         
     </div>
     
     
     
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
+        <div class="reward-container">
+  <div>打赏一瓶矿泉水</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
       
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/22/go9/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/me.jpg">
-      <meta itemprop="name" content="asOneMaster">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="迅的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/08/22/go9/" class="post-title-link" itemprop="url">go语言基础6--context相关</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-08-22 16:38:05 / 修改时间：18:42:38" itemprop="dateCreated datePublished" datetime="2022-08-22T16:38:05+08:00">2022-08-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.9k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
+      <div style="display: inline-block;">
+        <img src="/images/weChatPay.jpg" alt="asOneMaster 微信支付">
+        <p>微信支付</p>
+      </div>
       
-          <h3 id="context-的使用，context是否并发安全（联动问题-gt-多个协程的同时控制）？"><a href="#context-的使用，context是否并发安全（联动问题-gt-多个协程的同时控制）？" class="headerlink" title="context 的使用，context是否并发安全（联动问题-&gt;多个协程的同时控制）？"></a>context 的使用，context是否并发安全（联动问题-&gt;多个协程的同时控制）？</h3><blockquote>
-<p>Go 的 Context 的数据结构包含 Deadline，Done，Err，Value；它可以控制一组呈树状结构的goroutine，每个goroutine拥有相同的上下文。通过context包，可以非常方便地在请求goroutine之间传递请求数据、取消信号和超时信息。</p>
-</blockquote>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Context <span class="token keyword">interface</span> <span class="token punctuation">&#123;</span>
-   <span class="token function">Deadline</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>deadline time<span class="token punctuation">.</span>Time<span class="token punctuation">,</span> ok <span class="token builtin">bool</span><span class="token punctuation">)</span>
-   <span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
-   <span class="token function">Err</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">error</span>
-   <span class="token function">Value</span><span class="token punctuation">(</span>key <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+      <div style="display: inline-block;">
+        <img src="/images/aliPay.jpg" alt="asOneMaster 支付宝">
+        <p>支付宝</p>
+      </div>
 
-<p>基础的context接口只定义了4个方法，下面分别简要说明一下：</p>
-<ul>
-<li><strong>Deadline</strong> 方法：可以获取设置的截止时间，返回值 deadline 是截止时间，到了这个时间，Context 会自动发起取消请求，返回值 ok 表示是否设置了截止时间。</li>
-<li><strong>Done</strong> 方法：返回一个只读的 channel ，类型为 struct{}。如果这个 chan 可以读取，说明已经发出了取消信号，可以做清理操作，然后退出协程，释放资源。</li>
-<li><strong>Err</strong> 方法：返回Context 被取消的原因。</li>
-<li><strong>Value</strong> 方法：获取 Context 上绑定的值，是一个键值对，通过 key 来获取对应的值。</li>
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>asOneMaster
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://asonemaster.github.io/2022/08/23/netWork1/" title="计算机网络1--TCP&#x2F;HTTP相关">https://asonemaster.github.io/2022/08/23/netWork1/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
 </ul>
-<blockquote>
-<p> 最常用的是 Done 方法，在 Context 取消的时候，会关闭这个只读的 Channel，相当于发出了取消信号。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/08/22/go9/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    <div>
-        
-    </div>
-    
-    
-    
+</div>
+
+	
       <footer class="post-footer">
-        <div class="post-eof"></div>
+          
+          <div class="post-tags">
+              <a href="/tags/TCP/" rel="tag"><i class="fa fa-tag"></i> TCP</a>
+              <a href="/tags/HTTP/" rel="tag"><i class="fa fa-tag"></i> HTTP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/22/go9/" rel="prev" title="go语言基础6--context相关">
+      <i class="fa fa-chevron-left"></i> go语言基础6--context相关
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
       </footer>
+    
   </article>
   
   
   
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/22/go8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/me.jpg">
-      <meta itemprop="name" content="asOneMaster">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="迅的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/08/22/go8/" class="post-title-link" itemprop="url">go语言基础5--切片与数组相关</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-08-22 16:13:07 / 修改时间：16:39:27" itemprop="dateCreated datePublished" datetime="2022-08-22T16:13:07+08:00">2022-08-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>633</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="slice-和-array的区别？（下级问题-gt-slice底层与扩容机制）"><a href="#slice-和-array的区别？（下级问题-gt-slice底层与扩容机制）" class="headerlink" title="slice 和 array的区别？（下级问题-&gt;slice底层与扩容机制）"></a>slice 和 array的区别？（下级问题-&gt;slice底层与扩容机制）</h4><ul>
-<li>数组的零值是元素类型的零值，切片的零值是 nil；</li>
-<li>数组是固定长度，切片是可变长度；</li>
-<li>数组是值类型，切片是引用类型。</li>
-</ul>
-<h4 id="slice的底层实现"><a href="#slice的底层实现" class="headerlink" title="slice的底层实现"></a>slice的底层实现</h4><blockquote>
-<p>slice 底层 是有 3 个字段的数据结构分为：</p>
-<ul>
-<li>array 数组</li>
-<li>len 长度</li>
-<li>cap 容量</li>
-</ul>
-</blockquote>
-<p>指针指向数组的第一个该 slice 可访问的元素，这个元素并不一定是底层数组的第一个元素，长度是指 slice 中元素的个数，它不能超过 slice 的容量。</p>
-<p>容量的大小通常是从 slice 底层数组的元素个数，什么意思呢举例：</p>
-<p>arr：=[]int{1,2,3,4} slice:=arr[1:3] —（即：{2，3，4}） slice的长度为3 容量为4（{1，2，3，4}为底层数组）</p>
-<p>Go 的内置函数 len 和 cap 用来返回 slice 的长度和容量。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/08/22/go8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    <div>
-        
-    </div>
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/20/go7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/me.jpg">
-      <meta itemprop="name" content="asOneMaster">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="迅的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/08/20/go7/" class="post-title-link" itemprop="url">逃逸分析能做什么？如何进行逃逸分析？</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-08-20 16:56:32" itemprop="dateCreated datePublished" datetime="2022-08-20T16:56:32+08:00">2022-08-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-22 16:17:15" itemprop="dateModified" datetime="2022-08-22T16:17:15+08:00">2022-08-22</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>589</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>（上级垃圾回收 问题逻辑- 垃圾回收-&gt;逃逸分析-&gt;内存逃逸）</p>
-</blockquote>
-<blockquote>
-<p>逃逸分析是什么：编译器决定内存分配位置的方式，就称之为逃逸分析(escape analysis)。逃逸分析由编译器完成，作用于编译阶段。</p>
-<p>逃逸分析能做什么：可以了解程序哪些内存在栈上，哪些在堆上，从而优化减少垃圾回收提升性能。</p>
-<p>如何进行逃逸分析：go语言可以使用<strong>go build -gcflags ‘-m -N -l’</strong>  test.go 的方式 查看编译结果中的逃逸情况 在堆上（heap）的就发生了逃逸</p>
-</blockquote>
-<p> <strong>必然不会发生逃逸的情况：</strong></p>
-<ol>
-<li><p>指针被没有发生逃逸的变量引用</p>
-</li>
-<li><p>仅仅在函数被对变量进行取地址操作，没有将指针传出</p></li></ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/08/20/go7/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    <div>
-        
-    </div>
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/20/go6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/me.jpg">
-      <meta itemprop="name" content="asOneMaster">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="迅的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/08/20/go6/" class="post-title-link" itemprop="url">goroutine(协程)和线程是什么关系，goroutine是如何调度的？</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-08-20 16:04:38" itemprop="dateCreated datePublished" datetime="2022-08-20T16:04:38+08:00">2022-08-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-22 16:17:30" itemprop="dateModified" datetime="2022-08-22T16:17:30+08:00">2022-08-22</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>933</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>（上级问题并发  问题逻辑-  并发机制-&gt;GMP-&gt;goroutine调度）</p>
-</blockquote>
-<h4 id="goroutine-协程-和线程"><a href="#goroutine-协程-和线程" class="headerlink" title="goroutine(协程)和线程"></a>goroutine(协程)和线程</h4><p>说线程之前，我们先说进程和线程的关系，</p>
-<p>首先线程是进程的执行体，拥有一个执行入口，以及进程虚拟地址空间中分配的栈—包括用户栈和内核栈，操作系统会记录线程控制信息，</p>
-<p>而线程会在获得cpu时间片信息后执行 ，cpu中栈指针、指令指针等寄存器都到切换到对应的线程；</p>
-<p>而协程就是线程创建的执行体，其控制信息由线程记录，由于用户程序不能操作内核空间，所以只能给协程分配用户栈，而操作系统对这个信息一无所知。</p>
-<p><strong>总结：</strong>协程是一种”用户态线程”。</p>
-<h4 id="goroutine如何调度"><a href="#goroutine如何调度" class="headerlink" title="goroutine如何调度"></a>goroutine如何调度</h4><p>说到goroutine的调度就不得不提MPG（GMP）模型</p>
-<ul>
-<li>M: 线程</li>
-<li>P: 执行go协程运行所必需的资源，关联本地可运行G的队列</li>
-<li>G: go协程</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/08/20/go6/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    <div>
-        
-    </div>
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
-  </nav>
 
 
 
@@ -868,6 +502,7 @@ https://zh.wikipedia.org/wiki/HTTP/3
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E4%B8%8EUDP%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">TCP与UDP的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E9%80%89%E6%8B%A9TCP%EF%BC%8C%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E9%80%89UDP%EF%BC%9F"><span class="nav-number">1.0.1.</span> <span class="nav-text">什么时候选择TCP，什么时候选UDP？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#HTTP%E5%8F%AF%E4%BB%A5%E4%BD%BF%E7%94%A8UDP%E5%90%97%EF%BC%9F"><span class="nav-number">1.0.2.</span> <span class="nav-text">HTTP可以使用UDP吗？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9D%A2%E5%90%91%E8%BF%9E%E6%8E%A5%E5%92%8C%E6%97%A0%E8%BF%9E%E6%8E%A5%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.0.3.</span> <span class="nav-text">面向连接和无连接的区别</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%BC%A0%E8%BE%93%E7%9A%84%E5%8F%AF%E9%9D%A0%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">TCP如何保证传输的可靠性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP%E5%92%8CHTTPS%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">HTTP和HTTPS有什么区别？</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Https%E7%9A%84%E8%BF%9E%E6%8E%A5%E8%BF%87%E7%A8%8B%EF%BC%9F"><span class="nav-number">3.0.1.</span> <span class="nav-text">Https的连接过程？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BE%93%E5%85%A5-www-baidu-com%EF%BC%8C%E6%80%8E%E4%B9%88%E5%8F%98%E6%88%90-https-www-baidu-com-%E7%9A%84%EF%BC%8C%E6%80%8E%E4%B9%88%E7%A1%AE%E5%AE%9A%E7%94%A8HTTP%E8%BF%98%E6%98%AFHTTPS%EF%BC%9F"><span class="nav-number">3.0.2.</span> <span class="nav-text">输入 www.baidu.com，怎么变成 https:&#x2F;&#x2F;www.baidu.com 的，怎么确定用HTTP还是HTTPS？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#HTTPS%E8%BF%9E%E6%8E%A5%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8C%E6%80%8E%E4%B9%88%E7%A1%AE%E5%AE%9A%E6%94%B6%E5%88%B0%E7%9A%84%E5%8C%85%E6%98%AF%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%8F%91%E6%9D%A5%E7%9A%84%EF%BC%88%E4%B8%AD%E9%97%B4%E4%BA%BA%E6%94%BB%E5%87%BB%EF%BC%89%EF%BC%9F"><span class="nav-number">3.0.3.</span> <span class="nav-text">HTTPS连接的时候，怎么确定收到的包是服务器发来的（中间人攻击）？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%E3%80%81%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86%EF%BC%9F%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">3.0.4.</span> <span class="nav-text">什么是对称加密、非对称加密？区别是什么？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E3%80%81%E6%8A%A5%E6%96%87%E6%91%98%E8%A6%81%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-number">3.0.5.</span> <span class="nav-text">数字签名、报文摘要的原理</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
