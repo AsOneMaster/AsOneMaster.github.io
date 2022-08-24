@@ -24,26 +24,26 @@
 
   <meta property="og:type" content="website">
 <meta property="og:title" content="迅的个人博客">
-<meta property="og:url" content="https://asonemaster.github.io/archives/2022/index.html">
+<meta property="og:url" content="https://asonemaster.github.io/page/4/index.html">
 <meta property="og:site_name" content="迅的个人博客">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="asOneMaster">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://asonemaster.github.io/archives/2022/">
+<link rel="canonical" href="https://asonemaster.github.io/page/4/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : false,
+    isHome : true,
     isPost : false,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>归档 | 迅的个人博客</title>
+  <title>迅的个人博客</title>
   
 
 
@@ -179,351 +179,127 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/17/golangStudy/">
 
-  
-  
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 16 篇日志。 继续努力。</span>
-      </div>
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/me.jpg">
+      <meta itemprop="name" content="asOneMaster">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="迅的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/08/17/golangStudy/" class="post-title-link" itemprop="url">golang学习路线，所需知识</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-17 09:50:07" itemprop="dateCreated datePublished" datetime="2022-08-17T09:50:07+08:00">2022-08-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-18 14:37:47" itemprop="dateModified" datetime="2022-08-18T14:37:47+08:00">2022-08-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2022</span>
+          <h2 id="计算机基础"><a href="#计算机基础" class="headerlink" title="计算机基础"></a>计算机基础</h2><h3 id="1-操作系统"><a href="#1-操作系统" class="headerlink" title="1. 操作系统"></a>1. 操作系统</h3><ul>
+<li><h5 id="了解进程、线程、协程的区别"><a href="#了解进程、线程、协程的区别" class="headerlink" title="了解进程、线程、协程的区别"></a>了解进程、线程、协程的区别</h5></li>
+<li><h5 id="了解进程间常用的通信方式"><a href="#了解进程间常用的通信方式" class="headerlink" title="了解进程间常用的通信方式"></a>了解进程间常用的通信方式</h5><ol>
+<li>管道</li>
+<li>命名管道（FIFO）</li>
+<li>消息队列</li>
+<li>信号量</li>
+<li>共享内存</li>
+<li>套接字（Socket）</li>
+</ol>
+</li>
+<li><h5 id="了解5种网络IO模型"><a href="#了解5种网络IO模型" class="headerlink" title="了解5种网络IO模型"></a>了解5种网络IO模型</h5><ol>
+<li>阻塞 IO（blocking IO）</li>
+<li>非阻塞 IO（non-blocking IO）</li>
+<li>多路复用 IO（IO multiplexing）</li>
+<li>异步 IO（Asynchronous I/O）</li>
+<li>信号驱动 IO（signal driven I/O， SIGIO）</li>
+</ol></li></ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/17/golangStudy/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-24T15:05:22+08:00"
-              content="2022-08-24">
-          08-24
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/24/go10/" itemprop="url">
-            <span itemprop="name">go语言基础7--defer相关</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-23T20:39:18+08:00"
-              content="2022-08-23">
-          08-23
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/23/netWork1/" itemprop="url">
-            <span itemprop="name">计算机网络1--TCP/HTTP相关</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-22T16:38:05+08:00"
-              content="2022-08-22">
-          08-22
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/22/go9/" itemprop="url">
-            <span itemprop="name">go语言基础6--context相关</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-22T16:13:07+08:00"
-              content="2022-08-22">
-          08-22
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/22/go8/" itemprop="url">
-            <span itemprop="name">go语言基础5--切片与数组相关</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-20T16:56:32+08:00"
-              content="2022-08-20">
-          08-20
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/20/go7/" itemprop="url">
-            <span itemprop="name">逃逸分析能做什么？如何进行逃逸分析？</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-20T16:04:38+08:00"
-              content="2022-08-20">
-          08-20
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/20/go6/" itemprop="url">
-            <span itemprop="name">goroutine(协程)和线程是什么关系，goroutine是如何调度的？</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-19T21:28:44+08:00"
-              content="2022-08-19">
-          08-19
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/19/goRoutine/" itemprop="url">
-            <span itemprop="name">go语言的并发机制</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-19T21:12:39+08:00"
-              content="2022-08-19">
-          08-19
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/19/redis1/" itemprop="url">
-            <span itemprop="name">Redis基础1</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-18T15:28:53+08:00"
-              content="2022-08-18">
-          08-18
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/18/mysql2/" itemprop="url">
-            <span itemprop="name">为什么InnoDB存储引擎选择使用B+tree索引结构?</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-18T14:42:08+08:00"
-              content="2022-08-18">
-          08-18
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/18/mysql1/" itemprop="url">
-            <span itemprop="name">Mysql进阶1——Mysql存储引擎与索引相关</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-18T11:31:24+08:00"
-              content="2022-08-18">
-          08-18
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/18/go5/" itemprop="url">
-            <span itemprop="name">go语言基础4——Channel相关</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-18T11:28:55+08:00"
-              content="2022-08-18">
-          08-18
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/18/go4/" itemprop="url">
-            <span itemprop="name">go语言基础3——GC相关</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-18T11:23:59+08:00"
-              content="2022-08-18">
-          08-18
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/18/go3/" itemprop="url">
-            <span itemprop="name">go语言基础2——map相关</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-17T15:58:17+08:00"
-              content="2022-08-17">
-          08-17
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/17/go2/" itemprop="url">
-            <span itemprop="name">为什么代码中实例化结构体时大多要返回结构体指针 而不是结构体值</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-17T13:16:20+08:00"
-              content="2022-08-17">
-          08-17
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/17/go1/" itemprop="url">
-            <span itemprop="name">go语言基础1——make和new</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-08-17T09:50:07+08:00"
-              content="2022-08-17">
-          08-17
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/08/17/golangStudy/" itemprop="url">
-            <span itemprop="name">golang学习路线，所需知识</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-
+    <div>
+        
     </div>
-  </div>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
   
   
   
 
+
   
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
+  </nav>
 
 
 

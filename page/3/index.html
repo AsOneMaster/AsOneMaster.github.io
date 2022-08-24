@@ -185,6 +185,115 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/18/go5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/me.jpg">
+      <meta itemprop="name" content="asOneMaster">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="迅的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/08/18/go5/" class="post-title-link" itemprop="url">go语言基础4——Channel相关</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-18 11:31:24" itemprop="dateCreated datePublished" datetime="2022-08-18T11:31:24+08:00">2022-08-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-20 14:12:04" itemprop="dateModified" datetime="2022-08-20T14:12:04+08:00">2022-08-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>912</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h5 id="channel-是否线程安全？锁用在什么地方？"><a href="#channel-是否线程安全？锁用在什么地方？" class="headerlink" title="channel 是否线程安全？锁用在什么地方？"></a>channel 是否线程安全？锁用在什么地方？</h5><blockquote>
+<p>Golang的Channel,发送一个数据到Channel 和 从Channel接收一个数据都是原子性的。</p>
+<p>如果把线程安全定义为允许多个goroutine同时去读写，那么golang 的channel 是线程安全的，因为channel底层数据结构中是带有lock的，不需要在并发读写同一个channe时再加锁。</p>
+<p>而且Go的设计思想就是：不要通过共享内存来通信，而是通过通信来共享内存，前者就是传统的加锁（共享内存通信），后者就是Channel。</p>
+<p>也就是说，设计Channel的主要目的就是在多任务间传递数据的，这当然是安全的</p>
+</blockquote>
+<h5 id="go-channel-的底层实现原理-（数据结构）"><a href="#go-channel-的底层实现原理-（数据结构）" class="headerlink" title="go channel 的底层实现原理 （数据结构）"></a>go channel 的底层实现原理 （数据结构）</h5><p>总结hchan结构体的主要组成部分有四个：</p>
+<ul>
+<li>用来保存goroutine之间传递数据的循环数组：buf</li>
+<li>用来记录此循环数组当前发送或接收数据的下标值：sendx（发送队列）和recvx（接受队列）</li>
+<li>用于保存向该chan发送和从该chan接收数据被阻塞的goroutine队列： sendq 和 recvq</li>
+<li>保证channel写入和读取数据时线程安全的锁：lock</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/18/go5/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    <div>
+        
+    </div>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/18/go4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -586,124 +695,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/17/golangStudy/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/me.jpg">
-      <meta itemprop="name" content="asOneMaster">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="迅的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/08/17/golangStudy/" class="post-title-link" itemprop="url">golang学习路线，所需知识</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-08-17 09:50:07" itemprop="dateCreated datePublished" datetime="2022-08-17T09:50:07+08:00">2022-08-17</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-18 14:37:47" itemprop="dateModified" datetime="2022-08-18T14:37:47+08:00">2022-08-18</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="计算机基础"><a href="#计算机基础" class="headerlink" title="计算机基础"></a>计算机基础</h2><h3 id="1-操作系统"><a href="#1-操作系统" class="headerlink" title="1. 操作系统"></a>1. 操作系统</h3><ul>
-<li><h5 id="了解进程、线程、协程的区别"><a href="#了解进程、线程、协程的区别" class="headerlink" title="了解进程、线程、协程的区别"></a>了解进程、线程、协程的区别</h5></li>
-<li><h5 id="了解进程间常用的通信方式"><a href="#了解进程间常用的通信方式" class="headerlink" title="了解进程间常用的通信方式"></a>了解进程间常用的通信方式</h5><ol>
-<li>管道</li>
-<li>命名管道（FIFO）</li>
-<li>消息队列</li>
-<li>信号量</li>
-<li>共享内存</li>
-<li>套接字（Socket）</li>
-</ol>
-</li>
-<li><h5 id="了解5种网络IO模型"><a href="#了解5种网络IO模型" class="headerlink" title="了解5种网络IO模型"></a>了解5种网络IO模型</h5><ol>
-<li>阻塞 IO（blocking IO）</li>
-<li>非阻塞 IO（non-blocking IO）</li>
-<li>多路复用 IO（IO multiplexing）</li>
-<li>异步 IO（Asynchronous I/O）</li>
-<li>信号驱动 IO（signal driven I/O， SIGIO）</li>
-</ol></li></ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/08/17/golangStudy/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    <div>
-        
-    </div>
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -771,7 +766,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -784,7 +779,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -832,13 +827,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">16k</span>
+    <span title="站点总字数">17k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">14 分钟</span>
+    <span title="站点阅读时长">15 分钟</span>
 </div>
 
         
