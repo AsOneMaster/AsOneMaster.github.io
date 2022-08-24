@@ -974,4 +974,35 @@ https://zh.wikipedia.org/wiki/HTTP/3
         <tag>defer</tag>
       </tags>
   </entry>
+  <entry>
+    <title>linux系统</title>
+    <url>/2022/08/24/linux1/</url>
+    <content><![CDATA[<p>Linux 最常用命令！</p>
+<p>Linux是目前应用最广泛的服务器操作系统，基于Unix，开源免费，由于系统的稳定性和安全性，市场占有率很高，几乎成为程序代码运行的最佳系统环境。</p>
+<p>linux不仅可以长时间的运行我们编写的程序代码，还可以安装在各种计算机硬件设备中，如手机、路由器等，Android程序最底层就是运行在linux系统上的。</p>
+<h2 id="linux的目录结构"><a href="#linux的目录结构" class="headerlink" title="linux的目录结构"></a>linux的目录结构</h2><p><img src="/2022/08/24/linux1/linux1.png"></p>
+<span id="more"></span>
+
+<ul>
+<li>bin  (binaries)存放二进制可执行文件</li>
+<li>sbin  (super user binaries)存放二进制可执行文件，只有root才能访问</li>
+<li>etc (etcetera)存放系统配置文件</li>
+<li>usr  (unix shared resources)用于存放共享的系统资源</li>
+<li>home 存放用户文件的根目录</li>
+<li>root  超级用户目录</li>
+<li>dev (devices)用于存放设备文件</li>
+<li>lib  (library)存放跟文件系统中的程序运行所需要的共享库及内核模块</li>
+<li>mnt  (mount)系统管理员安装临时文件系统的安装点</li>
+<li>boot 存放用于系统引导时使用的各种文件</li>
+<li>tmp  (temporary)用于存放各种临时文件</li>
+<li>var  (variable)用于存放运行时需要改变数据的文件</li>
+</ul>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>目录结构</tag>
+      </tags>
+  </entry>
 </search>
