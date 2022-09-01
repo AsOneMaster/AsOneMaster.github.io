@@ -1720,4 +1720,95 @@ https://zh.wikipedia.org/wiki/HTTP/3
         <tag>常用操作</tag>
       </tags>
   </entry>
+  <entry>
+    <title>什么情况下索引失效</title>
+    <url>/2022/09/01/mysql3/</url>
+    <content><![CDATA[<h3 id="索引失效情况：索引使用"><a href="#索引失效情况：索引使用" class="headerlink" title="索引失效情况：索引使用"></a>索引失效情况：索引使用</h3><blockquote>
+<p>使用explain 分析索引是否使用</p>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql"> explain select *from tbl_file where file_sha1&#x3D;&#39;0c4b1036671ad0b2727a9d18349d02feae0e8161&#39;;
++----+-------------+----------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
+| id | select_type | table    | partitions | type  | possible_keys | key           | key_len | ref   | rows | filtered | Extra |
++----+-------------+----------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | tbl_file | NULL       | const | idx_file_hash | idx_file_hash | 120     | const |    1 |   100.00 | NULL  |
++----+-------------+----------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<p>possible_keys ：可能索引  key：索引键</p>
+<span id="more"></span>
+
+<ul>
+<li><strong>索引列上进行位运算 失效</strong></li>
+</ul>
+<blockquote>
+<p>使用substring</p>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql"> explain select *from tbl_file where substring(file_sha1,1,2)&#x3D;&#39;0c&#39;;
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+|  1 | SIMPLE      | tbl_file | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    1 |   100.00 | Using where |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p> key 为NULL 索引失效</p>
+</blockquote>
+<ul>
+<li><strong>字符串类型不加引号 失效</strong></li>
+</ul>
+<blockquote>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">explain select *from tbl_file where file_sha1&#x3D;123456;
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+|  1 | SIMPLE      | tbl_file | NULL       | ALL  | idx_file_hash | NULL | NULL    | NULL |    1 |   100.00 | Using where |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+1 row in set, 3 warnings (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<ul>
+<li><strong>索引字段使用模糊匹配，头部匹配失效，尾部匹配不会</strong></li>
+</ul>
+<blockquote>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">##头部匹配 失效
+mysql&gt; explain select *from tbl_file where file_sha1 like &#39;%161&#39;;
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+|  1 | SIMPLE      | tbl_file | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    1 |   100.00 | Using where |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+1 row in set, 1 warning (0.00 sec)
+##尾部匹配 索引未失效
+mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
++----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+
+| id | select_type | table    | partitions | type  | possible_keys | key           | key_len | ref  | rows | filtered | Extra                 |
++----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+
+|  1 | SIMPLE      | tbl_file | NULL       | range | idx_file_hash | idx_file_hash | 120     | NULL |    1 |   100.00 | Using index condition |
++----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<ul>
+<li>or连 接的条件</li>
+</ul>
+<blockquote>
+<p>用or分割开的条件，如果or前的条件中 的列有索引，而后面的列中没有索引，那么涉及的索引都不会被用到。</p>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">mysql&gt; explain select *from tbl_file where file_sha1&#x3D;&#39;123456&#39; or ext1&#x3D;0;
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+|  1 | SIMPLE      | tbl_file | NULL       | ALL  | idx_file_hash | NULL | NULL    | NULL |    1 |   100.00 | Using where |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<ul>
+<li>数据分布影响</li>
+</ul>
+<blockquote>
+<p>如果MySQL评估使用索引比全表更慢，则不使用索引。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Mysql</category>
+      </categories>
+      <tags>
+        <tag>索引</tag>
+      </tags>
+  </entry>
 </search>

@@ -22,20 +22,20 @@
     var CONFIG = {"hostname":"asonemaster.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="1. 多个defer语句，按先进后出的方式执行package main  import &quot;fmt&quot;  func main() &amp;#123;         var whatever [5]struct&amp;#123;s&amp;#125;         for i :&#x3D; range whatever &amp;#123;         defer fmt.Println(i)         &amp;#125;  &amp;#">
+  <meta name="description" content="索引失效情况：索引使用 使用explain 分析索引是否使用  explain select *from tbl_file where file_sha1&#x3D;&#39;0c4b1036671ad0b2727a9d18349d02feae0e8161&#39;; +----+-------------+----------+------------+-------+-------------">
 <meta property="og:type" content="article">
-<meta property="og:title" content="go语言基础7--defer相关">
-<meta property="og:url" content="https://asonemaster.github.io/2022/08/24/go10/index.html">
+<meta property="og:title" content="什么情况下索引失效">
+<meta property="og:url" content="https://asonemaster.github.io/2022/09/01/mysql3/index.html">
 <meta property="og:site_name" content="迅的个人博客">
-<meta property="og:description" content="1. 多个defer语句，按先进后出的方式执行package main  import &quot;fmt&quot;  func main() &amp;#123;         var whatever [5]struct&amp;#123;s&amp;#125;         for i :&#x3D; range whatever &amp;#123;         defer fmt.Println(i)         &amp;#125;  &amp;#">
+<meta property="og:description" content="索引失效情况：索引使用 使用explain 分析索引是否使用  explain select *from tbl_file where file_sha1&#x3D;&#39;0c4b1036671ad0b2727a9d18349d02feae0e8161&#39;; +----+-------------+----------+------------+-------+-------------">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-08-24T07:05:22.583Z">
-<meta property="article:modified_time" content="2022-08-24T07:25:45.330Z">
+<meta property="article:published_time" content="2022-09-01T05:50:14.139Z">
+<meta property="article:modified_time" content="2022-09-01T07:12:37.666Z">
 <meta property="article:author" content="asOneMaster">
-<meta property="article:tag" content="defer">
+<meta property="article:tag" content="索引">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://asonemaster.github.io/2022/08/24/go10/">
+<link rel="canonical" href="https://asonemaster.github.io/2022/09/01/mysql3/">
 
 
 <script id="page-configurations">
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>go语言基础7--defer相关 | 迅的个人博客</title>
+  <title>什么情况下索引失效 | 迅的个人博客</title>
   
 
 
@@ -191,7 +191,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/24/go10/">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/09/01/mysql3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/me.jpg">
@@ -204,7 +204,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          go语言基础7--defer相关
+          什么情况下索引失效
         </h1>
 
         <div class="post-meta">
@@ -215,7 +215,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-08-24 15:05:22 / 修改时间：15:25:45" itemprop="dateCreated datePublished" datetime="2022-08-24T15:05:22+08:00">2022-08-24</time>
+              <time title="创建时间：2022-09-01 13:50:14 / 修改时间：15:12:37" itemprop="dateCreated datePublished" datetime="2022-09-01T13:50:14+08:00">2022-09-01</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -223,7 +223,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
+                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
                 </span>
             </span>
 
@@ -240,14 +240,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>954</span>
+              <span>4.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>4 分钟</span>
             </span>
 
         </div>
@@ -259,61 +259,85 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="1-多个defer语句，按先进后出的方式执行"><a href="#1-多个defer语句，按先进后出的方式执行" class="headerlink" title="1. 多个defer语句，按先进后出的方式执行"></a>1. 多个defer语句，按先进后出的方式执行</h2><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main 
-<span class="token keyword">import</span> <span class="token string">"fmt"</span> 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    
-    <span class="token keyword">var</span> whatever <span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token keyword">struct</span><span class="token punctuation">&#123;</span>s<span class="token punctuation">&#125;</span>    
-    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token keyword">range</span> whatever <span class="token punctuation">&#123;</span>
-        <span class="token keyword">defer</span> fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>    
-    <span class="token punctuation">&#125;</span> 
-<span class="token punctuation">&#125;</span>
-
-<span class="token comment">//4</span>
-<span class="token comment">//3</span>
-<span class="token comment">//2</span>
-<span class="token comment">//1</span>
-<span class="token comment">//0</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+        <h3 id="索引失效情况：索引使用"><a href="#索引失效情况：索引使用" class="headerlink" title="索引失效情况：索引使用"></a>索引失效情况：索引使用</h3><blockquote>
+<p>使用explain 分析索引是否使用</p>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql"> explain select *from tbl_file where file_sha1&#x3D;&#39;0c4b1036671ad0b2727a9d18349d02feae0e8161&#39;;
++----+-------------+----------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
+| id | select_type | table    | partitions | type  | possible_keys | key           | key_len | ref   | rows | filtered | Extra |
++----+-------------+----------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | tbl_file | NULL       | const | idx_file_hash | idx_file_hash | 120     | const |    1 |   100.00 | NULL  |
++----+-------------+----------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<p>possible_keys ：可能索引  key：索引键</p>
 <span id="more"></span>
 
-<h2 id="2-易错点：defer加func函数带return"><a href="#2-易错点：defer加func函数带return" class="headerlink" title="2. 易错点：defer加func函数带return"></a>2. 易错点：defer加func函数带return</h2><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main 
-<span class="token keyword">import</span> <span class="token string">"fmt"</span> 
-<span class="token comment">//测试函数带参数  直接返回函数参数x再调用defer</span>
-<span class="token keyword">func</span> <span class="token function">test1</span><span class="token punctuation">(</span>x <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token builtin">int</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> x <span class="token operator">=</span> <span class="token number">9</span> <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-	<span class="token keyword">return</span> x
-<span class="token punctuation">&#125;</span>
-<span class="token comment">//测试函数带参数 先赋值x 然后回回函数参数x再调用defer</span>
-<span class="token keyword">func</span> <span class="token function">test11</span><span class="token punctuation">(</span>x <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token builtin">int</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> x <span class="token operator">=</span> <span class="token number">9</span> <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-	x <span class="token operator">=</span> <span class="token number">10</span>
-	<span class="token keyword">return</span> x
-<span class="token punctuation">&#125;</span>
-<span class="token comment">//测试函数返回值带参数 先赋值x 然后回回函数参数x再调用defer 但是defer内参数x与返回值参数名相同 直接覆盖原返回值 </span>
-<span class="token comment">//结尾return x 是诱导 可以不用写返回值</span>
-<span class="token keyword">func</span> <span class="token function">test2</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>x <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> x <span class="token operator">=</span> <span class="token number">9</span> <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-	x <span class="token operator">=</span> <span class="token number">10</span>
-	<span class="token keyword">return</span> x
-    <span class="token comment">//return </span>
-<span class="token punctuation">&#125;</span>
-<span class="token comment">//测试函数返回值带参数 同上 覆盖并调用defer得 返回值为10</span>
-<span class="token keyword">func</span> <span class="token function">test3</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>x <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> x <span class="token operator">=</span> <span class="token number">10</span> <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-	<span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> x <span class="token operator">=</span> <span class="token number">9</span> <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-	<span class="token keyword">return</span> x
-<span class="token punctuation">&#125;</span>
-
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">test1</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment">//1</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">test11</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">//10</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">test2</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>   <span class="token comment">//9</span>
-    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token function">test3</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>   <span class="token comment">//10</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>总结：</strong> 执行逻辑 </p>
-<p>测试函数-&gt;非defer测试函数内局部变量赋值-&gt;return 变量 -&gt;defer函数（如果测试函数有返回值函数且内部变量与返回值参数同名，覆盖return变量值）</p>
+<ul>
+<li><strong>索引列上进行位运算 失效</strong></li>
+</ul>
 <blockquote>
-<p><strong>更多defer用法参考：</strong> <a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2002791">Go 延迟调用 defer 用法详解 - 腾讯云开发者社区-腾讯云 (tencent.com)</a></p>
+<p>使用substring</p>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql"> explain select *from tbl_file where substring(file_sha1,1,2)&#x3D;&#39;0c&#39;;
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+|  1 | SIMPLE      | tbl_file | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    1 |   100.00 | Using where |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p> key 为NULL 索引失效</p>
+</blockquote>
+<ul>
+<li><strong>字符串类型不加引号 失效</strong></li>
+</ul>
+<blockquote>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">explain select *from tbl_file where file_sha1&#x3D;123456;
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+|  1 | SIMPLE      | tbl_file | NULL       | ALL  | idx_file_hash | NULL | NULL    | NULL |    1 |   100.00 | Using where |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+1 row in set, 3 warnings (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<ul>
+<li><strong>索引字段使用模糊匹配，头部匹配失效，尾部匹配不会</strong></li>
+</ul>
+<blockquote>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">##头部匹配 失效
+mysql&gt; explain select *from tbl_file where file_sha1 like &#39;%161&#39;;
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+|  1 | SIMPLE      | tbl_file | NULL       | ALL  | NULL          | NULL | NULL    | NULL |    1 |   100.00 | Using where |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+1 row in set, 1 warning (0.00 sec)
+##尾部匹配 索引未失效
+mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
++----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+
+| id | select_type | table    | partitions | type  | possible_keys | key           | key_len | ref  | rows | filtered | Extra                 |
++----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+
+|  1 | SIMPLE      | tbl_file | NULL       | range | idx_file_hash | idx_file_hash | 120     | NULL |    1 |   100.00 | Using index condition |
++----+-------------+----------+------------+-------+---------------+---------------+---------+------+------+----------+-----------------------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<ul>
+<li>or连 接的条件</li>
+</ul>
+<blockquote>
+<p>用or分割开的条件，如果or前的条件中 的列有索引，而后面的列中没有索引，那么涉及的索引都不会被用到。</p>
+<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql">mysql&gt; explain select *from tbl_file where file_sha1&#x3D;&#39;123456&#39; or ext1&#x3D;0;
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+| id | select_type | table    | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+|  1 | SIMPLE      | tbl_file | NULL       | ALL  | idx_file_hash | NULL | NULL    | NULL |    1 |   100.00 | Using where |
++----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
+1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<ul>
+<li>数据分布影响</li>
+</ul>
+<blockquote>
+<p>如果MySQL评估使用索引比全表更慢，则不使用索引。</p>
 </blockquote>
 
     </div>
@@ -359,7 +383,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://asonemaster.github.io/2022/08/24/go10/" title="go语言基础7--defer相关">https://asonemaster.github.io/2022/08/24/go10/</a>
+    <a href="https://asonemaster.github.io/2022/09/01/mysql3/" title="什么情况下索引失效">https://asonemaster.github.io/2022/09/01/mysql3/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -371,7 +395,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/defer/" rel="tag"><i class="fa fa-tag"></i> defer</a>
+              <a href="/tags/%E7%B4%A2%E5%BC%95/" rel="tag"><i class="fa fa-tag"></i> 索引</a>
           </div>
 
         
@@ -380,13 +404,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/08/23/netWork1/" rel="prev" title="计算机网络1--TCP/HTTP相关">
-      <i class="fa fa-chevron-left"></i> 计算机网络1--TCP/HTTP相关
+    <a href="/2022/08/24/linux2/" rel="prev" title="linux系统后端常用命令">
+      <i class="fa fa-chevron-left"></i> linux系统后端常用命令
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/08/24/linux1/" rel="next" title="linux系统">
-      linux系统 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -445,7 +466,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%A4%9A%E4%B8%AAdefer%E8%AF%AD%E5%8F%A5%EF%BC%8C%E6%8C%89%E5%85%88%E8%BF%9B%E5%90%8E%E5%87%BA%E7%9A%84%E6%96%B9%E5%BC%8F%E6%89%A7%E8%A1%8C"><span class="nav-number">1.</span> <span class="nav-text">1. 多个defer语句，按先进后出的方式执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E6%98%93%E9%94%99%E7%82%B9%EF%BC%9Adefer%E5%8A%A0func%E5%87%BD%E6%95%B0%E5%B8%A6return"><span class="nav-number">2.</span> <span class="nav-text">2. 易错点：defer加func函数带return</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E5%A4%B1%E6%95%88%E6%83%85%E5%86%B5%EF%BC%9A%E7%B4%A2%E5%BC%95%E4%BD%BF%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">索引失效情况：索引使用</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
