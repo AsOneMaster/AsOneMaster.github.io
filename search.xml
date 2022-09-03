@@ -1811,4 +1811,20 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
         <tag>索引</tag>
       </tags>
   </entry>
+  <entry>
+    <title>云服务器使用man命令出错</title>
+    <url>/2022/09/03/linux3/</url>
+    <content><![CDATA[<blockquote>
+<p>报错信息：an: preconv: Bad system call (core dumped) man: nroff: Bad system call (core dumped)</p>
+</blockquote>
+<p>找到的原因是man 的版本与linux 的SECCOMP 机制有冲突。找到方法，禁用MAN 的SECCOMP。<br>临时使用：<br>MAN_DISABLE_SECCOMP=1 man ls<br>设到环境变理后：<br>export MAN_DISABLE_SECCOMP=1<br>就可以直接使用，不用每次都加MAN_DISABLE_SECCOMP=1这句。</p>
+<p><strong>具体问题待解决~</strong></p>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>文档说明查询</tag>
+      </tags>
+  </entry>
 </search>

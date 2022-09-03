@@ -185,6 +185,131 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/23/netWork1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/me.jpg">
+      <meta itemprop="name" content="asOneMaster">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="迅的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/08/23/netWork1/" class="post-title-link" itemprop="url">计算机网络1--TCP/HTTP相关</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-23 20:39:18" itemprop="dateCreated datePublished" datetime="2022-08-23T20:39:18+08:00">2022-08-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-24 15:06:13" itemprop="dateModified" datetime="2022-08-24T15:06:13+08:00">2022-08-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="TCP与UDP的区别"><a href="#TCP与UDP的区别" class="headerlink" title="TCP与UDP的区别"></a>TCP与UDP的区别</h3><ol>
+<li>TCP是面向连接的，UDP是无连接的；</li>
+</ol>
+<details>
+<summary>什么叫无连接？</summary>
+UDP发送数据之前不需要建立连接
+</details>
+
+<details>
+<summary>什么叫不可靠？</summary>
+UDP接收方收到报文后，不需要给出任何确认
+</details>
+2. TCP只支持点对点通信，UDP支持一对一、一对多、多对一、多对多；
+
+<ol start="3">
+<li>TCP是面向字节流的，UDP是面向报文的；</li>
+</ol>
+<details>
+<summary>什么意思？</summary>
+面向字节流是指发送数据时以字节为单位，一个数据包可以拆分成若干组进行发送，而UDP一个报文只能一次发完。
+</details>
+4. TCP有拥塞控制机制，UDP一般没有（很多研究人员已经提出一种新机制，以促使数据源(包括UDP)执行自适应的拥塞控制”）。网络出现的拥塞不会使源主机的发送速率降低，这对某些实时应用是很重要的，比如媒体通信，游戏；
+5. TCP首部开销（20字节）比UDP首部开销（8字节）要大
+6. UDP 的主机不需要维持复杂的连接状态表
+
+<h5 id="什么时候选择TCP，什么时候选UDP？"><a href="#什么时候选择TCP，什么时候选UDP？" class="headerlink" title="什么时候选择TCP，什么时候选UDP？"></a>什么时候选择TCP，什么时候选UDP？</h5><details>
+<summary>展开</summary>
+对某些实时性要求比较高的情况，选择UDP，比如游戏，媒体通信，实时视频流（直播），即使出现传输错误也可以容忍；其它大部分情况下，HTTP都是用TCP，因为要求传输的内容可靠，不出现丢失
+</details>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/23/netWork1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    <div>
+        
+    </div>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/22/go9/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -617,101 +742,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/19/goRoutine/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/me.jpg">
-      <meta itemprop="name" content="asOneMaster">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="迅的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/08/19/goRoutine/" class="post-title-link" itemprop="url">go语言的并发机制</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-08-19 21:28:44 / 修改时间：22:51:18" itemprop="dateCreated datePublished" datetime="2022-08-19T21:28:44+08:00">2022-08-19</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>377</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="go语言并发原理"><a href="#go语言并发原理" class="headerlink" title="go语言并发原理"></a>go语言并发原理</h2><blockquote>
-<p>Go不推荐用共享内存的方式传递数据，而推荐使用channel(或称“通道” )。channel主要用来在多个goroutine之间传递数据，并且还</p>
-<p>会保证整个过程的并发安全性。不过，作为可选方法，Go依然提供了一些传统的同步方法 (比如互斥量、 条件变量等)。</p>
-<p><strong>Go的并发机制</strong>指的是用于支撑goroutine 和channel的底层原理，说到这个就不得不提go语言的调度模型，GMP。</p>
-</blockquote>
-<h3 id="GMP调度模型"><a href="#GMP调度模型" class="headerlink" title="GMP调度模型"></a>GMP调度模型</h3><p>说起Go的线程实现模型,有3个必知的核心元素,它们支撑起了这个模型的主框架，<br>简要说明如下：</p>
-<ul>
-<li>M: machine的缩写。一个M代表一个内核线程，或称“工作线程”。</li>
-<li>P: processor的缩写。一个P代表执行一个Go代码片段所必需的资源(或称“上下文环境”)。</li>
-<li>G: goroutine的缩写。一个G代表一 个Go代码片段。前者是对后者的一种封装。</li>
-</ul>
-<p>.未完待续~~~</p>
-
-      
-    </div>
-    <div>
-        
-    </div>
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -783,7 +813,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">20</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -796,7 +826,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">20</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -846,7 +876,7 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">24k</span>
+    <span title="站点总字数">25k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
