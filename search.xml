@@ -1827,4 +1827,68 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
         <tag>文档说明查询</tag>
       </tags>
   </entry>
+  <entry>
+    <title>控制gorutine顺序输出（生产者——消费者）</title>
+    <url>/2022/09/08/go11/</url>
+    <content><![CDATA[<h3 id="以此铭记失败的面试"><a href="#以此铭记失败的面试" class="headerlink" title="以此铭记失败的面试"></a>以此铭记失败的面试</h3><blockquote>
+<p>go协程开启后是并发执行且无序的；开启100个协程如何对其进行顺序执行。</p>
+</blockquote>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"fmt"</span>
+	<span class="token string">"sync"</span>
+<span class="token punctuation">)</span>
+
+<span class="token comment">//控制数量</span>
+<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+
+<span class="token keyword">func</span> <span class="token function">producter</span><span class="token punctuation">(</span>out <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">,</span> in <span class="token keyword">chan</span><span class="token operator">&lt;-</span> <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//阻塞 如果out没有值就一直阻塞</span>
+	key <span class="token operator">:=</span> <span class="token operator">&lt;-</span>out
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"生产："</span><span class="token punctuation">,</span> key<span class="token punctuation">)</span>
+	<span class="token comment">//输入消费管道</span>
+	in <span class="token operator">&lt;-</span> key
+	wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">consumer</span><span class="token punctuation">(</span>in <span class="token operator">&lt;-</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+
+	<span class="token keyword">for</span> v <span class="token operator">:=</span> <span class="token keyword">range</span> in <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"消费："</span><span class="token punctuation">,</span> v<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//需要消费的缓冲管道</span>
+	in <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">)</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">100</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">//生产管道</span>
+		ch <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+		wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+		<span class="token comment">//开启生产协程</span>
+		<span class="token keyword">go</span> <span class="token function">producter</span><span class="token punctuation">(</span>ch<span class="token punctuation">,</span> in<span class="token punctuation">)</span>
+		<span class="token comment">//将i顺序输入管道</span>
+		ch <span class="token operator">&lt;-</span> i
+		<span class="token comment">//当前协程销毁才能进行下一个</span>
+		wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token comment">//关闭in通道 不然会出错</span>
+	<span class="token function">close</span><span class="token punctuation">(</span>in<span class="token punctuation">)</span>
+	wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token function">consumer</span><span class="token punctuation">(</span>in<span class="token punctuation">)</span>
+	wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>下一步计划，尽量熟悉go语言协程开发，不要只停留于理论！吸取校训！</strong></p>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+      </tags>
+  </entry>
 </search>
