@@ -1830,8 +1830,10 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
   <entry>
     <title>控制gorutine顺序输出（生产者——消费者）</title>
     <url>/2022/09/08/go11/</url>
-    <content><![CDATA[<h3 id="以此铭记失败的面试"><a href="#以此铭记失败的面试" class="headerlink" title="以此铭记失败的面试"></a>以此铭记失败的面试</h3><blockquote>
-<p>go协程开启后是并发执行且无序的；开启100个协程如何对其进行顺序执行。</p>
+    <content><![CDATA[<h3 id="以此铭记失败的面试"><a href="#以此铭记失败的面试" class="headerlink" title="以此铭记失败的面试"></a>以此铭记失败的面试</h3><span id="more"></span>
+
+<blockquote>
+<p>go协程开启后是并发执行且无序的；开启100个协程如何对其进行顺序执行?</p>
 </blockquote>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
 
@@ -1882,7 +1884,7 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
 <span class="token punctuation">&#125;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p><strong>下一步计划，尽量熟悉go语言协程开发，不要只停留于理论！吸取校训！</strong></p>
+<p><strong>下一步计划，尽量熟悉go语言协程开发，不要只停留于理论！吸取教训！</strong></p>
 ]]></content>
       <categories>
         <category>go语言</category>
