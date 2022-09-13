@@ -1983,4 +1983,194 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
         <tag>channel</tag>
       </tags>
   </entry>
+  <entry>
+    <title>控制gorutine并发数量</title>
+    <url>/2022/09/13/go13/</url>
+    <content><![CDATA[<h3 id="控制并发数量可以避免服务器奔溃：以下方式尝试控制"><a href="#控制并发数量可以避免服务器奔溃：以下方式尝试控制" class="headerlink" title="控制并发数量可以避免服务器奔溃：以下方式尝试控制"></a>控制并发数量可以避免服务器奔溃：以下方式尝试控制</h3><ul>
+<li><strong>只是用Chan控制</strong><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+   <span class="token string">"fmt"</span>
+<span class="token punctuation">)</span>
+
+<span class="token comment">//控制并发数量 chan</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   count <span class="token operator">:=</span> <span class="token number">10</span>
+   ch <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span>
+   <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> count<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+      ch <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+      <span class="token keyword">go</span> <span class="token function">read</span><span class="token punctuation">(</span>ch<span class="token punctuation">,</span> i<span class="token punctuation">)</span>
+   <span class="token punctuation">&#125;</span>
+   <span class="token comment">//time.Sleep(time.Second * 2)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">read</span><span class="token punctuation">(</span>ch <span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">,</span> i <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"第"</span><span class="token punctuation">,</span> i<span class="token punctuation">,</span> <span class="token string">"个协程"</span><span class="token punctuation">,</span>time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Unix</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+   <span class="token comment">//为了测试并发数量</span>
+   time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+   <span class="token operator">&lt;-</span>ch
+<span class="token punctuation">&#125;</span>
+<span class="token comment">/* 以下为输出---（应该输出10个）
+第 1 个协程 1663071133
+第 0 个协程 1663071133
+第 2 个协程 1663071134
+第 3 个协程 1663071134
+第 4 个协程 1663071135
+第 5 个协程 1663071135
+第 6 个协程 1663071136
+第 7 个协程 1663071136
+第 8 个协程 1663071137
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+</ul>
+<p><strong>出现问题：</strong>看似达到控制2个2个输出的效果，但是主协程结束时，子协程也是会被终止掉的，因此剩余的 goroutine 没来及把值输出，</p>
+<ul>
+<li><strong>只使用Sync.WaitGroup</strong></li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// Sync控制</span>
+<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	count <span class="token operator">:=</span> <span class="token number">10</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> count<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+		<span class="token keyword">go</span> <span class="token function">read</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">read</span><span class="token punctuation">(</span>i <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"第"</span><span class="token punctuation">,</span> i<span class="token punctuation">,</span> <span class="token string">"个协程"</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Unix</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment">//为了测试并发数量</span>
+    time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">/* 以下为输出---（应该输出10个）
+第 9 个协程 1663070879
+第 4 个协程 1663070879
+第 2 个协程 1663070879
+第 3 个协程 1663070879
+第 0 个协程 1663070879
+第 6 个协程 1663070879
+第 5 个协程 1663070879
+第 7 个协程 1663070879
+第 8 个协程 1663070879
+第 1 个协程 1663070879
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>出现问题：</strong>没有达到控制2个2个输出的效果。</p>
+<ul>
+<li><strong>使用Sync.WaitGroup+Chan</strong></li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">//Sync+Chan</span>
+<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	count <span class="token operator">:=</span> <span class="token number">10</span>
+	ch <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> count<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+        ch <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+		<span class="token keyword">go</span> <span class="token function">read</span><span class="token punctuation">(</span>ch<span class="token punctuation">,</span> i<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">read</span><span class="token punctuation">(</span>ch <span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">,</span> i <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment">//TODO</span>
+	<span class="token comment">//ch &lt;- true 放在里面吃内存（待处理 ）</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"第"</span><span class="token punctuation">,</span> i<span class="token punctuation">,</span> <span class="token string">"个协程"</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Unix</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token comment">//为了测试并发数量</span>
+	time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+	<span class="token operator">&lt;-</span>ch
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">/* 以下为输出---（应该输出10个）
+第 1 个协程 1663071133
+第 0 个协程 1663071133
+第 2 个协程 1663071134
+第 3 个协程 1663071134
+第 4 个协程 1663071135
+第 5 个协程 1663071135
+第 6 个协程 1663071136
+第 7 个协程 1663071136
+第 8 个协程 1663071137
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>成功：</strong>达到控制2个2个输出的效果。</p>
+<h3 id="新场景——控制输入的数量，以此达到改变允许并发运行-goroutine-的数量（灵活控制）"><a href="#新场景——控制输入的数量，以此达到改变允许并发运行-goroutine-的数量（灵活控制）" class="headerlink" title="新场景——控制输入的数量，以此达到改变允许并发运行 goroutine 的数量（灵活控制）"></a>新场景——控制输入的数量，以此达到改变允许并发运行 goroutine 的数量（灵活控制）</h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+    <span class="token string">"sync"</span>
+    <span class="token string">"time"</span>
+<span class="token punctuation">)</span>
+<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+<span class="token keyword">var</span> count <span class="token builtin">int</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	userCount <span class="token operator">:=</span> <span class="token number">10</span>
+	ch <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">)</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> userCount<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+		<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">defer</span> wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+			<span class="token keyword">for</span> d <span class="token operator">:=</span> <span class="token keyword">range</span> ch <span class="token punctuation">&#123;</span>
+				count<span class="token operator">++</span>
+				fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"第"</span><span class="token punctuation">,</span> count<span class="token punctuation">,</span> <span class="token string">"个协程"</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Unix</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+				time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second <span class="token operator">*</span> time<span class="token punctuation">.</span><span class="token function">Duration</span><span class="token punctuation">(</span>d<span class="token punctuation">)</span><span class="token punctuation">)</span>
+			<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">//输入几个ch 就有几个*userCount个协程</span>
+		ch <span class="token operator">&lt;-</span> <span class="token number">1</span>
+		ch <span class="token operator">&lt;-</span> <span class="token number">2</span>
+		ch <span class="token operator">&lt;-</span> <span class="token number">3</span>
+		<span class="token comment">//time.Sleep(time.Second)</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token function">close</span><span class="token punctuation">(</span>ch<span class="token punctuation">)</span>
+	wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">/* 以下为输出---（应该输出10个）
+第 1 个协程 1663072405
+第 2 个协程 1663072405 
+第 4 个协程 1663072405 
+第 5 个协程 1663072405 
+第 6 个协程 1663072405 
+第 7 个协程 1663072405 
+第 8 个协程 1663072405 
+第 9 个协程 1663072405 
+第 10 个协程 1663072405
+第 3 个协程 1663072405 
+第 12 个协程 1663072406
+第 13 个协程 1663072406
+第 14 个协程 1663072406
+第 11 个协程 1663072406
+第 15 个协程 1663072407
+第 16 个协程 1663072407
+第 17 个协程 1663072407
+第 18 个协程 1663072407
+第 19 个协程 1663072408
+第 20 个协程 1663072408
+第 21 个协程 1663072408
+第 22 个协程 1663072408
+第 23 个协程 1663072408
+第 24 个协程 1663072408
+第 25 个协程 1663072409
+第 26 个协程 1663072409
+第 28 个协程 1663072409
+第 27 个协程 1663072409
+第 29 个协程 1663072410
+第 30 个协程 1663072410
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+      </tags>
+  </entry>
 </search>
