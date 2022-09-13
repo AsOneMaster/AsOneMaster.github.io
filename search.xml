@@ -1987,7 +1987,11 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
     <title>控制gorutine并发数量</title>
     <url>/2022/09/13/go13/</url>
     <content><![CDATA[<h3 id="控制并发数量可以避免服务器奔溃：以下方式尝试控制"><a href="#控制并发数量可以避免服务器奔溃：以下方式尝试控制" class="headerlink" title="控制并发数量可以避免服务器奔溃：以下方式尝试控制"></a>控制并发数量可以避免服务器奔溃：以下方式尝试控制</h3><ul>
-<li><strong>只是用Chan控制</strong><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+<li><strong>只是用Chan控制</strong></li>
+</ul>
+<span id="more"></span>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
 
 <span class="token keyword">import</span> <span class="token punctuation">(</span>
    <span class="token string">"fmt"</span>
@@ -2019,8 +2023,8 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
 第 6 个协程 1663071136
 第 7 个协程 1663071136
 第 8 个协程 1663071137
-*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
-</ul>
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p><strong>出现问题：</strong>看似达到控制2个2个输出的效果，但是主协程结束时，子协程也是会被终止掉的，因此剩余的 goroutine 没来及把值输出，</p>
 <ul>
 <li><strong>只使用Sync.WaitGroup</strong></li>
