@@ -2136,7 +2136,7 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
 	wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span>
 
-<span class="token comment">/* 以下为输出---（应该输出10个）
+<span class="token comment">/* 以下为输出---（应该输出30个）
 第 1 个协程 1663072405
 第 2 个协程 1663072405 
 第 4 个协程 1663072405 
