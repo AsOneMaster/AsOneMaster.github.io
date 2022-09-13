@@ -1830,12 +1830,12 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
   <entry>
     <title>控制gorutine顺序输出（生产者——消费者）</title>
     <url>/2022/09/08/go11/</url>
-    <content><![CDATA[<h3 id="以此铭记失败的面试"><a href="#以此铭记失败的面试" class="headerlink" title="以此铭记失败的面试"></a>以此铭记失败的面试</h3><span id="more"></span>
-
-<blockquote>
+    <content><![CDATA[<h3 id="以此铭记失败的面试"><a href="#以此铭记失败的面试" class="headerlink" title="以此铭记失败的面试"></a>以此铭记失败的面试</h3><blockquote>
 <p>go协程开启后是并发执行且无序的；开启100个协程如何对其进行顺序执行?</p>
 </blockquote>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+<span id="more"></span>
+
+<h3 id="第一种方式"><a href="#第一种方式" class="headerlink" title="第一种方式"></a>第一种方式</h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
 
 <span class="token keyword">import</span> <span class="token punctuation">(</span>
 	<span class="token string">"fmt"</span>
@@ -1885,6 +1885,60 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p><strong>下一步计划，尽量熟悉go语言协程开发，不要只停留于理论！吸取教训！</strong></p>
+<h3 id="第二种方式"><a href="#第二种方式" class="headerlink" title="第二种方式"></a>第二种方式</h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"fmt"</span>
+	<span class="token string">"sync"</span>
+<span class="token punctuation">)</span>
+
+<span class="token comment">//实现有缓冲区与无缓冲区 消费者生产者</span>
+<span class="token keyword">var</span> myCh <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> exitCh <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+
+<span class="token keyword">func</span> <span class="token function">producter</span><span class="token punctuation">(</span>zhu <span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	num <span class="token operator">:=</span> <span class="token operator">&lt;-</span>zhu
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"生产了:"</span><span class="token punctuation">,</span> num<span class="token punctuation">)</span>
+	myCh <span class="token operator">&lt;-</span> num
+	wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">consumer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">if</span> num<span class="token punctuation">,</span> ok <span class="token operator">:=</span> <span class="token operator">&lt;-</span>myCh<span class="token punctuation">;</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+			<span class="token keyword">break</span>
+		<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"消费了:"</span><span class="token punctuation">,</span> num<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"停止消费"</span><span class="token punctuation">)</span>
+	wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	exitCh <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">100</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		zhu <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+		wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+		<span class="token keyword">go</span> <span class="token function">producter</span><span class="token punctuation">(</span>zhu<span class="token punctuation">)</span>
+		zhu <span class="token operator">&lt;-</span> i
+		wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token function">close</span><span class="token punctuation">(</span>zhu<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token comment">//wg.Wait()</span>
+	<span class="token function">close</span><span class="token punctuation">(</span>myCh<span class="token punctuation">)</span>
+	wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token function">consumer</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token comment">//wg.Wait()</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"exitCh前"</span><span class="token punctuation">)</span>
+	<span class="token operator">&lt;-</span>exitCh
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"exitCh后"</span><span class="token punctuation">)</span>
+	wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 ]]></content>
       <categories>
         <category>go语言</category>
