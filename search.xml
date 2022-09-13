@@ -1947,4 +1947,40 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
         <tag>并发</tag>
       </tags>
   </entry>
+  <entry>
+    <title>go基础8-Select相关</title>
+    <url>/2022/09/13/go12/</url>
+    <content><![CDATA[<h3 id="Select的作用"><a href="#Select的作用" class="headerlink" title="Select的作用"></a>Select的作用</h3><p><strong>select主要用于实现多路监听、实现超时处理</strong></p>
+<ul>
+<li>select case后面必须是一个IO操作</li>
+<li>一般情况下不用写default</li>
+</ul>
+<p><strong>select是Go中的一个控制结构，类似于switch语句，用于处理异步I0操作</strong></p>
+<span id="more"></span>
+
+<ul>
+<li><p>如果有多个case都可以运行，select会随机选出一个执行,其他不会执行。</p>
+</li>
+<li><p>如果没有可运行的case语句，且有default语句， 那么就会执行default的动作。</p>
+</li>
+<li><p>如果没有可运行的case语句，且没有default语句， select将阻塞，直到某个case通信可以运</p>
+</li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">case</span> IO操作<span class="token number">1</span><span class="token punctuation">:</span>
+		I0操作<span class="token number">1</span>读取或写入成功就执行
+	<span class="token keyword">case</span> IO操作<span class="token number">2</span><span class="token punctuation">:</span>
+		IO操作<span class="token number">2</span>读取或写入成功就执行
+	<span class="token keyword">default</span><span class="token punctuation">:</span>
+		如果上面<span class="token keyword">case</span>都没有成功，则进入<span class="token keyword">default</span>处理流程
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>channel</tag>
+      </tags>
+  </entry>
 </search>
