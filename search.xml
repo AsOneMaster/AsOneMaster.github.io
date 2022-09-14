@@ -1986,7 +1986,11 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
   <entry>
     <title>控制gorutine并发数量</title>
     <url>/2022/09/13/go13/</url>
-    <content><![CDATA[<h3 id="控制并发数量可以避免服务器奔溃：以下方式尝试控制"><a href="#控制并发数量可以避免服务器奔溃：以下方式尝试控制" class="headerlink" title="控制并发数量可以避免服务器奔溃：以下方式尝试控制"></a>控制并发数量可以避免服务器奔溃：以下方式尝试控制</h3><ul>
+    <content><![CDATA[<h3 id="控制并发数量可以避免服务器奔溃：以下方式尝试控制"><a href="#控制并发数量可以避免服务器奔溃：以下方式尝试控制" class="headerlink" title="控制并发数量可以避免服务器奔溃：以下方式尝试控制"></a>控制并发数量可以避免服务器奔溃：以下方式尝试控制</h3><blockquote>
+<p>注意：多个并发协程之间不需要通信，那么就可以使用 sync.WaitGroup</p>
+<p>如果并发启动了多个子协程，需要等待所有的子协程完成任务，WaitGroup 非常适合于这类场景</p>
+</blockquote>
+<ul>
 <li><strong>只是用Chan控制</strong></li>
 </ul>
 <span id="more"></span>
@@ -2175,6 +2179,274 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
       </categories>
       <tags>
         <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Context控制gorutine并发</title>
+    <url>/2022/09/14/go14/</url>
+    <content><![CDATA[<p>更复杂的场景如何做并发控制呢？比如子协程中开启了新的子协程，或者需要同时控制多个子协程。这种场景下，<code>select+chan</code>的方式就显得力不从心了。Go 语言提供了 Context 标准库可以解决这类场景的问题，Context 的作用和它的名字很像，上下文，即子协程的下上文。Context 有两个主要的功能：</p>
+<ul>
+<li>通知子协程退出（正常退出，超时退出等）；</li>
+<li>传递必要的参数。</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="1-context-WithCancel"><a href="#1-context-WithCancel" class="headerlink" title="1.context.WithCancel"></a>1.context.WithCancel</h2><h3 id="select-chan定时轮询"><a href="#select-chan定时轮询" class="headerlink" title="select+chan定时轮询"></a><code>select+chan</code>定时轮询</h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> stop <span class="token keyword">chan</span> <span class="token builtin">bool</span>
+
+<span class="token keyword">func</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>name <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   <span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">case</span> <span class="token operator">&lt;-</span>stop<span class="token punctuation">:</span>
+         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"stop"</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span>
+         <span class="token keyword">return</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span>
+         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> <span class="token string">"send ing"</span><span class="token punctuation">)</span>
+         time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+   <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   stop <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">)</span>
+   fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>stop<span class="token punctuation">)</span>
+   <span class="token keyword">go</span> <span class="token function">reqTask</span><span class="token punctuation">(</span><span class="token string">"work1"</span><span class="token punctuation">)</span>
+   time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+   stop <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+   fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"准备结束"</span><span class="token punctuation">)</span>
+   time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">/* 输出：
+work1 send ing
+work1 send ing
+work1 send ing
+准备结束
+stop work1
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="在上述基础上使用context-WithCancel"><a href="#在上述基础上使用context-WithCancel" class="headerlink" title="在上述基础上使用context.WithCancel"></a>在上述基础上使用context.WithCancel</h3><p><code>context.WithCancel()</code> 创建可取消的 Context 对象，即可以主动通知子协程退出。</p>
+<h4 id="控制单个协程"><a href="#控制单个协程" class="headerlink" title="控制单个协程"></a>控制单个协程</h4><ul>
+<li><code>context.Backgroud()</code> 创建根 Context，通常在 main 函数、初始化和测试代码中创建，作为顶层 Context。</li>
+<li><code>context.WithCancel(parent)</code> 创建可取消的子 Context，同时返回函数 <code>cancel</code>。</li>
+<li>在子协程中，使用 select 调用 <code>&lt;-ctx.Done()</code> 判断是否需要退出。</li>
+<li>主协程中，调用 <code>cancel()</code> 函数通知子协程退出。</li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> name <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">case</span> <span class="token operator">&lt;-</span>ctx<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"stop"</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span>
+			<span class="token keyword">return</span>
+		<span class="token keyword">default</span><span class="token punctuation">:</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> <span class="token string">"send ing"</span><span class="token punctuation">)</span>
+			time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	ctx<span class="token punctuation">,</span> cancel <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">WithCancel</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> <span class="token string">"work2"</span><span class="token punctuation">)</span>
+	time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+	<span class="token function">cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"准备结束"</span><span class="token punctuation">)</span>
+	time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">/*输出：
+work2 send ing
+work2 send ing
+work2 send ing
+准备结束
+stop work2
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="控制多个协程"><a href="#控制多个协程" class="headerlink" title="控制多个协程"></a>控制多个协程</h4><p><strong>只需要多启用协程即可</strong></p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	ctx<span class="token punctuation">,</span> cancel <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">WithCancel</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment">//多协程示例</span>
+	<span class="token keyword">go</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> <span class="token string">"work2"</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> <span class="token string">"work3"</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> <span class="token string">"work4"</span><span class="token punctuation">)</span>
+	time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+	<span class="token function">cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"准备结束"</span><span class="token punctuation">)</span>
+	time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">/*输出：
+work4 send ing
+work2 send ing
+work3 send ing
+work2 send ing
+work3 send ing
+work4 send ing
+work2 send ing
+work3 send ing
+work4 send ing
+准备结束
+stop work4
+stop work3
+stop work2
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="2-context-WithValue"><a href="#2-context-WithValue" class="headerlink" title="2.context.WithValue"></a>2.context.WithValue</h2><p>如果需要往子协程中传递参数，可以使用 <code>context.WithValue()</code>。</p>
+<ul>
+<li><code>context.WithValue()</code> 创建了一个基于 <code>ctx</code> 的子 Context，并携带了值 <code>options</code>。</li>
+<li>在子协程中，使用 <code>ctx.Value(&quot;options&quot;)</code> 获取到传递的值，读取/修改该值。</li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Target <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+	name <span class="token builtin">string</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> name <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">case</span> <span class="token operator">&lt;-</span>ctx<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"stop"</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span>
+			<span class="token keyword">return</span>
+		<span class="token keyword">default</span><span class="token punctuation">:</span>
+			<span class="token comment">//Value获取的是any 接口型值 需要.(*Target)类型断言 将v获取为*Target类型</span>
+			v <span class="token operator">:=</span> ctx<span class="token punctuation">.</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token operator">*</span>Target<span class="token punctuation">)</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> <span class="token string">"send ing--"</span><span class="token punctuation">,</span> v<span class="token punctuation">.</span>name<span class="token punctuation">)</span>
+			time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	ctx<span class="token punctuation">,</span> cancel <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">WithCancel</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	testV1 <span class="token operator">:=</span> <span class="token operator">&amp;</span>Target<span class="token punctuation">&#123;</span><span class="token string">"小张"</span><span class="token punctuation">&#125;</span>
+	testV2 <span class="token operator">:=</span> <span class="token operator">&amp;</span>Target<span class="token punctuation">&#123;</span><span class="token string">"小李"</span><span class="token punctuation">&#125;</span>
+	vCtx1 <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">WithValue</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> <span class="token string">"name"</span><span class="token punctuation">,</span> testV1<span class="token punctuation">)</span>
+	vCtx2 <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">WithValue</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> <span class="token string">"name"</span><span class="token punctuation">,</span> testV2<span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>vCtx1<span class="token punctuation">,</span> <span class="token string">"work2"</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>vCtx2<span class="token punctuation">,</span> <span class="token string">"work3"</span><span class="token punctuation">)</span>
+	time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+	<span class="token function">cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"准备结束"</span><span class="token punctuation">)</span>
+	time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">/*
+work3 send ing-- 小李
+work2 send ing-- 小张
+work3 send ing-- 小李
+work2 send ing-- 小张
+work2 send ing-- 小张
+work3 send ing-- 小李
+work2 send ing-- 小张
+准备结束  
+stop work3
+stop work2
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="3-context-WithTimeout"><a href="#3-context-WithTimeout" class="headerlink" title="3.context.WithTimeout"></a>3.context.WithTimeout</h2><p>如果需要控制子协程的执行时间，可以使用 <code>context.WithTimeout</code> 创建具有超时通知机制的 Context 对象</p>
+<p>因为超时时间设置为 2s，但是 main 函数中，3s 后才会调用 <code>cancel()</code>，因此，在调用 <code>cancel()</code> 函数前，子协程因为超时已经退出了。</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Target <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+	name <span class="token builtin">string</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> name <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	i <span class="token operator">:=</span> <span class="token number">0</span>
+	<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+		i<span class="token operator">++</span>
+		<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">case</span> <span class="token operator">&lt;-</span>ctx<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"stop"</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span>
+			<span class="token keyword">return</span>
+		<span class="token keyword">default</span><span class="token punctuation">:</span>
+
+			<span class="token comment">//Value获取的是any 接口型值 需要.(*Target)类型断言 将v获取为*Target类型</span>
+			time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+			v <span class="token operator">:=</span> ctx<span class="token punctuation">.</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token operator">*</span>Target<span class="token punctuation">)</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> <span class="token string">"send ing--"</span><span class="token punctuation">,</span> v<span class="token punctuation">.</span>name<span class="token punctuation">,</span> <span class="token string">"第："</span><span class="token punctuation">,</span> i<span class="token punctuation">,</span> <span class="token string">"秒"</span><span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//ctx, cancel := context.WithCancel(context.Background())</span>
+	ctx<span class="token punctuation">,</span> cancel <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">WithTimeout</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+	testV1 <span class="token operator">:=</span> <span class="token operator">&amp;</span>Target<span class="token punctuation">&#123;</span><span class="token string">"小张"</span><span class="token punctuation">&#125;</span>
+	testV2 <span class="token operator">:=</span> <span class="token operator">&amp;</span>Target<span class="token punctuation">&#123;</span><span class="token string">"小李"</span><span class="token punctuation">&#125;</span>
+	vCtx1 <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">WithValue</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> <span class="token string">"name"</span><span class="token punctuation">,</span> testV1<span class="token punctuation">)</span>
+	vCtx2 <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">WithValue</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> <span class="token string">"name"</span><span class="token punctuation">,</span> testV2<span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>vCtx1<span class="token punctuation">,</span> <span class="token string">"work2"</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>vCtx2<span class="token punctuation">,</span> <span class="token string">"work3"</span><span class="token punctuation">)</span>
+	time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"准备结束"</span><span class="token punctuation">)</span>
+	<span class="token function">cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">/*
+work3 send ing-- 小李 第： 1 秒
+work2 send ing-- 小张 第： 1 秒
+work2 send ing-- 小张 第： 2 秒
+stop work2                     
+work3 send ing-- 小李 第： 2 秒
+stop work3                     
+准备结束
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="4-context-WithDeadline"><a href="#4-context-WithDeadline" class="headerlink" title="4.context.WithDeadline"></a>4.context.WithDeadline</h2><p>超时退出可以控制子协程的最长执行时间，那 <code>context.WithDeadline()</code> 则可以控制子协程的最迟退出时间</p>
+<ul>
+<li><code>WithDeadline</code> 用于设置截止时间。在这个例子中，将截止时间设置为2s后，<code>cancel()</code> 函数在 3s 后调用，因此子协程将在调用 <code>cancel()</code> 函数前结束。</li>
+<li>在子协程中，可以通过 <code>ctx.Err()</code> 获取到子协程退出的错误原因。</li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Target <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+	name <span class="token builtin">string</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> name <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	i <span class="token operator">:=</span> <span class="token number">0</span>
+	<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+		i<span class="token operator">++</span>
+		<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">case</span> <span class="token operator">&lt;-</span>ctx<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"stop"</span><span class="token punctuation">,</span> name<span class="token punctuation">,</span> <span class="token string">"退出错误显示："</span><span class="token punctuation">,</span> ctx<span class="token punctuation">.</span><span class="token function">Err</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+			<span class="token keyword">return</span>
+		<span class="token keyword">default</span><span class="token punctuation">:</span>
+
+			<span class="token comment">//Value获取的是any 接口型值 需要.(*Target)类型断言 将v获取为*Target类型</span>
+			time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+			v <span class="token operator">:=</span> ctx<span class="token punctuation">.</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token string">"name"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token operator">*</span>Target<span class="token punctuation">)</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> <span class="token string">"send ing--"</span><span class="token punctuation">,</span> v<span class="token punctuation">.</span>name<span class="token punctuation">,</span> <span class="token string">"第："</span><span class="token punctuation">,</span> i<span class="token punctuation">,</span> <span class="token string">"秒"</span><span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//ctx, cancel := context.WithCancel(context.Background())</span>
+	<span class="token comment">//ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)</span>
+	ctx<span class="token punctuation">,</span> cancel <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">WithDeadline</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span><span class="token punctuation">)</span>
+	testV1 <span class="token operator">:=</span> <span class="token operator">&amp;</span>Target<span class="token punctuation">&#123;</span><span class="token string">"小张"</span><span class="token punctuation">&#125;</span>
+	testV2 <span class="token operator">:=</span> <span class="token operator">&amp;</span>Target<span class="token punctuation">&#123;</span><span class="token string">"小李"</span><span class="token punctuation">&#125;</span>
+	vCtx1 <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">WithValue</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> <span class="token string">"name"</span><span class="token punctuation">,</span> testV1<span class="token punctuation">)</span>
+	vCtx2 <span class="token operator">:=</span> context<span class="token punctuation">.</span><span class="token function">WithValue</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> <span class="token string">"name"</span><span class="token punctuation">,</span> testV2<span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>vCtx1<span class="token punctuation">,</span> <span class="token string">"work2"</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token function">reqTask</span><span class="token punctuation">(</span>vCtx2<span class="token punctuation">,</span> <span class="token string">"work3"</span><span class="token punctuation">)</span>
+	time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"准备结束"</span><span class="token punctuation">)</span>
+	<span class="token function">cancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">3</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">/*
+work3 send ing-- 小李 第： 1 秒
+work2 send ing-- 小张 第： 1 秒
+work2 send ing-- 小张 第： 2 秒
+stop work2 退出错误显示： context deadline exceeded
+work3 send ing-- 小李 第： 2 秒                    
+stop work3 退出错误显示： context deadline exceeded
+准备结束
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>context deadline exceeded 因为截止时间到了而退出</strong></p>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+        <tag>context</tag>
       </tags>
   </entry>
 </search>
