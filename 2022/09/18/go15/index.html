@@ -22,20 +22,20 @@
     var CONFIG = {"hostname":"asonemaster.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="go语言并发原理 Go不推荐用共享内存的方式传递数据，而推荐使用channel(或称“通道” )。channel主要用来在多个goroutine之间传递数据，并且还 会保证整个过程的并发安全性。不过，作为可选方法，Go依然提供了一些传统的同步方法 (比如互斥量、 条件变量等)。 Go的并发机制指的是用于支撑goroutine 和channel的底层原理，说到这个就不得不提go语言的调度模型，GMP">
+  <meta name="description" content="两个 channel 负责通知，english 负责通知打印字母的 goroutine 来打印字母，num用来通知打印数字的 goroutine  打印数字。 wait 用来等待字母打印完成后退出循环。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="go语言的并发机制">
-<meta property="og:url" content="https://asonemaster.github.io/2022/08/19/goRoutine/index.html">
+<meta property="og:title" content="交替打印字母和数字">
+<meta property="og:url" content="https://asonemaster.github.io/2022/09/18/go15/index.html">
 <meta property="og:site_name" content="迅的个人博客">
-<meta property="og:description" content="go语言并发原理 Go不推荐用共享内存的方式传递数据，而推荐使用channel(或称“通道” )。channel主要用来在多个goroutine之间传递数据，并且还 会保证整个过程的并发安全性。不过，作为可选方法，Go依然提供了一些传统的同步方法 (比如互斥量、 条件变量等)。 Go的并发机制指的是用于支撑goroutine 和channel的底层原理，说到这个就不得不提go语言的调度模型，GMP">
+<meta property="og:description" content="两个 channel 负责通知，english 负责通知打印字母的 goroutine 来打印字母，num用来通知打印数字的 goroutine  打印数字。 wait 用来等待字母打印完成后退出循环。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-08-19T13:28:44.044Z">
-<meta property="article:modified_time" content="2022-08-19T14:51:18.028Z">
+<meta property="article:published_time" content="2022-09-18T13:00:28.937Z">
+<meta property="article:modified_time" content="2022-09-18T13:05:47.867Z">
 <meta property="article:author" content="asOneMaster">
 <meta property="article:tag" content="并发">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://asonemaster.github.io/2022/08/19/goRoutine/">
+<link rel="canonical" href="https://asonemaster.github.io/2022/09/18/go15/">
 
 
 <script id="page-configurations">
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>go语言的并发机制 | 迅的个人博客</title>
+  <title>交替打印字母和数字 | 迅的个人博客</title>
   
 
 
@@ -191,7 +191,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/19/goRoutine/">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/09/18/go15/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/me.jpg">
@@ -204,7 +204,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          go语言的并发机制
+          交替打印字母和数字
         </h1>
 
         <div class="post-meta">
@@ -215,7 +215,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-08-19 21:28:44 / 修改时间：22:51:18" itemprop="dateCreated datePublished" datetime="2022-08-19T21:28:44+08:00">2022-08-19</time>
+              <time title="创建时间：2022-09-18 21:00:28 / 修改时间：21:05:47" itemprop="dateCreated datePublished" datetime="2022-09-18T21:00:28+08:00">2022-09-18</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -240,7 +240,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>377</span>
+              <span>719</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -259,18 +259,71 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="go语言并发原理"><a href="#go语言并发原理" class="headerlink" title="go语言并发原理"></a>go语言并发原理</h2><blockquote>
-<p>Go不推荐用共享内存的方式传递数据，而推荐使用channel(或称“通道” )。channel主要用来在多个goroutine之间传递数据，并且还</p>
-<p>会保证整个过程的并发安全性。不过，作为可选方法，Go依然提供了一些传统的同步方法 (比如互斥量、 条件变量等)。</p>
-<p><strong>Go的并发机制</strong>指的是用于支撑goroutine 和channel的底层原理，说到这个就不得不提go语言的调度模型，GMP。</p>
-</blockquote>
-<h3 id="GMP调度模型"><a href="#GMP调度模型" class="headerlink" title="GMP调度模型"></a>GMP调度模型</h3><p>说起Go的线程实现模型,有3个必知的核心元素,它们支撑起了这个模型的主框架，<br>简要说明如下：</p>
-<ul>
-<li>M: machine的缩写。一个M代表一个内核线程，或称“工作线程”。</li>
-<li>P: processor的缩写。一个P代表执行一个Go代码片段所必需的资源(或称“上下文环境”)。</li>
-<li>G: goroutine的缩写。一个G代表一 个Go代码片段。前者是对后者的一种封装。</li>
-</ul>
-<p>.未完待续~~~</p>
+        <p>两个 <code>channel</code> 负责通知，english 负责通知打印字母的 <code>goroutine </code>来打印字母，num用来通知打印数字的 <code>goroutine </code> 打印数字。</p>
+<p><code>wait </code>用来等待字母打印完成后退出循环。</p>
+<span id="more"></span>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"fmt"</span>
+	<span class="token string">"strings"</span>
+	<span class="token string">"sync"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+	num<span class="token punctuation">,</span> english <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">)</span>
+	str <span class="token operator">:=</span> <span class="token string">"ABCD"</span>
+	<span class="token comment">//fmt.Println(strings.Count(str[2:], ""))</span>
+	<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		i <span class="token operator">:=</span> <span class="token number">1</span>
+		<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">case</span> v<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> <span class="token operator">&lt;-</span>num<span class="token punctuation">:</span>
+				<span class="token keyword">if</span> <span class="token operator">!</span>v <span class="token punctuation">&#123;</span>
+					wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+					<span class="token keyword">return</span>
+				<span class="token punctuation">&#125;</span>
+				fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+				i<span class="token operator">++</span>
+				english <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+				<span class="token keyword">break</span>
+
+			<span class="token keyword">default</span><span class="token punctuation">:</span>
+				<span class="token keyword">break</span>
+			<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		i <span class="token operator">:=</span> <span class="token number">0</span>
+		<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">case</span> <span class="token operator">&lt;-</span>english<span class="token punctuation">:</span>
+				<span class="token comment">//strings.Count “” 结束判断</span>
+				<span class="token comment">//fmt.Println("判断条件", strings.Count(str, "")-1)</span>
+				<span class="token keyword">if</span> i <span class="token operator">>=</span> strings<span class="token punctuation">.</span><span class="token function">Count</span><span class="token punctuation">(</span>str<span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">1</span> <span class="token punctuation">&#123;</span>
+					num <span class="token operator">&lt;-</span> <span class="token boolean">false</span>
+					wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+					<span class="token keyword">return</span>
+				<span class="token punctuation">&#125;</span>
+				fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>str<span class="token punctuation">[</span>i <span class="token punctuation">:</span> i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+				i<span class="token operator">++</span>
+				num <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+				<span class="token keyword">break</span>
+			<span class="token keyword">default</span><span class="token punctuation">:</span>
+				<span class="token keyword">break</span>
+			<span class="token punctuation">&#125;</span>
+
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	num <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+	wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 
     </div>
     <div>
@@ -315,7 +368,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://asonemaster.github.io/2022/08/19/goRoutine/" title="go语言的并发机制">https://asonemaster.github.io/2022/08/19/goRoutine/</a>
+    <a href="https://asonemaster.github.io/2022/09/18/go15/" title="交替打印字母和数字">https://asonemaster.github.io/2022/09/18/go15/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -336,12 +389,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/08/19/redis1/" rel="prev" title="Redis基础1">
-      <i class="fa fa-chevron-left"></i> Redis基础1
+    <a href="/2022/09/16/go_wrk/" rel="prev" title="windows上使用go-wrk进行接口压力测试">
+      <i class="fa fa-chevron-left"></i> windows上使用go-wrk进行接口压力测试
     </a></div>
       <div class="post-nav-item">
-    <a href="/2022/08/20/go6/" rel="next" title="goroutine(协程)和线程是什么关系，goroutine是如何调度的？">
-      goroutine(协程)和线程是什么关系，goroutine是如何调度的？ <i class="fa fa-chevron-right"></i>
+    <a href="/2022/09/18/redis2/" rel="next" title="Go+Redis缓存控制商品数量防止超卖">
+      Go+Redis缓存控制商品数量防止超卖 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -401,7 +454,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#go%E8%AF%AD%E8%A8%80%E5%B9%B6%E5%8F%91%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">go语言并发原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GMP%E8%B0%83%E5%BA%A6%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.1.</span> <span class="nav-text">GMP调度模型</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

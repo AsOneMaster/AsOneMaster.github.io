@@ -2485,4 +2485,93 @@ stop work3 退出错误显示： context deadline exceeded
         <tag>并发</tag>
       </tags>
   </entry>
+  <entry>
+    <title>交替打印字母和数字</title>
+    <url>/2022/09/18/go15/</url>
+    <content><![CDATA[<p>两个 <code>channel</code> 负责通知，english 负责通知打印字母的 <code>goroutine </code>来打印字母，num用来通知打印数字的 <code>goroutine </code> 打印数字。</p>
+<p><code>wait </code>用来等待字母打印完成后退出循环。</p>
+<span id="more"></span>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"fmt"</span>
+	<span class="token string">"strings"</span>
+	<span class="token string">"sync"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">var</span> wg sync<span class="token punctuation">.</span>WaitGroup
+	num<span class="token punctuation">,</span> english <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">)</span>
+	str <span class="token operator">:=</span> <span class="token string">"ABCD"</span>
+	<span class="token comment">//fmt.Println(strings.Count(str[2:], ""))</span>
+	<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		i <span class="token operator">:=</span> <span class="token number">1</span>
+		<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">case</span> v<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> <span class="token operator">&lt;-</span>num<span class="token punctuation">:</span>
+				<span class="token keyword">if</span> <span class="token operator">!</span>v <span class="token punctuation">&#123;</span>
+					wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+					<span class="token keyword">return</span>
+				<span class="token punctuation">&#125;</span>
+				fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+				i<span class="token operator">++</span>
+				english <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+				<span class="token keyword">break</span>
+
+			<span class="token keyword">default</span><span class="token punctuation">:</span>
+				<span class="token keyword">break</span>
+			<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		i <span class="token operator">:=</span> <span class="token number">0</span>
+		<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">case</span> <span class="token operator">&lt;-</span>english<span class="token punctuation">:</span>
+				<span class="token comment">//strings.Count “” 结束判断</span>
+				<span class="token comment">//fmt.Println("判断条件", strings.Count(str, "")-1)</span>
+				<span class="token keyword">if</span> i <span class="token operator">>=</span> strings<span class="token punctuation">.</span><span class="token function">Count</span><span class="token punctuation">(</span>str<span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">1</span> <span class="token punctuation">&#123;</span>
+					num <span class="token operator">&lt;-</span> <span class="token boolean">false</span>
+					wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+					<span class="token keyword">return</span>
+				<span class="token punctuation">&#125;</span>
+				fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>str<span class="token punctuation">[</span>i <span class="token punctuation">:</span> i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+				i<span class="token operator">++</span>
+				num <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+				<span class="token keyword">break</span>
+			<span class="token keyword">default</span><span class="token punctuation">:</span>
+				<span class="token keyword">break</span>
+			<span class="token punctuation">&#125;</span>
+
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	num <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+	wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Go+Redis缓存控制商品数量防止超卖</title>
+    <url>/2022/09/18/redis2/</url>
+    <content><![CDATA[<p>待上传~</p>
+]]></content>
+      <categories>
+        <category>go语言</category>
+        <category>Redis</category>
+      </categories>
+      <tags>
+        <tag>使用</tag>
+      </tags>
+  </entry>
 </search>
