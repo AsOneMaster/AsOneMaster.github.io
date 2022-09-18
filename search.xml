@@ -2567,7 +2567,6 @@ stop work3 退出错误显示： context deadline exceeded
     <content><![CDATA[<p>待上传~</p>
 ]]></content>
       <categories>
-        <category>go语言</category>
         <category>Redis</category>
       </categories>
       <tags>
