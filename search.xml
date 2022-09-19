@@ -2767,23 +2767,49 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
 	x <span class="token operator">:=</span> rand<span class="token punctuation">.</span><span class="token function">Intn</span><span class="token punctuation">(</span>right<span class="token punctuation">)</span> <span class="token operator">+</span> min
 	<span class="token keyword">return</span> x
 <span class="token punctuation">&#125;</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token comment">/*
+第 1 个人领了 24 元
+第 2 个人领了 24 元
+第 3 个人领了 26 元
+第 4 个人领了 15 元
+第 5 个人领了 36 元
+第 6 个人领了 20 元
+第 7 个人领了 20 元
+第 8 个人领了 17 元
+第 9 个人领了 17 元
+第 10 个人领了 1 元
+一共发了 200 元
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>红包到小数点后两位</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go">count<span class="token punctuation">,</span> money <span class="token operator">:=</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">200</span><span class="token comment">//200为2元 定钱需要 *100</span>
-<span class="token comment">//红包总和 验证发了多少钱</span>
-sum <span class="token operator">:=</span> <span class="token function">float32</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
-<span class="token comment">//发红包</span>
-<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> count<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
-	x <span class="token operator">:=</span> <span class="token function">SecAvg</span><span class="token punctuation">(</span>count<span class="token operator">-</span>i<span class="token punctuation">,</span> money<span class="token punctuation">)</span>
-	<span class="token comment">//剩余钱</span>
-	money <span class="token operator">-=</span> x
-	<span class="token comment">//发了多少钱</span>
-	sum <span class="token operator">+=</span> <span class="token function">float32</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span>
-	<span class="token comment">//领红包数</span>
-	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"第"</span><span class="token punctuation">,</span> i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">"个人领了"</span><span class="token punctuation">,</span> <span class="token function">float32</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token operator">/</span><span class="token function">float32</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"元"</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span>
-fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"一共发了"</span><span class="token punctuation">,</span> sum<span class="token operator">/</span><span class="token function">float32</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"元"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">	count<span class="token punctuation">,</span> money <span class="token operator">:=</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">200</span><span class="token comment">//200为2元 定钱需要 *100</span>
+	<span class="token comment">//红包总和 验证发了多少钱</span>
+	sum <span class="token operator">:=</span> <span class="token function">float32</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+	<span class="token comment">//发红包</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> count<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		x <span class="token operator">:=</span> <span class="token function">SecAvg</span><span class="token punctuation">(</span>count<span class="token operator">-</span>i<span class="token punctuation">,</span> money<span class="token punctuation">)</span>
+		<span class="token comment">//剩余钱</span>
+		money <span class="token operator">-=</span> x
+		<span class="token comment">//发了多少钱</span>
+		sum <span class="token operator">+=</span> <span class="token function">float32</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span>
+		<span class="token comment">//领红包数</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"第"</span><span class="token punctuation">,</span> i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">"个人领了"</span><span class="token punctuation">,</span> <span class="token function">float32</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token operator">/</span><span class="token function">float32</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"元"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"一共发了"</span><span class="token punctuation">,</span> sum<span class="token operator">/</span><span class="token function">float32</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"元"</span><span class="token punctuation">)</span>
+
+<span class="token comment">/*
+第 1 个人领了 0.2 元
+第 2 个人领了 0.24 元
+第 3 个人领了 0.24 元
+第 4 个人领了 0.27 元
+第 5 个人领了 0.26 元
+第 6 个人领了 0.26 元
+第 7 个人领了 0.18 元
+第 8 个人领了 0.1 元 
+第 9 个人领了 0.06 元
+第 10 个人领了 0.19 元
+一共发了 2 元
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 ]]></content>
       <categories>
