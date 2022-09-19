@@ -2573,4 +2573,224 @@ stop work3 退出错误显示： context deadline exceeded
         <tag>使用</tag>
       </tags>
   </entry>
+  <entry>
+    <title>go基础9-Math/Rand包相关</title>
+    <url>/2022/09/19/go16/</url>
+    <content><![CDATA[<h3 id="type-Source"><a href="#type-Source" class="headerlink" title="type Source"></a>type <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#18">Source</a></h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Source <span class="token keyword">interface</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">Int63</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">int64</span>
+    <span class="token function">Seed</span><span class="token punctuation">(</span>seed <span class="token builtin">int64</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>Source代表一个生成均匀分布在范围[0, 1&lt;&lt;63)的int64值的（伪随机的）资源。</p>
+<h4 id="func-NewSource"><a href="#func-NewSource" class="headerlink" title="func NewSource"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#24">NewSource</a></h4><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">NewSource</span><span class="token punctuation">(</span>seed <span class="token builtin">int64</span><span class="token punctuation">)</span> Source<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>使用给定的种子创建一个伪随机资源。</p>
+<span id="more"></span>
+
+<h3 id="type-Rand"><a href="#type-Rand" class="headerlink" title="type Rand"></a>type <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#31">Rand</a></h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Rand <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 内含隐藏或非导出字段</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>Rand生成服从多种分布的随机数。</p>
+<h4 id="func-New"><a href="#func-New" class="headerlink" title="func New"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#37">New</a></h4><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">New</span><span class="token punctuation">(</span>src Source<span class="token punctuation">)</span> <span class="token operator">*</span>Rand<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个使用src生产的随机数来生成其他各种分布的随机数值的*Rand。</p>
+<h4 id="func-Rand-Seed"><a href="#func-Rand-Seed" class="headerlink" title="func (*Rand) Seed"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#40">Seed</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Seed(seed int64)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>使用给定的seed来初始化生成器到一个确定的状态。</p>
+<h4 id="func-Rand-Int"><a href="#func-Rand-Int" class="headerlink" title="func (*Rand) Int"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#52">Int</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Int() int<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个非负的伪随机int值。</p>
+<h4 id="func-Rand-Int31"><a href="#func-Rand-Int31" class="headerlink" title="func (*Rand) Int31"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#49">Int31</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Int31() int32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个int32类型的非负的31位伪随机数。</p>
+<h4 id="func-Rand-Int63"><a href="#func-Rand-Int63" class="headerlink" title="func (*Rand) Int63"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#43">Int63</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Int63() int64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个int64类型的非负的63位伪随机数。</p>
+<h4 id="func-Rand-Uint32"><a href="#func-Rand-Uint32" class="headerlink" title="func (*Rand) Uint32"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#46">Uint32</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Uint32() uint32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个uint32类型的非负的32位伪随机数。</p>
+<h4 id="func-Rand-Intn"><a href="#func-Rand-Intn" class="headerlink" title="func (*Rand) Intn"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#93">Intn</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Intn(n int) int<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0,n)的伪随机int值，如果n&lt;=0会panic。</p>
+<h4 id="func-Rand-Int31n"><a href="#func-Rand-Int31n" class="headerlink" title="func (*Rand) Int31n"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#76">Int31n</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Int31n(n int32) int32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0,n)的伪随机int32值，如果n&lt;=0会panic</p>
+<h4 id="func-Rand-Int63n"><a href="#func-Rand-Int63n" class="headerlink" title="func (*Rand) Int63n"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#59">Int63n</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Int63n(n int64) int64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0,n)的伪随机int64值，如果n&lt;=0会panic。</p>
+<h4 id="func-Rand-Float32"><a href="#func-Rand-Float32" class="headerlink" title="func (*Rand) Float32"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#131">Float32</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Float32() float32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0.0, 1.0)的伪随机float32值。</p>
+<h4 id="func-Rand-Float64"><a href="#func-Rand-Float64" class="headerlink" title="func (*Rand) Float64"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#104">Float64</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Float64() float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0.0, 1.0)的伪随机float64值。</p>
+<h4 id="func-Rand-NormFloat64"><a href="#func-Rand-NormFloat64" class="headerlink" title="func (*Rand) NormFloat64"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/normal.go?name=release#38">NormFloat64</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) NormFloat64() float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个服从标准正态分布（标准差=1，期望=0）、取值范围在[-math.MaxFloat64, +math.MaxFloat64]的float64值</p>
+<p>如果要生成不同的正态分布值，调用者可用如下代码调整输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">sample &#x3D; NormFloat64() * 标准差 + 期望<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="func-Rand-ExpFloat64"><a href="#func-Rand-ExpFloat64" class="headerlink" title="func (*Rand) ExpFloat64"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/exp.go?name=release#31">ExpFloat64</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) ExpFloat64() float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个服从标准指数分布（率参数=1，率参数是期望的倒数）、取值范围在(0, +math.MaxFloat64]的float64值</p>
+<p>如要生成不同的指数分布值，调用者可用如下代码调整输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">sample &#x3D; ExpFloat64() &#x2F; 率参数<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="func-Rand-Perm"><a href="#func-Rand-Perm" class="headerlink" title="func (*Rand) Perm"></a>func (*Rand) <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#146">Perm</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Perm(n int) []int<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个有n个元素的，[0,n)范围内整数的伪随机排列的切片。</p>
+<h3 id="type-Zipf"><a href="#type-Zipf" class="headerlink" title="type Zipf"></a>type <a href="https://github.com/golang/go/blob/master/src/math/rand/zipf.go?name=release#15">Zipf</a></h3><pre class="line-numbers language-none"><code class="language-none">type Zipf struct &#123;
+    &#x2F;&#x2F; 内含隐藏或非导出字段
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>Zipf生成服从齐普夫分布的随机数。</p>
+<h4 id="func-NewZipf"><a href="#func-NewZipf" class="headerlink" title="func NewZipf"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/zipf.go?name=release#37">NewZipf</a></h4><pre class="line-numbers language-none"><code class="language-none">func NewZipf(r *Rand, s float64, v float64, imax uint64) *Zipf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>NewZipf返回一个[0, imax]范围内的齐普夫随机数生成器。</p>
+<p>齐普夫分布：值k出现的几率p(k)正比于(v+k)**(-s)，其中s&gt;1且k&gt;=0且v&gt;=1。</p>
+<h4 id="func-Zipf-Uint64"><a href="#func-Zipf-Uint64" class="headerlink" title="func (*Zipf) Uint64"></a>func (*Zipf) <a href="https://github.com/golang/go/blob/master/src/math/rand/zipf.go?name=release#56">Uint64</a></h4><pre class="line-numbers language-none"><code class="language-none">func (z *Zipf) Uint64() uint64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>Uint64返回一个服从Zipf对象描述的齐普夫分布的随机数。</p>
+<h3 id="func-Seed"><a href="#func-Seed" class="headerlink" title="func Seed"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#165">Seed</a></h3><pre class="line-numbers language-none"><code class="language-none">func Seed(seed int64)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>使用给定的seed将默认资源初始化到一个确定的状态；如未调用Seed，默认资源的行为就好像调用了Seed(1)。</p>
+<h3 id="func-Int"><a href="#func-Int" class="headerlink" title="func Int"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#180">Int</a></h3><pre class="line-numbers language-none"><code class="language-none">func Int() int<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个非负的伪随机int值。</p>
+<h3 id="func-Int31"><a href="#func-Int31" class="headerlink" title="func Int31"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#177">Int31</a></h3><pre class="line-numbers language-none"><code class="language-none">func Int31() int32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个int32类型的非负的31位伪随机数。</p>
+<h3 id="func-Int63"><a href="#func-Int63" class="headerlink" title="func Int63"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#169">Int63</a></h3><pre class="line-numbers language-none"><code class="language-none">func Int63() int64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个int64类型的非负的63位伪随机数。</p>
+<h3 id="func-Uint32"><a href="#func-Uint32" class="headerlink" title="func Uint32"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#173">Uint32</a></h3><pre class="line-numbers language-none"><code class="language-none">func Uint32() uint32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个uint32类型的非负的32位伪随机数。</p>
+<h3 id="func-Intn"><a href="#func-Intn" class="headerlink" title="func Intn"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#195">Intn</a></h3><pre class="line-numbers language-none"><code class="language-none">func Intn(n int) int<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0,n)的伪随机int值，如果n&lt;=0会panic。</p>
+<h3 id="func-Int31n"><a href="#func-Int31n" class="headerlink" title="func Int31n"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#190">Int31n</a></h3><pre class="line-numbers language-none"><code class="language-none">func Int31n(n int32) int32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0,n)的伪随机int32值，如果n&lt;=0会panic。</p>
+<h3 id="func-Int63n"><a href="#func-Int63n" class="headerlink" title="func Int63n"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#185">Int63n</a></h3><pre class="line-numbers language-none"><code class="language-none">func Int63n(n int64) int64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0, n)的伪随机int64值，如果n&lt;=0会panic。</p>
+<h3 id="func-Float32"><a href="#func-Float32" class="headerlink" title="func Float32"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#203">Float32</a></h3><pre class="line-numbers language-none"><code class="language-none">func Float32() float32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0.0, 1.0)的伪随机float32值。</p>
+<h3 id="func-Float64"><a href="#func-Float64" class="headerlink" title="func Float64"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#199">Float64</a></h3><pre class="line-numbers language-none"><code class="language-none">func Float64() float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0.0, 1.0)的伪随机float64值。</p>
+<h3 id="func-NormFloat64"><a href="#func-NormFloat64" class="headerlink" title="func NormFloat64"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#218">NormFloat64</a></h3><pre class="line-numbers language-none"><code class="language-none">func NormFloat64() float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个服从标准正态分布（标准差=1，期望=0）、取值范围在[-math.MaxFloat64, +math.MaxFloat64]的float64值</p>
+<p>如果要生成不同的正态分布值，调用者可用如下代码调整输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">sample &#x3D; NormFloat64() * 标准差 + 期望<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="func-ExpFloat64"><a href="#func-ExpFloat64" class="headerlink" title="func ExpFloat64"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#228">ExpFloat64</a></h3><pre class="line-numbers language-none"><code class="language-none">func ExpFloat64() float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个服从标准指数分布（率参数=1，率参数是期望的倒数）、取值范围在(0, +math.MaxFloat64]的float64值</p>
+<p>如要生成不同的指数分布值，调用者可用如下代码调整输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">sample &#x3D; ExpFloat64() &#x2F; 率参数<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="func-Perm"><a href="#func-Perm" class="headerlink" title="func Perm"></a>func <a href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#207">Perm</a></h3><pre class="line-numbers language-none"><code class="language-none">func Perm(n int) []int<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个有n个元素的，[0,n)范围内整数的伪随机排列的切片。</p>
+<h3 id="简单随机数示例"><a href="#简单随机数示例" class="headerlink" title="简单随机数示例"></a>简单随机数示例</h3><ol>
+<li><strong>使用Seed种子确定状态执行Rand</strong></li>
+</ol>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">//该资源会在程序每次运行时都产生确定的序列。</span>
+<span class="token comment">//如果需要每次运行产生不同的序列，应使用Seed函数进行初始化。</span>
+<span class="token comment">//使用time.Now().Unix()随机Seed状态 不使用这个初始化Seed后，</span>
+<span class="token comment">//data := rand.Int63n(1)</span>
+<span class="token comment">//</span>
+<span class="token comment">//fmt.Println(data) //每次输出都是1</span>
+<span class="token comment">//每次输出都一样</span>
+rand<span class="token punctuation">.</span><span class="token function">Seed</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Unix</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">//同一秒执行的话 data会相同 可换为.UnixNano() 纳米时间戳</span>
+<span class="token comment">//data为 [0-10)随机数 数值为int64型</span>
+data <span class="token operator">:=</span> rand<span class="token punctuation">.</span><span class="token function">Int63n</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ol start="2">
+<li><strong>使用rand.New初始化状态执行Rand</strong></li>
+</ol>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">rander <span class="token operator">:=</span> rand<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span>rand<span class="token punctuation">.</span><span class="token function">NewSource</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">UnixNano</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	n1 <span class="token operator">:=</span> rander<span class="token punctuation">.</span><span class="token function">Int63n</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>n1<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>标准库</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>go二均值抢红包算法</title>
+    <url>/2022/09/19/go17/</url>
+    <content><![CDATA[<blockquote>
+<p>微信抢红包算法—–go语言实现</p>
+</blockquote>
+<p>主要使用Rand随机+二均值方法实现</p>
+<span id="more"></span>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>	
+	count<span class="token punctuation">,</span> money <span class="token operator">:=</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">200</span>
+	<span class="token comment">//红包总和 验证发了多少钱</span>
+	sum <span class="token operator">:=</span> <span class="token number">0</span>
+	<span class="token comment">//发红包</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> count<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		x <span class="token operator">:=</span> <span class="token function">SecAvg</span><span class="token punctuation">(</span>count<span class="token operator">-</span>i<span class="token punctuation">,</span> money<span class="token punctuation">)</span>
+		<span class="token comment">//剩余钱</span>
+		money <span class="token operator">-=</span> x
+		<span class="token comment">//发了多少钱</span>
+		sum <span class="token operator">+=</span> x
+		<span class="token comment">//领红包数</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"第"</span><span class="token punctuation">,</span> i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">"个人领了"</span><span class="token punctuation">,</span> x<span class="token punctuation">,</span> <span class="token string">"元"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"一共发了"</span><span class="token punctuation">,</span> sum<span class="token punctuation">,</span> <span class="token string">"元"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">SecAvg</span><span class="token punctuation">(</span>count<span class="token punctuation">,</span> money <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token builtin">int</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//红包最小值</span>
+	min <span class="token operator">:=</span> <span class="token number">1</span>
+	<span class="token keyword">if</span> count <span class="token operator">==</span> <span class="token number">1</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> money
+	<span class="token punctuation">&#125;</span>
+	<span class="token comment">//二均值法 （0，（剩余钱/剩余人数）*2）==[min,max/count * 2]</span>
+	<span class="token comment">//上边界 左开右开 避免为0</span>
+	max <span class="token operator">:=</span> money <span class="token operator">-</span> min
+	right <span class="token operator">:=</span> <span class="token punctuation">(</span>max<span class="token operator">/</span>count<span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span> <span class="token operator">+</span> min
+	rand<span class="token punctuation">.</span><span class="token function">Seed</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">UnixNano</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token comment">//[min,max/count * 2]</span>
+	x <span class="token operator">:=</span> rand<span class="token punctuation">.</span><span class="token function">Intn</span><span class="token punctuation">(</span>right<span class="token punctuation">)</span> <span class="token operator">+</span> min
+	<span class="token keyword">return</span> x
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>红包到小数点后两位</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">count<span class="token punctuation">,</span> money <span class="token operator">:=</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">200</span><span class="token comment">//200为2元 定钱需要 *100</span>
+<span class="token comment">//红包总和 验证发了多少钱</span>
+sum <span class="token operator">:=</span> <span class="token function">float32</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token comment">//发红包</span>
+<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> count<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+	x <span class="token operator">:=</span> <span class="token function">SecAvg</span><span class="token punctuation">(</span>count<span class="token operator">-</span>i<span class="token punctuation">,</span> money<span class="token punctuation">)</span>
+	<span class="token comment">//剩余钱</span>
+	money <span class="token operator">-=</span> x
+	<span class="token comment">//发了多少钱</span>
+	sum <span class="token operator">+=</span> <span class="token function">float32</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span>
+	<span class="token comment">//领红包数</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"第"</span><span class="token punctuation">,</span> i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">"个人领了"</span><span class="token punctuation">,</span> <span class="token function">float32</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token operator">/</span><span class="token function">float32</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"元"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"一共发了"</span><span class="token punctuation">,</span> sum<span class="token operator">/</span><span class="token function">float32</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"元"</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>算法</tag>
+      </tags>
+  </entry>
 </search>

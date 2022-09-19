@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"asonemaster.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="type Sourcetype Source interface &amp;#123;     Int63() int64     Seed(seed int64) &amp;#125;  Source代表一个生成均匀分布在范围[0, 1&lt;&lt;63)的int64值的（伪随机的）资源。 func NewSourcefunc NewSource(seed int64) Source  使用给定的种子创建一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="go基础9-Math&#x2F;Rand包相关">
+<meta property="og:url" content="https://asonemaster.github.io/2022/09/19/go16/index.html">
+<meta property="og:site_name" content="迅的个人博客">
+<meta property="og:description" content="type Sourcetype Source interface &amp;#123;     Int63() int64     Seed(seed int64) &amp;#125;  Source代表一个生成均匀分布在范围[0, 1&lt;&lt;63)的int64值的（伪随机的）资源。 func NewSourcefunc NewSource(seed int64) Source  使用给定的种子创建一个">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-09-19T12:05:34.211Z">
+<meta property="article:modified_time" content="2022-09-19T12:39:55.925Z">
+<meta property="article:author" content="asOneMaster">
+<meta property="article:tag" content="标准库">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://asonemaster.github.io/2022/09/19/go16/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>go基础9-Math/Rand包相关 | 迅的个人博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">迅的个人博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/09/19/go16/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/me.jpg">
+      <meta itemprop="name" content="asOneMaster">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="迅的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          go基础9-Math/Rand包相关
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-09-19 20:05:34 / 修改时间：20:39:55" itemprop="dateCreated datePublished" datetime="2022-09-19T20:05:34+08:00">2022-09-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="type-Source"><a href="#type-Source" class="headerlink" title="type Source"></a>type <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#18">Source</a></h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Source <span class="token keyword">interface</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">Int63</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">int64</span>
+    <span class="token function">Seed</span><span class="token punctuation">(</span>seed <span class="token builtin">int64</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>Source代表一个生成均匀分布在范围[0, 1&lt;&lt;63)的int64值的（伪随机的）资源。</p>
+<h4 id="func-NewSource"><a href="#func-NewSource" class="headerlink" title="func NewSource"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#24">NewSource</a></h4><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">NewSource</span><span class="token punctuation">(</span>seed <span class="token builtin">int64</span><span class="token punctuation">)</span> Source<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>使用给定的种子创建一个伪随机资源。</p>
+<span id="more"></span>
+
+<h3 id="type-Rand"><a href="#type-Rand" class="headerlink" title="type Rand"></a>type <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#31">Rand</a></h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Rand <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 内含隐藏或非导出字段</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>Rand生成服从多种分布的随机数。</p>
+<h4 id="func-New"><a href="#func-New" class="headerlink" title="func New"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#37">New</a></h4><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">New</span><span class="token punctuation">(</span>src Source<span class="token punctuation">)</span> <span class="token operator">*</span>Rand<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个使用src生产的随机数来生成其他各种分布的随机数值的*Rand。</p>
+<h4 id="func-Rand-Seed"><a href="#func-Rand-Seed" class="headerlink" title="func (*Rand) Seed"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#40">Seed</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Seed(seed int64)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>使用给定的seed来初始化生成器到一个确定的状态。</p>
+<h4 id="func-Rand-Int"><a href="#func-Rand-Int" class="headerlink" title="func (*Rand) Int"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#52">Int</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Int() int<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个非负的伪随机int值。</p>
+<h4 id="func-Rand-Int31"><a href="#func-Rand-Int31" class="headerlink" title="func (*Rand) Int31"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#49">Int31</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Int31() int32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个int32类型的非负的31位伪随机数。</p>
+<h4 id="func-Rand-Int63"><a href="#func-Rand-Int63" class="headerlink" title="func (*Rand) Int63"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#43">Int63</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Int63() int64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个int64类型的非负的63位伪随机数。</p>
+<h4 id="func-Rand-Uint32"><a href="#func-Rand-Uint32" class="headerlink" title="func (*Rand) Uint32"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#46">Uint32</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Uint32() uint32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个uint32类型的非负的32位伪随机数。</p>
+<h4 id="func-Rand-Intn"><a href="#func-Rand-Intn" class="headerlink" title="func (*Rand) Intn"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#93">Intn</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Intn(n int) int<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0,n)的伪随机int值，如果n&lt;=0会panic。</p>
+<h4 id="func-Rand-Int31n"><a href="#func-Rand-Int31n" class="headerlink" title="func (*Rand) Int31n"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#76">Int31n</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Int31n(n int32) int32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0,n)的伪随机int32值，如果n&lt;=0会panic</p>
+<h4 id="func-Rand-Int63n"><a href="#func-Rand-Int63n" class="headerlink" title="func (*Rand) Int63n"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#59">Int63n</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Int63n(n int64) int64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0,n)的伪随机int64值，如果n&lt;=0会panic。</p>
+<h4 id="func-Rand-Float32"><a href="#func-Rand-Float32" class="headerlink" title="func (*Rand) Float32"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#131">Float32</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Float32() float32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0.0, 1.0)的伪随机float32值。</p>
+<h4 id="func-Rand-Float64"><a href="#func-Rand-Float64" class="headerlink" title="func (*Rand) Float64"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#104">Float64</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Float64() float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0.0, 1.0)的伪随机float64值。</p>
+<h4 id="func-Rand-NormFloat64"><a href="#func-Rand-NormFloat64" class="headerlink" title="func (*Rand) NormFloat64"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/normal.go?name=release#38">NormFloat64</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) NormFloat64() float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个服从标准正态分布（标准差=1，期望=0）、取值范围在[-math.MaxFloat64, +math.MaxFloat64]的float64值</p>
+<p>如果要生成不同的正态分布值，调用者可用如下代码调整输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">sample &#x3D; NormFloat64() * 标准差 + 期望<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="func-Rand-ExpFloat64"><a href="#func-Rand-ExpFloat64" class="headerlink" title="func (*Rand) ExpFloat64"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/exp.go?name=release#31">ExpFloat64</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) ExpFloat64() float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个服从标准指数分布（率参数=1，率参数是期望的倒数）、取值范围在(0, +math.MaxFloat64]的float64值</p>
+<p>如要生成不同的指数分布值，调用者可用如下代码调整输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">sample &#x3D; ExpFloat64() &#x2F; 率参数<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h4 id="func-Rand-Perm"><a href="#func-Rand-Perm" class="headerlink" title="func (*Rand) Perm"></a>func (*Rand) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#146">Perm</a></h4><pre class="line-numbers language-none"><code class="language-none">func (r *Rand) Perm(n int) []int<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个有n个元素的，[0,n)范围内整数的伪随机排列的切片。</p>
+<h3 id="type-Zipf"><a href="#type-Zipf" class="headerlink" title="type Zipf"></a>type <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/zipf.go?name=release#15">Zipf</a></h3><pre class="line-numbers language-none"><code class="language-none">type Zipf struct &#123;
+    &#x2F;&#x2F; 内含隐藏或非导出字段
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>Zipf生成服从齐普夫分布的随机数。</p>
+<h4 id="func-NewZipf"><a href="#func-NewZipf" class="headerlink" title="func NewZipf"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/zipf.go?name=release#37">NewZipf</a></h4><pre class="line-numbers language-none"><code class="language-none">func NewZipf(r *Rand, s float64, v float64, imax uint64) *Zipf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>NewZipf返回一个[0, imax]范围内的齐普夫随机数生成器。</p>
+<p>齐普夫分布：值k出现的几率p(k)正比于(v+k)**(-s)，其中s&gt;1且k&gt;=0且v&gt;=1。</p>
+<h4 id="func-Zipf-Uint64"><a href="#func-Zipf-Uint64" class="headerlink" title="func (*Zipf) Uint64"></a>func (*Zipf) <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/zipf.go?name=release#56">Uint64</a></h4><pre class="line-numbers language-none"><code class="language-none">func (z *Zipf) Uint64() uint64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>Uint64返回一个服从Zipf对象描述的齐普夫分布的随机数。</p>
+<h3 id="func-Seed"><a href="#func-Seed" class="headerlink" title="func Seed"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#165">Seed</a></h3><pre class="line-numbers language-none"><code class="language-none">func Seed(seed int64)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>使用给定的seed将默认资源初始化到一个确定的状态；如未调用Seed，默认资源的行为就好像调用了Seed(1)。</p>
+<h3 id="func-Int"><a href="#func-Int" class="headerlink" title="func Int"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#180">Int</a></h3><pre class="line-numbers language-none"><code class="language-none">func Int() int<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个非负的伪随机int值。</p>
+<h3 id="func-Int31"><a href="#func-Int31" class="headerlink" title="func Int31"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#177">Int31</a></h3><pre class="line-numbers language-none"><code class="language-none">func Int31() int32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个int32类型的非负的31位伪随机数。</p>
+<h3 id="func-Int63"><a href="#func-Int63" class="headerlink" title="func Int63"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#169">Int63</a></h3><pre class="line-numbers language-none"><code class="language-none">func Int63() int64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个int64类型的非负的63位伪随机数。</p>
+<h3 id="func-Uint32"><a href="#func-Uint32" class="headerlink" title="func Uint32"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#173">Uint32</a></h3><pre class="line-numbers language-none"><code class="language-none">func Uint32() uint32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个uint32类型的非负的32位伪随机数。</p>
+<h3 id="func-Intn"><a href="#func-Intn" class="headerlink" title="func Intn"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#195">Intn</a></h3><pre class="line-numbers language-none"><code class="language-none">func Intn(n int) int<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0,n)的伪随机int值，如果n&lt;=0会panic。</p>
+<h3 id="func-Int31n"><a href="#func-Int31n" class="headerlink" title="func Int31n"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#190">Int31n</a></h3><pre class="line-numbers language-none"><code class="language-none">func Int31n(n int32) int32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0,n)的伪随机int32值，如果n&lt;=0会panic。</p>
+<h3 id="func-Int63n"><a href="#func-Int63n" class="headerlink" title="func Int63n"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#185">Int63n</a></h3><pre class="line-numbers language-none"><code class="language-none">func Int63n(n int64) int64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0, n)的伪随机int64值，如果n&lt;=0会panic。</p>
+<h3 id="func-Float32"><a href="#func-Float32" class="headerlink" title="func Float32"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#203">Float32</a></h3><pre class="line-numbers language-none"><code class="language-none">func Float32() float32<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0.0, 1.0)的伪随机float32值。</p>
+<h3 id="func-Float64"><a href="#func-Float64" class="headerlink" title="func Float64"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#199">Float64</a></h3><pre class="line-numbers language-none"><code class="language-none">func Float64() float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个取值范围在[0.0, 1.0)的伪随机float64值。</p>
+<h3 id="func-NormFloat64"><a href="#func-NormFloat64" class="headerlink" title="func NormFloat64"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#218">NormFloat64</a></h3><pre class="line-numbers language-none"><code class="language-none">func NormFloat64() float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个服从标准正态分布（标准差=1，期望=0）、取值范围在[-math.MaxFloat64, +math.MaxFloat64]的float64值</p>
+<p>如果要生成不同的正态分布值，调用者可用如下代码调整输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">sample &#x3D; NormFloat64() * 标准差 + 期望<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="func-ExpFloat64"><a href="#func-ExpFloat64" class="headerlink" title="func ExpFloat64"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#228">ExpFloat64</a></h3><pre class="line-numbers language-none"><code class="language-none">func ExpFloat64() float64<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个服从标准指数分布（率参数=1，率参数是期望的倒数）、取值范围在(0, +math.MaxFloat64]的float64值</p>
+<p>如要生成不同的指数分布值，调用者可用如下代码调整输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">sample &#x3D; ExpFloat64() &#x2F; 率参数<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<h3 id="func-Perm"><a href="#func-Perm" class="headerlink" title="func Perm"></a>func <a target="_blank" rel="noopener" href="https://github.com/golang/go/blob/master/src/math/rand/rand.go?name=release#207">Perm</a></h3><pre class="line-numbers language-none"><code class="language-none">func Perm(n int) []int<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>返回一个有n个元素的，[0,n)范围内整数的伪随机排列的切片。</p>
+<h3 id="简单随机数示例"><a href="#简单随机数示例" class="headerlink" title="简单随机数示例"></a>简单随机数示例</h3><ol>
+<li><strong>使用Seed种子确定状态执行Rand</strong></li>
+</ol>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">//该资源会在程序每次运行时都产生确定的序列。</span>
+<span class="token comment">//如果需要每次运行产生不同的序列，应使用Seed函数进行初始化。</span>
+<span class="token comment">//使用time.Now().Unix()随机Seed状态 不使用这个初始化Seed后，</span>
+<span class="token comment">//data := rand.Int63n(1)</span>
+<span class="token comment">//</span>
+<span class="token comment">//fmt.Println(data) //每次输出都是1</span>
+<span class="token comment">//每次输出都一样</span>
+rand<span class="token punctuation">.</span><span class="token function">Seed</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Unix</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">//同一秒执行的话 data会相同 可换为.UnixNano() 纳米时间戳</span>
+<span class="token comment">//data为 [0-10)随机数 数值为int64型</span>
+data <span class="token operator">:=</span> rand<span class="token punctuation">.</span><span class="token function">Int63n</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ol start="2">
+<li><strong>使用rand.New初始化状态执行Rand</strong></li>
+</ol>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">rander <span class="token operator">:=</span> rand<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span>rand<span class="token punctuation">.</span><span class="token function">NewSource</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">UnixNano</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	n1 <span class="token operator">:=</span> rander<span class="token punctuation">.</span><span class="token function">Int63n</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>n1<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+
+    </div>
+    <div>
+        
+           <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+
+        
+    </div>
+    
+    
+    
+        <div class="reward-container">
+  <div>打赏一瓶矿泉水</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/weChatPay.jpg" alt="asOneMaster 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/aliPay.jpg" alt="asOneMaster 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>asOneMaster
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://asonemaster.github.io/2022/09/19/go16/" title="go基础9-Math&#x2F;Rand包相关">https://asonemaster.github.io/2022/09/19/go16/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+	
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E6%A0%87%E5%87%86%E5%BA%93/" rel="tag"><i class="fa fa-tag"></i> 标准库</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/09/18/redis2/" rel="prev" title="Go+Redis缓存控制商品数量防止超卖">
+      <i class="fa fa-chevron-left"></i> Go+Redis缓存控制商品数量防止超卖
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/09/19/go17/" rel="next" title="go二均值抢红包算法">
+      go二均值抢红包算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#type-Source"><span class="nav-number">1.</span> <span class="nav-text">type Source</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#func-NewSource"><span class="nav-number">1.1.</span> <span class="nav-text">func NewSource</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#type-Rand"><span class="nav-number">2.</span> <span class="nav-text">type Rand</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#func-New"><span class="nav-number">2.1.</span> <span class="nav-text">func New</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-Seed"><span class="nav-number">2.2.</span> <span class="nav-text">func (*Rand) Seed</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-Int"><span class="nav-number">2.3.</span> <span class="nav-text">func (*Rand) Int</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-Int31"><span class="nav-number">2.4.</span> <span class="nav-text">func (*Rand) Int31</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-Int63"><span class="nav-number">2.5.</span> <span class="nav-text">func (*Rand) Int63</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-Uint32"><span class="nav-number">2.6.</span> <span class="nav-text">func (*Rand) Uint32</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-Intn"><span class="nav-number">2.7.</span> <span class="nav-text">func (*Rand) Intn</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-Int31n"><span class="nav-number">2.8.</span> <span class="nav-text">func (*Rand) Int31n</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-Int63n"><span class="nav-number">2.9.</span> <span class="nav-text">func (*Rand) Int63n</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-Float32"><span class="nav-number">2.10.</span> <span class="nav-text">func (*Rand) Float32</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-Float64"><span class="nav-number">2.11.</span> <span class="nav-text">func (*Rand) Float64</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-NormFloat64"><span class="nav-number">2.12.</span> <span class="nav-text">func (*Rand) NormFloat64</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-ExpFloat64"><span class="nav-number">2.13.</span> <span class="nav-text">func (*Rand) ExpFloat64</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Rand-Perm"><span class="nav-number">2.14.</span> <span class="nav-text">func (*Rand) Perm</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#type-Zipf"><span class="nav-number">3.</span> <span class="nav-text">type Zipf</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#func-NewZipf"><span class="nav-number">3.1.</span> <span class="nav-text">func NewZipf</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#func-Zipf-Uint64"><span class="nav-number">3.2.</span> <span class="nav-text">func (*Zipf) Uint64</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-Seed"><span class="nav-number">4.</span> <span class="nav-text">func Seed</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-Int"><span class="nav-number">5.</span> <span class="nav-text">func Int</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-Int31"><span class="nav-number">6.</span> <span class="nav-text">func Int31</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-Int63"><span class="nav-number">7.</span> <span class="nav-text">func Int63</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-Uint32"><span class="nav-number">8.</span> <span class="nav-text">func Uint32</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-Intn"><span class="nav-number">9.</span> <span class="nav-text">func Intn</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-Int31n"><span class="nav-number">10.</span> <span class="nav-text">func Int31n</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-Int63n"><span class="nav-number">11.</span> <span class="nav-text">func Int63n</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-Float32"><span class="nav-number">12.</span> <span class="nav-text">func Float32</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-Float64"><span class="nav-number">13.</span> <span class="nav-text">func Float64</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-NormFloat64"><span class="nav-number">14.</span> <span class="nav-text">func NormFloat64</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-ExpFloat64"><span class="nav-number">15.</span> <span class="nav-text">func ExpFloat64</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#func-Perm"><span class="nav-number">16.</span> <span class="nav-text">func Perm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%A4%BA%E4%BE%8B"><span class="nav-number">17.</span> <span class="nav-text">简单随机数示例</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="asOneMaster"
+      src="/images/me.jpg">
+  <p class="site-author-name" itemprop="name">asOneMaster</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AsOneMaster" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AsOneMaster" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hx120577@163.com" title="E-Mail → mailto:hx120577@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">蜀ICP备2022021574号 </a>
+  </div>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">asOneMaster</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">39k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">35 分钟</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
