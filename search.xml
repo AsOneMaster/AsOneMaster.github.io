@@ -2849,4 +2849,35 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
         <tag>算法</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Go高并发数据库操作的bug——max_prepared_stmt_count</title>
+    <url>/2022/09/21/mysql4/</url>
+    <content><![CDATA[<h3 id="高并发情况下MySQL操作报错"><a href="#高并发情况下MySQL操作报错" class="headerlink" title="高并发情况下MySQL操作报错"></a>高并发情况下MySQL操作报错</h3><pre class="line-numbers language-none"><code class="language-none">Can&#39;t create more than max_prepared_stmt_count statements (current value: 16382)<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<span id="more"></span>
+
+<p><strong>这是mysql的preparedStatement使用超限问题</strong></p>
+<pre class="line-numbers language-powershell" data-language="powershell"><code class="language-powershell">mysql> show global status like <span class="token string">'com_stmt%'</span><span class="token punctuation">;</span>
+<span class="token operator">+</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">+</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">+</span>
+<span class="token punctuation">|</span> Variable_name           <span class="token punctuation">|</span> Value  <span class="token punctuation">|</span>
+<span class="token operator">+</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">+</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">+</span>
+<span class="token punctuation">|</span> Com_stmt_execute        <span class="token punctuation">|</span> 117814 <span class="token punctuation">|</span>
+<span class="token punctuation">|</span> Com_stmt_close          <span class="token punctuation">|</span> 104421 <span class="token punctuation">|</span>
+<span class="token punctuation">|</span> Com_stmt_fetch          <span class="token punctuation">|</span> 0      <span class="token punctuation">|</span>
+<span class="token punctuation">|</span> Com_stmt_prepare        <span class="token punctuation">|</span> 126965 <span class="token punctuation">|</span>
+<span class="token punctuation">|</span> Com_stmt_reset          <span class="token punctuation">|</span> 0      <span class="token punctuation">|</span>
+<span class="token punctuation">|</span> Com_stmt_send_long_data <span class="token punctuation">|</span> 0      <span class="token punctuation">|</span>
+<span class="token punctuation">|</span> Com_stmt_reprepare      <span class="token punctuation">|</span> 0      <span class="token punctuation">|</span>
+<span class="token operator">+</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span><span class="token operator">+</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">+</span>
+7 rows in <span class="token function">set</span> <span class="token punctuation">(</span>0<span class="token punctuation">.</span>00 sec<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>待解决~</strong></p>
+]]></content>
+      <categories>
+        <category>Mysql</category>
+      </categories>
+      <tags>
+        <tag>高并发</tag>
+      </tags>
+  </entry>
 </search>
