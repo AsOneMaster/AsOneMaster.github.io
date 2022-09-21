@@ -2452,7 +2452,7 @@ stop work3 退出错误显示： context deadline exceeded
   <entry>
     <title>windows上使用go-wrk进行接口压力测试</title>
     <url>/2022/09/16/go_wrk/</url>
-    <content><![CDATA[<h2 id="Go开发接口测试过程记录"><a href="#Go开发接口测试过程记录" class="headerlink" title="Go开发接口测试过程记录"></a>Go开发接口测试过程记录</h2><h3 id="压测工具准备"><a href="#压测工具准备" class="headerlink" title="压测工具准备"></a>压测工具准备</h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">go</span> install github<span class="token punctuation">.</span>com<span class="token operator">/</span>tsliwowicz<span class="token operator">/</span><span class="token keyword">go</span><span class="token operator">-</span>wrk@latest<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+    <content><![CDATA[<h2 id="Go开发接口测试过程记录"><a href="#Go开发接口测试过程记录" class="headerlink" title="Go开发接口测试过程记录"></a>Go开发接口测试过程记录</h2><h3 id="压测工具准备"><a href="#压测工具准备" class="headerlink" title="压测工具准备"></a>压测工具准备</h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">go</span> install github<span class="token punctuation">.</span>com<span class="token operator">/</span>adjust<span class="token operator">/</span><span class="token keyword">go</span><span class="token operator">-</span>wrk<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 
 <h3 id="测试接口准备"><a href="#测试接口准备" class="headerlink" title="测试接口准备"></a>测试接口准备</h3><blockquote>
 <p>将开发中的接口写一个简单的测试接口用例，方便wrk模拟调用</p>
@@ -2466,18 +2466,47 @@ stop work3 退出错误显示： context deadline exceeded
 <p>在该路径下直接cmd，或者使用命令行到该路径下</p>
 <p><strong>开启Web服务</strong></p>
 <p>使用以下命令进行测试</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"># <span class="token number">8</span>个线程，<span class="token number">400</span>个连接， 模拟10w次请求  <span class="token operator">-</span>d替换<span class="token operator">-</span>n表示连接时间
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"># <span class="token number">8</span>个线程，<span class="token number">400</span>个连接， 模拟1w次请求  <span class="token operator">-</span>d替换<span class="token operator">-</span>n表示连接时间
 <span class="token keyword">go</span><span class="token operator">-</span>wrk <span class="token operator">-</span>c<span class="token operator">=</span><span class="token number">400</span> <span class="token operator">-</span>t<span class="token operator">=</span><span class="token number">8</span> <span class="token operator">-</span>n<span class="token operator">=</span><span class="token number">10000</span> http<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>localhost<span class="token punctuation">:</span><span class="token number">8082</span><span class="token operator">/</span>product<span class="token operator">/</span>qrder<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
-<ul>
-<li>-c 表示开启协程数量 </li>
-<li>-T 表示连接数量</li>
-<li>-d 表示测试时间</li>
-</ul>
+<pre class="line-numbers language-powershell" data-language="powershell"><code class="language-powershell">D:\goProject\bin>go-wrk <span class="token operator">-</span>h
+Usage of go-wrk:
+  <span class="token operator">-</span>CA string
+        A PEM eoncoded CA<span class="token string">'s certificate file. (default "someCertCAFile")
+  -H string
+        the http headers sent separated by '</span>\n' <span class="token punctuation">(</span>default <span class="token string">"User-Agent: go-wrk 0.1 benchmark\nContent-Type: text/html;"</span><span class="token punctuation">)</span>
+  <span class="token operator">-</span>b string
+        the http request body
+  <span class="token operator">-</span>c int
+        the max numbers of connections used <span class="token punctuation">(</span>default 100<span class="token punctuation">)</span>
+  <span class="token operator">-</span>cert string
+        A PEM eoncoded certificate file<span class="token punctuation">.</span> <span class="token punctuation">(</span>default <span class="token string">"someCertFile"</span><span class="token punctuation">)</span>
+  <span class="token operator">-</span>d string
+        dist mode
+  <span class="token operator">-</span>f string
+        json config file
+  <span class="token operator">-</span>i    TLS checks are disabled
+  <span class="token operator">-</span>k    <span class="token keyword">if</span> keep-alives are disabled <span class="token punctuation">(</span>default true<span class="token punctuation">)</span>
+  <span class="token operator">-</span>key string
+        A PEM encoded private key file<span class="token punctuation">.</span> <span class="token punctuation">(</span>default <span class="token string">"someKeyFile"</span><span class="token punctuation">)</span>
+  <span class="token operator">-</span>m string
+        the http request method <span class="token punctuation">(</span>default <span class="token string">"GET"</span><span class="token punctuation">)</span>
+  <span class="token operator">-</span>n int
+        the total number of calls processed <span class="token punctuation">(</span>default 1000<span class="token punctuation">)</span>
+  <span class="token operator">-</span>p string
+        the http request body <span class="token keyword">data</span> file
+  <span class="token operator">-</span>r    in the case of having stream or file in the response<span class="token punctuation">,</span>
+         it reads all response body to calculate the response size
+  <span class="token operator">-</span>s string
+        <span class="token keyword">if</span> specified<span class="token punctuation">,</span> it counts how often the searched string s is contained in the responses
+  <span class="token operator">-</span>t int
+        the numbers of threads used <span class="token punctuation">(</span>default 1<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 <p>测试效果如下</p>
-<p><img src="/2022/09/16/go_wrk/image-20220916171007197.png" alt="image-20220916171007197"></p>
-<p>每秒 1428.27次连接 也可以说 QBS为1428</p>
-<p>使用本地Windows10 16G内存 CPU i7-9750H 进行测试</p>
+<p><img src="/2022/09/16/go_wrk/image-20220921170806211.png" alt="image-20220921170806211"></p>
+<p>每秒 929.15次连接 也可以说 QPS为 929.15</p>
+<p>因继续改进，出现连接错误与超卖现象</p>
+<p>使用本地Windows10 16G内存 CPU i7-9750H 8核 进行测试</p>
 ]]></content>
       <categories>
         <category>测试</category>
