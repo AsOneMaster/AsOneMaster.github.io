@@ -2600,6 +2600,8 @@ Usage of go-wrk:
 <li>在value&gt;=0时，使用MQ消息队列异步处理下单，数据库库存减少操作</li>
 <li>value&lt;0后返回False，不执行下单操作，缓解数据库压力</li>
 </ol>
+<span id="more"></span>
+
 <h3 id="Go-Redis代码实现思路"><a href="#Go-Redis代码实现思路" class="headerlink" title="Go+Redis代码实现思路"></a>Go+Redis代码实现思路</h3><ol>
 <li>首先使用Go语言第三方库<code>github.com/garyburd/redigo/redis</code>，建立redis连接池</li>
 </ol>
