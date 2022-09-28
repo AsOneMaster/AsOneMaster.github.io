@@ -483,7 +483,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/09/18/redis2/" class="post-title-link" itemprop="url">Go+Redis缓存控制商品数量防止超卖</a>
+            <a href="/2022/09/18/redis2/" class="post-title-link" itemprop="url">Go+Redis缓存控制商品数量防止超卖《基础实现版》</a>
         </h2>
 
         <div class="post-meta">
@@ -492,10 +492,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-09-18 21:05:41 / 修改时间：22:11:50" itemprop="dateCreated datePublished" datetime="2022-09-18T21:05:41+08:00">2022-09-18</time>
+              <time title="创建时间：2022-09-18 21:05:41" itemprop="dateCreated datePublished" datetime="2022-09-18T21:05:41+08:00">2022-09-18</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-09-28 22:53:10" itemprop="dateModified" datetime="2022-09-28T22:53:10+08:00">2022-09-28</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -512,14 +518,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4</span>
+              <span>5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>5 分钟</span>
             </span>
 
         </div>
@@ -531,7 +537,289 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>待上传~</p>
+          <h3 id="首先了解使用Redis的思路"><a href="#首先了解使用Redis的思路" class="headerlink" title="首先了解使用Redis的思路"></a>首先了解使用Redis的思路</h3><ol>
+<li>使用在秒杀商品页面，使用Redis缓存数据库中当前商品数量</li>
+<li>运用Redis的<code>DECR</code>原子语句，减少存储value的值</li>
+<li>在value&gt;=0时，使用MQ消息队列异步处理下单，数据库库存减少操作</li>
+<li>value&lt;0后返回False，不执行下单操作，缓解数据库压力</li>
+</ol>
+<h3 id="Go-Redis代码实现思路"><a href="#Go-Redis代码实现思路" class="headerlink" title="Go+Redis代码实现思路"></a>Go+Redis代码实现思路</h3><ol>
+<li>首先使用Go语言第三方库<code>github.com/garyburd/redigo/redis</code>，建立redis连接池</li>
+</ol>
+<blockquote>
+<p>为什么要建立redis连接池？</p>
+<p>redis连接方式是客户端/服务端的TCP连接，多次使用redis直接连接，会导致可能redis连接的时间比处理数据的时间还长，</p>
+<p>效率不高，这并不是我们想要的，通过建立连接池的方式，想连接就使用，不想连接，就放回连接池，极大提高redis使用效率。</p>
+</blockquote>
+<ol start="2">
+<li>在商品页面缓存商品数量</li>
+<li>秒杀接口扣除商品数量防止超卖</li>
+</ol>
+<h4 id="连接池代码如下"><a href="#连接池代码如下" class="headerlink" title="连接池代码如下"></a>连接池代码如下</h4><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> common
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"fmt"</span>
+	<span class="token string">"github.com/garyburd/redigo/redis"</span>
+	<span class="token string">"time"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> <span class="token punctuation">(</span>
+	pool <span class="token operator">*</span>redis<span class="token punctuation">.</span>Pool
+	<span class="token comment">//使用红帽 ACL 系统连接到红帽实例</span>
+	redisHost <span class="token operator">=</span> <span class="token string">"127.0.0.1:6379"</span>
+	<span class="token comment">//redisHost = ":6379"</span>
+	<span class="token comment">//密码</span>
+	redisPass <span class="token operator">=</span> <span class="token string">""</span>
+<span class="token punctuation">)</span>
+
+<span class="token comment">// newRedisPool : 创建redis连接池</span>
+<span class="token keyword">func</span> <span class="token function">newRedisPool</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>redis<span class="token punctuation">.</span>Pool <span class="token punctuation">&#123;</span>
+	<span class="token keyword">return</span> <span class="token operator">&amp;</span>redis<span class="token punctuation">.</span>Pool<span class="token punctuation">&#123;</span>
+		MaxIdle<span class="token punctuation">:</span>     <span class="token number">50</span><span class="token punctuation">,</span>
+		MaxActive<span class="token punctuation">:</span>   <span class="token number">0</span><span class="token punctuation">,</span>
+		IdleTimeout<span class="token punctuation">:</span> <span class="token number">300</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">,</span>
+		Dial<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>redis<span class="token punctuation">.</span>Conn<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+			<span class="token comment">// 1. 打开连接</span>
+			c<span class="token punctuation">,</span> err <span class="token operator">:=</span> redis<span class="token punctuation">.</span><span class="token function">Dial</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span> redisHost<span class="token punctuation">)</span>
+			<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+				fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+				<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
+			<span class="token punctuation">&#125;</span>
+
+			<span class="token comment">// 2. 访问认证</span>
+			<span class="token comment">//if _, err = c.Do("AUTH", redisPass); err != nil &#123;</span>
+			<span class="token comment">//	c.Close()</span>
+			<span class="token comment">//	return nil, err</span>
+			<span class="token comment">//&#125;</span>
+			<span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>redisPass<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span> <span class="token punctuation">&#123;</span> <span class="token comment">// 有密码的情况</span>
+				<span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span><span class="token string">"AUTH"</span><span class="token punctuation">,</span> redisPass<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+					c<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+					<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
+				<span class="token punctuation">&#125;</span>
+			<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span> <span class="token comment">// 没有密码的时候 ping 连接</span>
+				<span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">:=</span> c<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span><span class="token string">"ping"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+					c<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+					<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
+				<span class="token punctuation">&#125;</span>
+			<span class="token punctuation">&#125;</span>
+			<span class="token keyword">return</span> c<span class="token punctuation">,</span> <span class="token boolean">nil</span>
+		<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+		<span class="token comment">//检测Redis是否可用</span>
+		TestOnBorrow<span class="token punctuation">:</span> <span class="token keyword">func</span><span class="token punctuation">(</span>conn redis<span class="token punctuation">.</span>Conn<span class="token punctuation">,</span> t time<span class="token punctuation">.</span>Time<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">if</span> time<span class="token punctuation">.</span><span class="token function">Since</span><span class="token punctuation">(</span>t<span class="token punctuation">)</span> <span class="token operator">&lt;</span> time<span class="token punctuation">.</span>Minute <span class="token punctuation">&#123;</span>
+				<span class="token keyword">return</span> <span class="token boolean">nil</span>
+			<span class="token punctuation">&#125;</span>
+			<span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">:=</span> conn<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span><span class="token string">"PING"</span><span class="token punctuation">)</span>
+			<span class="token keyword">return</span> err
+		<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	pool <span class="token operator">=</span> <span class="token function">newRedisPool</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">RedisPool</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>redis<span class="token punctuation">.</span>Pool <span class="token punctuation">&#123;</span>
+	<span class="token keyword">return</span> pool
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="缓存商品数量"><a href="#缓存商品数量" class="headerlink" title="缓存商品数量"></a>缓存商品数量</h4><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// GetDetailr 秒杀页面/商品详情页 需要用户登录才能看 curl //detailr--------Redis</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>p <span class="token operator">*</span>ProductController<span class="token punctuation">)</span> <span class="token function">GetDetailr</span><span class="token punctuation">(</span><span class="token punctuation">)</span> mvc<span class="token punctuation">.</span>View <span class="token punctuation">&#123;</span>
+	<span class="token comment">//固定产品测试</span>
+	product<span class="token punctuation">,</span> err <span class="token operator">:=</span> p<span class="token punctuation">.</span>ProductService<span class="token punctuation">.</span><span class="token function">GetProductByID</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		p<span class="token punctuation">.</span>Ctx<span class="token punctuation">.</span><span class="token function">Application</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Logger</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Debug</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token comment">//fmt.Println("-----------产品路径------------", product)</span>
+	<span class="token comment">//p.Ctx.Redirect("/product/Localnum")</span>
+	<span class="token comment">//redis 缓存商品数量</span>
+	rConn <span class="token operator">:=</span> common<span class="token punctuation">.</span><span class="token function">RedisPool</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">defer</span> rConn<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">=</span> rConn<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span><span class="token string">"SET"</span><span class="token punctuation">,</span> <span class="token string">"Count"</span><span class="token punctuation">,</span> product<span class="token punctuation">.</span>ProductNum<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span><span class="token string">"set字符串失败，"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> mvc<span class="token punctuation">.</span>View<span class="token punctuation">&#123;</span>
+		<span class="token comment">//商品详情布局文件</span>
+		Layout<span class="token punctuation">:</span> <span class="token string">"shared/productLayout.html"</span><span class="token punctuation">,</span>
+		<span class="token comment">//页面模板</span>
+		Name<span class="token punctuation">:</span> <span class="token string">"product/view.html"</span><span class="token punctuation">,</span>
+		Data<span class="token punctuation">:</span> iris<span class="token punctuation">.</span>Map<span class="token punctuation">&#123;</span>
+			<span class="token string">"product"</span><span class="token punctuation">:</span> product<span class="token punctuation">,</span>
+		<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="秒杀接口"><a href="#秒杀接口" class="headerlink" title="秒杀接口"></a>秒杀接口</h4><pre class="line-numbers language-go" data-language="go"><code class="language-go">
+<span class="token comment">// GetQrder 测试接口 改进前 使用Redis</span>
+<span class="token comment">// go-wrk -c 80 -d 5 http://localhost:8082/product/rrder</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>p <span class="token operator">*</span>ProductController<span class="token punctuation">)</span> <span class="token function">GetRrder</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//通过消息队列 缓解订单更新数据库压力</span>
+	<span class="token comment">//productIDString转换成int64</span>
+	productID <span class="token operator">:=</span> <span class="token function">int64</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span>
+
+	userID <span class="token operator">:=</span> <span class="token function">int64</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>
+	<span class="token comment">//连接redis</span>
+	rConn <span class="token operator">:=</span> common<span class="token punctuation">.</span><span class="token function">RedisPool</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">defer</span> rConn<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> val<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> redis<span class="token punctuation">.</span><span class="token function">Int</span><span class="token punctuation">(</span>rConn<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span><span class="token string">"DECR"</span><span class="token punctuation">,</span> <span class="token string">"Count"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> val <span class="token operator">>=</span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">//创建消息体</span>
+		message <span class="token operator">:=</span> datamodels<span class="token punctuation">.</span><span class="token function">NewMessage</span><span class="token punctuation">(</span>productID<span class="token punctuation">,</span> userID<span class="token punctuation">)</span>
+		<span class="token comment">//类型转化 成rabbitmq可以传送的消息</span>
+		byteMessage<span class="token punctuation">,</span> err <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Marshal</span><span class="token punctuation">(</span>message<span class="token punctuation">)</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			p<span class="token punctuation">.</span>Ctx<span class="token punctuation">.</span><span class="token function">Application</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Logger</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Debug</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token comment">//使用Simple模式消息队列 实例定义好的模式</span>
+		err <span class="token operator">=</span> p<span class="token punctuation">.</span>RabbitMQ<span class="token punctuation">.</span><span class="token function">PublishSimple</span><span class="token punctuation">(</span><span class="token function">string</span><span class="token punctuation">(</span>byteMessage<span class="token punctuation">)</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			p<span class="token punctuation">.</span>Ctx<span class="token punctuation">.</span><span class="token function">Application</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Logger</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Debug</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"消费ing"</span><span class="token punctuation">)</span>
+		<span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span><span class="token string">"true"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"卖完了"</span><span class="token punctuation">)</span>
+		<span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span><span class="token string">"false"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="MQ消息队列"><a href="#MQ消息队列" class="headerlink" title="MQ消息队列"></a>MQ消息队列</h4><h5 id="消息队列消费微服务"><a href="#消息队列消费微服务" class="headerlink" title="消息队列消费微服务"></a>消息队列消费微服务</h5><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"fmt"</span>
+	<span class="token string">"imooc-Product/common"</span>
+	<span class="token string">"imooc-Product/rabbitmq"</span>
+	<span class="token string">"imooc-Product/repositories"</span>
+	<span class="token string">"imooc-Product/services"</span>
+<span class="token punctuation">)</span>
+
+<span class="token comment">/*
+	消费端代码
+*/</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//获取数据库实例</span>
+	db<span class="token punctuation">,</span> err <span class="token operator">:=</span> common<span class="token punctuation">.</span><span class="token function">NewMysqlConn</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token comment">//创建product数据库操作实例</span>
+	product <span class="token operator">:=</span> repositories<span class="token punctuation">.</span><span class="token function">NewProductManager</span><span class="token punctuation">(</span><span class="token string">"product"</span><span class="token punctuation">,</span> db<span class="token punctuation">)</span>
+	<span class="token comment">//创建 product service</span>
+	productService <span class="token operator">:=</span> services<span class="token punctuation">.</span><span class="token function">NewProductService</span><span class="token punctuation">(</span>product<span class="token punctuation">)</span>
+	<span class="token comment">//创建order 数据库操作实例</span>
+	order <span class="token operator">:=</span> repositories<span class="token punctuation">.</span><span class="token function">NewOrderManager</span><span class="token punctuation">(</span><span class="token string">"order"</span><span class="token punctuation">,</span> db<span class="token punctuation">)</span>
+	<span class="token comment">//创建 order service</span>
+	orderService <span class="token operator">:=</span> services<span class="token punctuation">.</span><span class="token function">NewOrderService</span><span class="token punctuation">(</span>order<span class="token punctuation">)</span>
+	<span class="token comment">//消息队列消费者</span>
+	rabbitmqConsumer <span class="token operator">:=</span> rabbitmq<span class="token punctuation">.</span><span class="token function">NewRabbitMQSimple</span><span class="token punctuation">(</span><span class="token string">"imoocProduct"</span><span class="token punctuation">)</span>
+	<span class="token comment">//进行消费</span>
+	rabbitmqConsumer<span class="token punctuation">.</span><span class="token function">ConsumeSimple</span><span class="token punctuation">(</span>orderService<span class="token punctuation">,</span> productService<span class="token punctuation">)</span>
+
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h5 id="MQ订单消费"><a href="#MQ订单消费" class="headerlink" title="MQ订单消费"></a>MQ订单消费</h5><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// ConsumeSimple  ----------step:3. 简单模式下消费者</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>RabbitMQ<span class="token punctuation">)</span> <span class="token function">ConsumeSimple</span><span class="token punctuation">(</span>orderService services<span class="token punctuation">.</span>IOrderService<span class="token punctuation">,</span> productService services<span class="token punctuation">.</span>IProductService<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   <span class="token comment">//1. 申请队列，如果队列不存在会自动创建，如果存在则跳过创建（保证队列存在，消息能发送到队列中）</span>
+   <span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">:=</span> r<span class="token punctuation">.</span>channel<span class="token punctuation">.</span><span class="token function">QueueDeclare</span><span class="token punctuation">(</span>
+      r<span class="token punctuation">.</span>QueueName<span class="token punctuation">,</span>
+      <span class="token comment">//是否持久化</span>
+      <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token comment">//是否自动删除</span>
+      <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token comment">//是否具有排他性</span>
+      <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token comment">//是否阻塞</span>
+      <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token comment">//额外属性</span>
+      <span class="token boolean">nil</span><span class="token punctuation">,</span>
+   <span class="token punctuation">)</span>
+   <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+      fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+   <span class="token punctuation">&#125;</span>
+   <span class="token comment">//消费者控流</span>
+   r<span class="token punctuation">.</span>channel<span class="token punctuation">.</span><span class="token function">Qos</span><span class="token punctuation">(</span>
+      <span class="token number">1</span><span class="token punctuation">,</span>     <span class="token comment">//当前消费者一次能接受最大消息数量1个</span>
+      <span class="token number">0</span><span class="token punctuation">,</span>     <span class="token comment">//服务器传递的最大容量（）以8位字节为单位</span>
+      <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token comment">//如果为true 对channel可用</span>
+   <span class="token punctuation">)</span>
+
+   <span class="token comment">//2. 接受消息</span>
+   msgs<span class="token punctuation">,</span> err <span class="token operator">:=</span> r<span class="token punctuation">.</span>channel<span class="token punctuation">.</span><span class="token function">Consume</span><span class="token punctuation">(</span>
+      r<span class="token punctuation">.</span>QueueName<span class="token punctuation">,</span>
+      <span class="token comment">//用来区分多个消费者</span>
+      <span class="token string">""</span><span class="token punctuation">,</span>
+      <span class="token comment">//是否自动应答</span>
+      <span class="token comment">//可改手动修改【false】 控制速率</span>
+      <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token comment">//是否独有</span>
+      <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token comment">//如果设置为true，表示不能将同一个connection中发送的消息传递给这个connection中的消费者</span>
+      <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token comment">//是否阻塞 false为阻塞</span>
+      <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token boolean">nil</span><span class="token punctuation">)</span>
+   <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+      fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+   <span class="token punctuation">&#125;</span>
+   forever <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">bool</span><span class="token punctuation">)</span>
+   <span class="token comment">//启用协程处理消息</span>
+   <span class="token keyword">var</span> num <span class="token builtin">int</span>
+   <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">for</span> d <span class="token operator">:=</span> <span class="token keyword">range</span> msgs <span class="token punctuation">&#123;</span>
+
+         <span class="token comment">//实现我们要处理的逻辑函数</span>
+         <span class="token comment">//log.Printf("Received a message:%s", d.Body)</span>
+         message <span class="token operator">:=</span> <span class="token operator">&amp;</span>datamodels<span class="token punctuation">.</span>Message<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+         err <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span>d<span class="token punctuation">.</span>Body<span class="token punctuation">,</span> message<span class="token punctuation">)</span>
+         <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+            fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+         <span class="token punctuation">&#125;</span>
+         num<span class="token operator">++</span>
+         fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Received a message:"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>d<span class="token punctuation">.</span>Body<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"第："</span><span class="token punctuation">,</span> num<span class="token punctuation">)</span>
+         <span class="token comment">//数据库插入订单</span>
+         <span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">=</span> orderService<span class="token punctuation">.</span><span class="token function">InsertOrderByMessage</span><span class="token punctuation">(</span>message<span class="token punctuation">)</span>
+         <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+            fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+         <span class="token punctuation">&#125;</span>
+
+         <span class="token comment">//</span>
+         err <span class="token operator">=</span> productService<span class="token punctuation">.</span><span class="token function">SubNumberOne</span><span class="token punctuation">(</span>message<span class="token punctuation">.</span>ProductID<span class="token punctuation">)</span>
+         <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+            fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+         <span class="token punctuation">&#125;</span>
+         <span class="token comment">//如果为true 表示确认所有未确认的消息</span>
+         <span class="token comment">//为false 表示确认当前消息</span>
+         d<span class="token punctuation">.</span><span class="token function">Ack</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span> <span class="token comment">//手动确认消息 正确才下一个 保障数据不丢失</span>
+      <span class="token punctuation">&#125;</span>
+   <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+   log<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"[*] Waiting for message,To exit press CTRL+C"</span><span class="token punctuation">)</span>
+   <span class="token comment">//forever里面没有元素，使用这种方法让协程保持阻塞 这样主程序不会死掉</span>
+   <span class="token operator">&lt;-</span>forever
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h4 id="代码中的重点"><a href="#代码中的重点" class="headerlink" title="代码中的重点"></a>代码中的重点</h4><ol>
+<li>Redis端</li>
+</ol>
+<p>数量判断必须与该数量减少原子语句操作在同一语句，否则高并发下仍然会发生超卖现象</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">if</span> val<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> redis<span class="token punctuation">.</span><span class="token function">Int</span><span class="token punctuation">(</span>rConn<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span><span class="token string">"DECR"</span><span class="token punctuation">,</span> <span class="token string">"Count"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> val <span class="token operator">>=</span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+
+<span class="token punctuation">&#125;</span><span class="token keyword">else</span><span class="token punctuation">&#123;</span>
+
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ol start="2">
+<li>MySQL端</li>
+</ol>
+<p>为避免高并发下超卖，更新操作在SQL中使用数量减少的原子语句</p>
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">sql</span> :<span class="token operator">=</span> <span class="token string">"update "</span> <span class="token operator">+</span> p<span class="token punctuation">.</span><span class="token keyword">table</span> <span class="token operator">+</span> <span class="token string">" set "</span> <span class="token operator">+</span> <span class="token string">" productNum=productNum-1 where ID="</span> <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
 
       
     </div>
@@ -775,13 +1063,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">40k</span>
+    <span title="站点总字数">45k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">37 分钟</span>
+    <span title="站点阅读时长">41 分钟</span>
 </div>
 
         
