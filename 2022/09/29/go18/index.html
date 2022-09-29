@@ -22,13 +22,15 @@
     var CONFIG = {"hostname":"asonemaster.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta property="og:type" content="article">
+  <meta name="description" content="通过从头开发一个简单的K–V存储数据库，学习Go语言及Redis原理实现本地读写功能（使用map） 使用结构体，实现myRedis类   注意 map 中值为 any 等同于 interface{} 本人使用go 1.18  any 为 interface{}  的自定义类型名称 使用 any 就可以存储任意类型  type myRedis struct &amp;#123; 	mymap map[str">
+<meta property="og:type" content="article">
 <meta property="og:title" content="通过Go+Map写k-v数据库（SET-GET简单实现篇）">
 <meta property="og:url" content="https://asonemaster.github.io/2022/09/29/go18/index.html">
 <meta property="og:site_name" content="迅的个人博客">
+<meta property="og:description" content="通过从头开发一个简单的K–V存储数据库，学习Go语言及Redis原理实现本地读写功能（使用map） 使用结构体，实现myRedis类   注意 map 中值为 any 等同于 interface{} 本人使用go 1.18  any 为 interface{}  的自定义类型名称 使用 any 就可以存储任意类型  type myRedis struct &amp;#123; 	mymap map[str">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-09-29T06:28:05.516Z">
-<meta property="article:modified_time" content="2022-09-29T06:30:33.718Z">
+<meta property="article:modified_time" content="2022-09-29T06:52:54.695Z">
 <meta property="article:author" content="asOneMaster">
 <meta property="article:tag" content="map">
 <meta name="twitter:card" content="summary">
@@ -213,7 +215,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-09-29 14:28:05 / 修改时间：14:30:33" itemprop="dateCreated datePublished" datetime="2022-09-29T14:28:05+08:00">2022-09-29</time>
+              <time title="创建时间：2022-09-29 14:28:05 / 修改时间：14:52:54" itemprop="dateCreated datePublished" datetime="2022-09-29T14:28:05+08:00">2022-09-29</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -238,14 +240,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>0</span>
+              <span>2.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -257,7 +259,133 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <h3 id="通过从头开发一个简单的K–V存储数据库，学习Go语言及Redis原理"><a href="#通过从头开发一个简单的K–V存储数据库，学习Go语言及Redis原理" class="headerlink" title="通过从头开发一个简单的K–V存储数据库，学习Go语言及Redis原理"></a>通过从头开发一个简单的K–V存储数据库，学习Go语言及Redis原理</h3><h4 id="实现本地读写功能（使用map）"><a href="#实现本地读写功能（使用map）" class="headerlink" title="实现本地读写功能（使用map）"></a>实现本地读写功能（使用map）</h4><ol>
+<li>使用结构体，实现myRedis类</li>
+</ol>
+<blockquote>
+<p>注意 map 中值为 any 等同于 interface{} 本人使用<code>go 1.18</code>  any 为 interface{}  的自定义类型名称</p>
+<p>使用 any 就可以存储任意类型</p>
+</blockquote>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> myRedis <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+	mymap <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span>any
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">newRedis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>myRedis <span class="token punctuation">&#123;</span>
+	<span class="token keyword">return</span> <span class="token operator">&amp;</span>myRedis<span class="token punctuation">&#123;</span>mymap<span class="token punctuation">:</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span>any<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span id="more"></span>
+
+<ol start="2">
+<li>实现SET-GET功能</li>
+</ol>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">unc <span class="token punctuation">(</span>r <span class="token operator">*</span>myRedis<span class="token punctuation">)</span> <span class="token function">Set</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">,</span> value any<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> key <span class="token operator">!=</span> <span class="token string">""</span> <span class="token operator">&amp;&amp;</span> value <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		r<span class="token punctuation">.</span>mymap<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> value
+		<span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">,</span> errors<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token string">"空值"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>myRedis<span class="token punctuation">)</span> <span class="token function">Get</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>any<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> v<span class="token punctuation">,</span> ok <span class="token operator">:=</span> r<span class="token punctuation">.</span>mymap<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span> ok <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> v<span class="token punctuation">,</span> <span class="token boolean">nil</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> errors<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token string">"无该元素"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h4 id="测试myRedis"><a href="#测试myRedis" class="headerlink" title="测试myRedis"></a>测试myRedis</h4><ol>
+<li>单元测试</li>
+</ol>
+<blockquote>
+<p>创建文件名为  <code>myMap_test.go</code>  即在原<code>myMap</code>后加上<code>_test</code>即可</p>
+<p>函数名称改为Test【XXX】</p>
+</blockquote>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">import</span> <span class="token string">"testing"</span>
+
+<span class="token comment">//样例测试</span>
+<span class="token comment">//go test -v 样例测试命令</span>
+<span class="token keyword">func</span> <span class="token function">TestMyRedis_Set</span><span class="token punctuation">(</span>t <span class="token operator">*</span>testing<span class="token punctuation">.</span>T<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	redis <span class="token operator">:=</span> <span class="token function">newRedis</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> i<span class="token punctuation">,</span> e <span class="token operator">:=</span> redis<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token string">"success"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> i <span class="token operator">!=</span> <span class="token number">1</span> <span class="token operator">||</span> e <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span> <span class="token comment">//try a unit test on function</span>
+		t<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token string">"Set函数测试没通过"</span><span class="token punctuation">)</span> <span class="token comment">// 如果不是如预期的那么就报错</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+		t<span class="token punctuation">.</span><span class="token function">Log</span><span class="token punctuation">(</span><span class="token string">"Set测试通过了"</span><span class="token punctuation">)</span> <span class="token comment">//记录一些你期望记录的信息</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">TestMyRedis_Get</span><span class="token punctuation">(</span>t <span class="token operator">*</span>testing<span class="token punctuation">.</span>T<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	redis <span class="token operator">:=</span> <span class="token function">newRedis</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	redis<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> v<span class="token punctuation">,</span> e <span class="token operator">:=</span> redis<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> e <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span> <span class="token comment">//try a unit test on function</span>
+		t<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token string">"Get函数测试没通过"</span><span class="token punctuation">)</span> <span class="token comment">// 如果不是如预期的那么就报错</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+		t<span class="token punctuation">.</span><span class="token function">Log</span><span class="token punctuation">(</span><span class="token string">"Get测试通过了"</span><span class="token punctuation">)</span> <span class="token comment">//记录一些你期望记录的信息</span>
+		t<span class="token punctuation">.</span><span class="token function">Log</span><span class="token punctuation">(</span><span class="token string">"值为:"</span><span class="token punctuation">,</span> v<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>运行测试文件，输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x3D;&#x3D;&#x3D; RUN   TestMyRedis_Set
+    mymap_test.go:12: Set测试通过了
+--- PASS: TestMyRedis_Set (0.00s)
+&#x3D;&#x3D;&#x3D; RUN   TestMyRedis_Get
+    mymap_test.go:21: Get测试通过了
+    mymap_test.go:22: 值为: 1
+--- PASS: TestMyRedis_Get (0.00s)
+PASS<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ol start="2">
+<li>压力测试</li>
+</ol>
+<blockquote>
+<p>函数名称改为Benchmark【XXX】</p>
+</blockquote>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">BenchmarkMyRedis_Set</span><span class="token punctuation">(</span>b <span class="token operator">*</span>testing<span class="token punctuation">.</span>B<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	redis <span class="token operator">:=</span> <span class="token function">newRedis</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> b<span class="token punctuation">.</span>N<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span> <span class="token comment">//use b.N for looping</span>
+		redis<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token string">"success"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">BenchmarkMyRedis_Set2</span><span class="token punctuation">(</span>b <span class="token operator">*</span>testing<span class="token punctuation">.</span>B<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	b<span class="token punctuation">.</span><span class="token function">StopTimer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//调用该函数停止压力测试的时间计数</span>
+
+	<span class="token comment">//做一些初始化的工作,例如读取文件数据,数据库连接之类的,</span>
+	<span class="token comment">//这样这些时间不影响我们测试函数本身的性能</span>
+	redis <span class="token operator">:=</span> <span class="token function">newRedis</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	b<span class="token punctuation">.</span><span class="token function">StartTimer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//重新开始时间</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> b<span class="token punctuation">.</span>N<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		redis<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token string">"success"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">BenchmarkMyRedis_Get</span><span class="token punctuation">(</span>b <span class="token operator">*</span>testing<span class="token punctuation">.</span>B<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	b<span class="token punctuation">.</span><span class="token function">StopTimer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//调用该函数停止压力测试的时间计数</span>
+	<span class="token comment">//做一些初始化的工作,例如读取文件数据,数据库连接之类的,</span>
+	<span class="token comment">//这样这些时间不影响我们测试函数本身的性能</span>
+	redis <span class="token operator">:=</span> <span class="token function">newRedis</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	redis<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token string">"success"</span><span class="token punctuation">)</span>
+	b<span class="token punctuation">.</span><span class="token function">StartTimer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//重新开始时间</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> b<span class="token punctuation">.</span>N<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		redis<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>运行测试文件，输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">goos: windows
+goarch: amd64
+pkg: 7days_test&#x2F;key-value
+cpu: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz
+BenchmarkMyRedis_Set
+BenchmarkMyRedis_Set-12         130041237                8.598 ns&#x2F;op
+BenchmarkMyRedis_Set2
+BenchmarkMyRedis_Set2-12        138570001                8.876 ns&#x2F;op
+BenchmarkMyRedis_Get
+BenchmarkMyRedis_Get-12         327336081                3.726 ns&#x2F;op
+PASS<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>327336081为运行次数       3.726 ns/op为运行速度</p>
+<p>以上说明GET读性能远大于写性能</p>
+<p><strong>未完待续~</strong></p>
+
     </div>
     <div>
         
@@ -384,6 +512,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E4%BB%8E%E5%A4%B4%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84K%E2%80%93V%E5%AD%98%E5%82%A8%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%8C%E5%AD%A6%E4%B9%A0Go%E8%AF%AD%E8%A8%80%E5%8F%8ARedis%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">通过从头开发一个简单的K–V存储数据库，学习Go语言及Redis原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%9C%AC%E5%9C%B0%E8%AF%BB%E5%86%99%E5%8A%9F%E8%83%BD%EF%BC%88%E4%BD%BF%E7%94%A8map%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">实现本地读写功能（使用map）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95myRedis"><span class="nav-number">1.2.</span> <span class="nav-text">测试myRedis</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -462,13 +591,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">45k</span>
+    <span title="站点总字数">48k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">41 分钟</span>
+    <span title="站点阅读时长">43 分钟</span>
 </div>
 
         

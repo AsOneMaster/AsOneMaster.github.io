@@ -3167,7 +3167,133 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
   <entry>
     <title>通过Go+Map写k-v数据库（SET-GET简单实现篇）</title>
     <url>/2022/09/29/go18/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h3 id="通过从头开发一个简单的K–V存储数据库，学习Go语言及Redis原理"><a href="#通过从头开发一个简单的K–V存储数据库，学习Go语言及Redis原理" class="headerlink" title="通过从头开发一个简单的K–V存储数据库，学习Go语言及Redis原理"></a>通过从头开发一个简单的K–V存储数据库，学习Go语言及Redis原理</h3><h4 id="实现本地读写功能（使用map）"><a href="#实现本地读写功能（使用map）" class="headerlink" title="实现本地读写功能（使用map）"></a>实现本地读写功能（使用map）</h4><ol>
+<li>使用结构体，实现myRedis类</li>
+</ol>
+<blockquote>
+<p>注意 map 中值为 any 等同于 interface{} 本人使用<code>go 1.18</code>  any 为 interface{}  的自定义类型名称</p>
+<p>使用 any 就可以存储任意类型</p>
+</blockquote>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> myRedis <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+	mymap <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span>any
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">newRedis</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>myRedis <span class="token punctuation">&#123;</span>
+	<span class="token keyword">return</span> <span class="token operator">&amp;</span>myRedis<span class="token punctuation">&#123;</span>mymap<span class="token punctuation">:</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span>any<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span id="more"></span>
+
+<ol start="2">
+<li>实现SET-GET功能</li>
+</ol>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go">unc <span class="token punctuation">(</span>r <span class="token operator">*</span>myRedis<span class="token punctuation">)</span> <span class="token function">Set</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">,</span> value any<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> key <span class="token operator">!=</span> <span class="token string">""</span> <span class="token operator">&amp;&amp;</span> value <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		r<span class="token punctuation">.</span>mymap<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> value
+		<span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">,</span> errors<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token string">"空值"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>myRedis<span class="token punctuation">)</span> <span class="token function">Get</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>any<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> v<span class="token punctuation">,</span> ok <span class="token operator">:=</span> r<span class="token punctuation">.</span>mymap<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span> ok <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> v<span class="token punctuation">,</span> <span class="token boolean">nil</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> errors<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token string">"无该元素"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h4 id="测试myRedis"><a href="#测试myRedis" class="headerlink" title="测试myRedis"></a>测试myRedis</h4><ol>
+<li>单元测试</li>
+</ol>
+<blockquote>
+<p>创建文件名为  <code>myMap_test.go</code>  即在原<code>myMap</code>后加上<code>_test</code>即可</p>
+<p>函数名称改为Test【XXX】</p>
+</blockquote>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">import</span> <span class="token string">"testing"</span>
+
+<span class="token comment">//样例测试</span>
+<span class="token comment">//go test -v 样例测试命令</span>
+<span class="token keyword">func</span> <span class="token function">TestMyRedis_Set</span><span class="token punctuation">(</span>t <span class="token operator">*</span>testing<span class="token punctuation">.</span>T<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	redis <span class="token operator">:=</span> <span class="token function">newRedis</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> i<span class="token punctuation">,</span> e <span class="token operator">:=</span> redis<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token string">"success"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> i <span class="token operator">!=</span> <span class="token number">1</span> <span class="token operator">||</span> e <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span> <span class="token comment">//try a unit test on function</span>
+		t<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token string">"Set函数测试没通过"</span><span class="token punctuation">)</span> <span class="token comment">// 如果不是如预期的那么就报错</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+		t<span class="token punctuation">.</span><span class="token function">Log</span><span class="token punctuation">(</span><span class="token string">"Set测试通过了"</span><span class="token punctuation">)</span> <span class="token comment">//记录一些你期望记录的信息</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">TestMyRedis_Get</span><span class="token punctuation">(</span>t <span class="token operator">*</span>testing<span class="token punctuation">.</span>T<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	redis <span class="token operator">:=</span> <span class="token function">newRedis</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	redis<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> v<span class="token punctuation">,</span> e <span class="token operator">:=</span> redis<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> e <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span> <span class="token comment">//try a unit test on function</span>
+		t<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token string">"Get函数测试没通过"</span><span class="token punctuation">)</span> <span class="token comment">// 如果不是如预期的那么就报错</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+		t<span class="token punctuation">.</span><span class="token function">Log</span><span class="token punctuation">(</span><span class="token string">"Get测试通过了"</span><span class="token punctuation">)</span> <span class="token comment">//记录一些你期望记录的信息</span>
+		t<span class="token punctuation">.</span><span class="token function">Log</span><span class="token punctuation">(</span><span class="token string">"值为:"</span><span class="token punctuation">,</span> v<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>运行测试文件，输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x3D;&#x3D;&#x3D; RUN   TestMyRedis_Set
+    mymap_test.go:12: Set测试通过了
+--- PASS: TestMyRedis_Set (0.00s)
+&#x3D;&#x3D;&#x3D; RUN   TestMyRedis_Get
+    mymap_test.go:21: Get测试通过了
+    mymap_test.go:22: 值为: 1
+--- PASS: TestMyRedis_Get (0.00s)
+PASS<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ol start="2">
+<li>压力测试</li>
+</ol>
+<blockquote>
+<p>函数名称改为Benchmark【XXX】</p>
+</blockquote>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">BenchmarkMyRedis_Set</span><span class="token punctuation">(</span>b <span class="token operator">*</span>testing<span class="token punctuation">.</span>B<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	redis <span class="token operator">:=</span> <span class="token function">newRedis</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> b<span class="token punctuation">.</span>N<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span> <span class="token comment">//use b.N for looping</span>
+		redis<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token string">"success"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">BenchmarkMyRedis_Set2</span><span class="token punctuation">(</span>b <span class="token operator">*</span>testing<span class="token punctuation">.</span>B<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	b<span class="token punctuation">.</span><span class="token function">StopTimer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//调用该函数停止压力测试的时间计数</span>
+
+	<span class="token comment">//做一些初始化的工作,例如读取文件数据,数据库连接之类的,</span>
+	<span class="token comment">//这样这些时间不影响我们测试函数本身的性能</span>
+	redis <span class="token operator">:=</span> <span class="token function">newRedis</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	b<span class="token punctuation">.</span><span class="token function">StartTimer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//重新开始时间</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> b<span class="token punctuation">.</span>N<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		redis<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token string">"success"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">BenchmarkMyRedis_Get</span><span class="token punctuation">(</span>b <span class="token operator">*</span>testing<span class="token punctuation">.</span>B<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	b<span class="token punctuation">.</span><span class="token function">StopTimer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//调用该函数停止压力测试的时间计数</span>
+	<span class="token comment">//做一些初始化的工作,例如读取文件数据,数据库连接之类的,</span>
+	<span class="token comment">//这样这些时间不影响我们测试函数本身的性能</span>
+	redis <span class="token operator">:=</span> <span class="token function">newRedis</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	redis<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token string">"success"</span><span class="token punctuation">)</span>
+	b<span class="token punctuation">.</span><span class="token function">StartTimer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//重新开始时间</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> b<span class="token punctuation">.</span>N<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		redis<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>运行测试文件，输出：</p>
+<pre class="line-numbers language-none"><code class="language-none">goos: windows
+goarch: amd64
+pkg: 7days_test&#x2F;key-value
+cpu: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz
+BenchmarkMyRedis_Set
+BenchmarkMyRedis_Set-12         130041237                8.598 ns&#x2F;op
+BenchmarkMyRedis_Set2
+BenchmarkMyRedis_Set2-12        138570001                8.876 ns&#x2F;op
+BenchmarkMyRedis_Get
+BenchmarkMyRedis_Get-12         327336081                3.726 ns&#x2F;op
+PASS<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>327336081为运行次数       3.726 ns/op为运行速度</p>
+<p>以上说明GET读性能远大于写性能</p>
+<p><strong>未完待续~</strong></p>
+]]></content>
       <categories>
         <category>go语言</category>
       </categories>
