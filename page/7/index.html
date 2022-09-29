@@ -22,33 +22,28 @@
     var CONFIG = {"hostname":"asonemaster.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Select的作用select主要用于实现多路监听、实现超时处理  select case后面必须是一个IO操作 一般情况下不用写default  select是Go中的一个控制结构，类似于switch语句，用于处理异步I0操作">
-<meta property="og:type" content="article">
-<meta property="og:title" content="go基础8-Select相关">
-<meta property="og:url" content="https://asonemaster.github.io/2022/09/13/go12/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="迅的个人博客">
+<meta property="og:url" content="https://asonemaster.github.io/page/7/index.html">
 <meta property="og:site_name" content="迅的个人博客">
-<meta property="og:description" content="Select的作用select主要用于实现多路监听、实现超时处理  select case后面必须是一个IO操作 一般情况下不用写default  select是Go中的一个控制结构，类似于switch语句，用于处理异步I0操作">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-09-13T11:12:49.137Z">
-<meta property="article:modified_time" content="2022-09-13T11:19:28.470Z">
 <meta property="article:author" content="asOneMaster">
-<meta property="article:tag" content="channel">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://asonemaster.github.io/2022/09/13/go12/">
+<link rel="canonical" href="https://asonemaster.github.io/page/7/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : false,
-    isPost : true,
+    isHome : true,
+    isPost : false,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>go基础8-Select相关 | 迅的个人博客</title>
+  <title>迅的个人博客</title>
   
 
 
@@ -184,14 +179,13 @@
         <div class="content-wrap">
           
 
-          <div class="content post posts-expand">
+          <div class="content index posts-expand">
             
-
-    
+      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/09/13/go12/">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/17/golangStudy/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/me.jpg">
@@ -203,9 +197,10 @@
       <meta itemprop="name" content="迅的个人博客">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          go基础8-Select相关
-        </h1>
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/08/17/golangStudy/" class="post-title-link" itemprop="url">golang学习路线，所需知识</a>
+        </h2>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -213,10 +208,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-09-13 19:12:49 / 修改时间：19:19:28" itemprop="dateCreated datePublished" datetime="2022-09-13T19:12:49+08:00">2022-09-13</time>
+              <time title="创建时间：2022-08-17 09:50:07" itemprop="dateCreated datePublished" datetime="2022-08-17T09:50:07+08:00">2022-08-17</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-18 14:37:47" itemprop="dateModified" datetime="2022-08-18T14:37:47+08:00">2022-08-18</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -228,19 +229,12 @@
             </span>
 
           
-            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span id="busuanzi_value_page_pv"></span>
-            </span>
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>345</span>
+              <span>1.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -259,110 +253,53 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="Select的作用"><a href="#Select的作用" class="headerlink" title="Select的作用"></a>Select的作用</h3><p><strong>select主要用于实现多路监听、实现超时处理</strong></p>
-<ul>
-<li>select case后面必须是一个IO操作</li>
-<li>一般情况下不用写default</li>
-</ul>
-<p><strong>select是Go中的一个控制结构，类似于switch语句，用于处理异步I0操作</strong></p>
-<span id="more"></span>
-
-<ul>
-<li><p>如果有多个case都可以运行，select会随机选出一个执行,其他不会执行。</p>
+          <h2 id="计算机基础"><a href="#计算机基础" class="headerlink" title="计算机基础"></a>计算机基础</h2><h3 id="1-操作系统"><a href="#1-操作系统" class="headerlink" title="1. 操作系统"></a>1. 操作系统</h3><ul>
+<li><h5 id="了解进程、线程、协程的区别"><a href="#了解进程、线程、协程的区别" class="headerlink" title="了解进程、线程、协程的区别"></a>了解进程、线程、协程的区别</h5></li>
+<li><h5 id="了解进程间常用的通信方式"><a href="#了解进程间常用的通信方式" class="headerlink" title="了解进程间常用的通信方式"></a>了解进程间常用的通信方式</h5><ol>
+<li>管道</li>
+<li>命名管道（FIFO）</li>
+<li>消息队列</li>
+<li>信号量</li>
+<li>共享内存</li>
+<li>套接字（Socket）</li>
+</ol>
 </li>
-<li><p>如果没有可运行的case语句，且有default语句， 那么就会执行default的动作。</p>
-</li>
-<li><p>如果没有可运行的case语句，且没有default语句， select将阻塞，直到某个case通信可以运</p>
-</li>
-</ul>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">select</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">case</span> IO操作<span class="token number">1</span><span class="token punctuation">:</span>
-		I0操作<span class="token number">1</span>读取或写入成功就执行
-	<span class="token keyword">case</span> IO操作<span class="token number">2</span><span class="token punctuation">:</span>
-		IO操作<span class="token number">2</span>读取或写入成功就执行
-	<span class="token keyword">default</span><span class="token punctuation">:</span>
-		如果上面<span class="token keyword">case</span>都没有成功，则进入<span class="token keyword">default</span>处理流程
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
+<li><h5 id="了解5种网络IO模型"><a href="#了解5种网络IO模型" class="headerlink" title="了解5种网络IO模型"></a>了解5种网络IO模型</h5><ol>
+<li>阻塞 IO（blocking IO）</li>
+<li>非阻塞 IO（non-blocking IO）</li>
+<li>多路复用 IO（IO multiplexing）</li>
+<li>异步 IO（Asynchronous I/O）</li>
+<li>信号驱动 IO（signal driven I/O， SIGIO）</li>
+</ol></li></ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/17/golangStudy/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
     <div>
         
-           <div>
-    
-        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
-    
-</div>
-
-        
     </div>
     
     
     
-        <div class="reward-container">
-  <div>打赏一瓶矿泉水</div>
-  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
-    打赏
-  </button>
-  <div id="qr" style="display: none;">
-      
-      <div style="display: inline-block;">
-        <img src="/images/weChatPay.jpg" alt="asOneMaster 微信支付">
-        <p>微信支付</p>
-      </div>
-      
-      <div style="display: inline-block;">
-        <img src="/images/aliPay.jpg" alt="asOneMaster 支付宝">
-        <p>支付宝</p>
-      </div>
-
-  </div>
-</div>
-
-        
-
-<div>
-<ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>asOneMaster
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="https://asonemaster.github.io/2022/09/13/go12/" title="go基础8-Select相关">https://asonemaster.github.io/2022/09/13/go12/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-
-	
       <footer class="post-footer">
-          
-          <div class="post-tags">
-              <a href="/tags/channel/" rel="tag"><i class="fa fa-tag"></i> channel</a>
-          </div>
-
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2022/09/08/go11/" rel="prev" title="控制gorutine顺序输出（生产者——消费者）">
-      <i class="fa fa-chevron-left"></i> 控制gorutine顺序输出（生产者——消费者）
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/09/13/go13/" rel="next" title="控制gorutine并发数量">
-      控制gorutine并发数量 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
+        <div class="post-eof"></div>
       </footer>
-    
   </article>
   
   
   
+
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span>
+  </nav>
 
 
 
@@ -414,7 +351,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Select%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Select的作用</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

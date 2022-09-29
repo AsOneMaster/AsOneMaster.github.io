@@ -2595,7 +2595,7 @@ Usage of go-wrk:
     <title>Go+Redis缓存控制商品数量防止超卖《基础实现版》</title>
     <url>/2022/09/18/redis2/</url>
     <content><![CDATA[<h3 id="首先了解使用Redis的思路"><a href="#首先了解使用Redis的思路" class="headerlink" title="首先了解使用Redis的思路"></a>首先了解使用Redis的思路</h3><ol>
-<li>使用在秒杀商品页面，使用Redis缓存数据库中当前商品数量</li>
+<li>在秒杀商品页面，使用Redis缓存数据库中当前商品数量</li>
 <li>运用Redis的<code>DECR</code>原子语句，减少存储value的值</li>
 <li>在value&gt;=0时，使用MQ消息队列异步处理下单，数据库库存减少操作</li>
 <li>value&lt;0后返回False，不执行下单操作，缓解数据库压力</li>
@@ -3162,6 +3162,17 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
       </categories>
       <tags>
         <tag>高并发</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>通过Go+Map写k-v数据库（SET-GET简单实现篇）</title>
+    <url>/2022/09/29/go18/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>map</tag>
       </tags>
   </entry>
 </search>
