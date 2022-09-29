@@ -30,7 +30,7 @@
 <meta property="og:description" content="更复杂的场景如何做并发控制呢？比如子协程中开启了新的子协程，或者需要同时控制多个子协程。这种场景下，select+chan的方式就显得力不从心了。Go 语言提供了 Context 标准库可以解决这类场景的问题，Context 的作用和它的名字很像，上下文，即子协程的下上文。Context 有两个主要的功能：  通知子协程退出（正常退出，超时退出等）； 传递必要的参数。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-09-14T03:13:19.251Z">
-<meta property="article:modified_time" content="2022-09-14T06:41:05.116Z">
+<meta property="article:modified_time" content="2022-09-14T12:44:49.636Z">
 <meta property="article:author" content="asOneMaster">
 <meta property="article:tag" content="并发">
 <meta property="article:tag" content="context">
@@ -216,7 +216,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-09-14 11:13:19 / 修改时间：14:41:05" itemprop="dateCreated datePublished" datetime="2022-09-14T11:13:19+08:00">2022-09-14</time>
+              <time title="创建时间：2022-09-14 11:13:19 / 修改时间：20:44:49" itemprop="dateCreated datePublished" datetime="2022-09-14T11:13:19+08:00">2022-09-14</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -236,6 +236,20 @@
               <span class="post-meta-item-text">阅读次数：</span>
               <span id="busuanzi_value_page_pv"></span>
             </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/09/14/go14/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/09/14/go14/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
@@ -601,6 +615,7 @@ stop work3 退出错误显示： context deadline exceeded
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -809,6 +824,35 @@ stop work3 退出错误显示： context deadline exceeded
   
 
   
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'nlUtPfYKNszozZNNB3Q3FM2Y-gzGzoHsz',
+      appKey     : 'UdkKLluFUFxT0FcnWBQJm4gy',
+      placeholder: "期待与您交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
 
 </body>
 </html>

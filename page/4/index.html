@@ -223,6 +223,8 @@
             </span>
 
           
+  
+  
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
@@ -333,6 +335,8 @@
             </span>
 
           
+  
+  
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
@@ -452,6 +456,8 @@ UDP接收方收到报文后，不需要给出任何确认
             </span>
 
           
+  
+  
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
@@ -562,6 +568,8 @@ UDP接收方收到报文后，不需要给出任何确认
             </span>
 
           
+  
+  
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
@@ -675,6 +683,8 @@ UDP接收方收到报文后，不需要给出任何确认
             </span>
 
           
+  
+  
             <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
@@ -953,6 +963,35 @@ UDP接收方收到报文后，不需要给出任何确认
   
 
   
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'nlUtPfYKNszozZNNB3Q3FM2Y-gzGzoHsz',
+      appKey     : 'UdkKLluFUFxT0FcnWBQJm4gy',
+      placeholder: "期待与您交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
 
 </body>
 </html>
