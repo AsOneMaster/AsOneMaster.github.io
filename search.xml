@@ -1123,7 +1123,7 @@ fmt<span class="token punctuation">.</span><span class="token function">Println<
   <entry>
     <title>通过Go+Map写k-v数据库（SET-GET简单实现函数版）</title>
     <url>/2022/09/29/go18/</url>
-    <content><![CDATA[<h3 id="通过实现一个简单的K–V存储数据库，学习Go语言及Redis原理（一）"><a href="#通过实现一个简单的K–V存储数据库，学习Go语言及Redis原理（一）" class="headerlink" title="通过实现一个简单的K–V存储数据库，学习Go语言及Redis原理（一）"></a>通过实现一个简单的K–V存储数据库，学习Go语言及Redis原理（一）</h3><h4 id="实现本地读写功能（使用map）"><a href="#实现本地读写功能（使用map）" class="headerlink" title="实现本地读写功能（使用map）"></a>实现本地读写功能（使用map）</h4><ol>
+    <content><![CDATA[<h3 id="通过实现一个简单的K–V存储数据库，学习Go语言（一）"><a href="#通过实现一个简单的K–V存储数据库，学习Go语言（一）" class="headerlink" title="通过实现一个简单的K–V存储数据库，学习Go语言（一）"></a>通过实现一个简单的K–V存储数据库，学习Go语言（一）</h3><h4 id="实现本地读写功能（使用map）"><a href="#实现本地读写功能（使用map）" class="headerlink" title="实现本地读写功能（使用map）"></a>实现本地读写功能（使用map）</h4><ol>
 <li>使用结构体，实现myRedis类</li>
 </ol>
 <blockquote>
@@ -3304,7 +3304,7 @@ https://zh.wikipedia.org/wiki/HTTP/3
   <entry>
     <title>通过Go+Map写k-v数据库（SET-GET简单实现命令行版）</title>
     <url>/2022/09/30/go19/</url>
-    <content><![CDATA[<h3 id="通过实现一个简单的K–V存储数据库，学习Go语言及Redis原理（一）"><a href="#通过实现一个简单的K–V存储数据库，学习Go语言及Redis原理（一）" class="headerlink" title="通过实现一个简单的K–V存储数据库，学习Go语言及Redis原理（一）"></a>通过实现一个简单的K–V存储数据库，学习Go语言及Redis原理（一）</h3><h4 id="实现本地增删改查功能（使用map）"><a href="#实现本地增删改查功能（使用map）" class="headerlink" title="实现本地增删改查功能（使用map）"></a>实现本地增删改查功能（使用map）</h4><p>命令为 <code>SET</code> <code>DELETE</code> <code>UPDATE</code> <code>GET</code> <code>SHOW</code> </p>
+    <content><![CDATA[<h3 id="通过实现一个简单的K–V存储数据库，学习Go语言（二）"><a href="#通过实现一个简单的K–V存储数据库，学习Go语言（二）" class="headerlink" title="通过实现一个简单的K–V存储数据库，学习Go语言（二）"></a>通过实现一个简单的K–V存储数据库，学习Go语言（二）</h3><h4 id="实现本地增删改查功能（使用map）"><a href="#实现本地增删改查功能（使用map）" class="headerlink" title="实现本地增删改查功能（使用map）"></a>实现本地增删改查功能（使用map）</h4><p>命令为 <code>SET</code> <code>DELETE</code> <code>UPDATE</code> <code>GET</code> <code>SHOW</code> </p>
 <ol>
 <li>添加新元素</li>
 <li>基于key删除已有的元素</li>
@@ -3401,7 +3401,22 @@ SHOW
 test:111
 test1:2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p><strong>下一步使用 HTTP/TCP 访问</strong></p>
+<p><strong>下一步将 key-value 进行持久化存储和实现TCP/IP接口访问</strong></p>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>map</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>通过Go+Map写k-v数据库（SET-GET简单实现网络服务版）</title>
+    <url>/2022/09/30/go20/</url>
+    <content><![CDATA[<h3 id="通过实现一个简单的K–V存储数据库，学习Go语言（三）"><a href="#通过实现一个简单的K–V存储数据库，学习Go语言（三）" class="headerlink" title="通过实现一个简单的K–V存储数据库，学习Go语言（三）"></a>通过实现一个简单的K–V存储数据库，学习Go语言（三）</h3><blockquote>
+<p>作为数据库我们需要将键值存储的数据保存在磁盘上，以及如何在下一次启动应用程序时将其加载到内存。</p>
+</blockquote>
+<p>待补充~</p>
 ]]></content>
       <categories>
         <category>go语言</category>
