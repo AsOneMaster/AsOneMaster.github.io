@@ -3411,12 +3411,454 @@ test1:2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></s
       </tags>
   </entry>
   <entry>
-    <title>通过Go+Map写k-v数据库（SET-GET简单实现网络服务版）</title>
+    <title>通过Go+Map写k-v数据库（SET-GET简单实现磁盘存储版）</title>
     <url>/2022/09/30/go20/</url>
     <content><![CDATA[<h3 id="通过实现一个简单的K–V存储数据库，学习Go语言（三）"><a href="#通过实现一个简单的K–V存储数据库，学习Go语言（三）" class="headerlink" title="通过实现一个简单的K–V存储数据库，学习Go语言（三）"></a>通过实现一个简单的K–V存储数据库，学习Go语言（三）</h3><blockquote>
 <p>作为数据库我们需要将键值存储的数据保存在磁盘上，以及如何在下一次启动应用程序时将其加载到内存。</p>
+<p>我们准备创建两个新函数，<code>save()</code>保存数据到磁盘，<code>load()</code>从磁盘加载数据。</p>
+<p>将数据转换为字节流的过程称为序列化。读取数据文件并将其转换为对象的过程称为反序列化。</p>
+<p>encoding/gob<code>标准</code>Go包将用于程序中。它将有助于序列化和反序列化过程。</p>
+<p><code>encoding/gob</code>包使用<code>gob</code>格式存储其数据。这种格式的官方名称是流编码。</p>
+<p><code>gob</code>格式的好处是，<code>Go</code>完成了所有的繁琐工作，因此你不必担心编码和解码阶段。</p>
 </blockquote>
-<p>待补充~</p>
+<span id="more"></span>
+
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"bufio"</span>
+	<span class="token string">"encoding/gob"</span>
+	<span class="token string">"fmt"</span>
+	<span class="token string">"os"</span>
+	<span class="token string">"strings"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> DATA <span class="token operator">=</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">var</span> DATAFILE <span class="token operator">=</span> <span class="token string">"dataFile.gob"</span>
+
+<span class="token comment">//myRedis基础功能</span>
+
+<span class="token keyword">func</span> <span class="token function">SET</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">,</span> value <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> ok <span class="token operator">:=</span> DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+		DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> value
+		<span class="token comment">//fmt.Println("set successful!")</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"error: existence of this key!"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">GET</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> ok <span class="token operator">:=</span> DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"error: not found this key!"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%s\n"</span><span class="token punctuation">,</span> DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">DELETE</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> ok <span class="token operator">:=</span> DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"error: not found this key!"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+		<span class="token function">delete</span><span class="token punctuation">(</span>DATA<span class="token punctuation">,</span> key<span class="token punctuation">)</span>
+		<span class="token comment">//fmt.Println("delete successful!")</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">UPDATE</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">,</span> value <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> ok <span class="token operator">:=</span> DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"error: not found this key!"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+		DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> value
+		<span class="token comment">//fmt.Println("update successful!")</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">SHOW</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+
+	<span class="token keyword">for</span> k<span class="token punctuation">,</span> v <span class="token operator">:=</span> <span class="token keyword">range</span> DATA <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%s:%s\n"</span><span class="token punctuation">,</span> k<span class="token punctuation">,</span> v<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">//数据持久化</span>
+
+<span class="token comment">//保存数据在磁盘上</span>
+<span class="token keyword">func</span> <span class="token function">save</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//去除原数据文件，保存为新数据文件</span>
+	err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Remove</span><span class="token punctuation">(</span>DATAFILE<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+	saveFile<span class="token punctuation">,</span> err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Create</span><span class="token punctuation">(</span>DATAFILE<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Cannot create"</span><span class="token punctuation">,</span> DATAFILE<span class="token punctuation">)</span>
+		<span class="token keyword">return</span> err
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">defer</span> saveFile<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token comment">//序列化存储数据到文件</span>
+	encoder <span class="token operator">:=</span> gob<span class="token punctuation">.</span><span class="token function">NewEncoder</span><span class="token punctuation">(</span>saveFile<span class="token punctuation">)</span>
+	<span class="token comment">//转码数据</span>
+	err <span class="token operator">=</span> encoder<span class="token punctuation">.</span><span class="token function">Encode</span><span class="token punctuation">(</span>DATA<span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>DATA<span class="token punctuation">,</span> saveFile<span class="token punctuation">,</span> DATAFILE<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Cannot save to"</span><span class="token punctuation">,</span> DATAFILE<span class="token punctuation">)</span>
+		<span class="token keyword">return</span> err
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">//启动应用时，加载数据</span>
+
+<span class="token keyword">func</span> <span class="token function">load</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+	loadFile<span class="token punctuation">,</span> err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span>DATAFILE<span class="token punctuation">)</span>
+	<span class="token keyword">defer</span> loadFile<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Empty key/value store!"</span><span class="token punctuation">)</span>
+		<span class="token keyword">return</span> err
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token comment">//反序列化读取文件</span>
+	decoder <span class="token operator">:=</span> gob<span class="token punctuation">.</span><span class="token function">NewDecoder</span><span class="token punctuation">(</span>loadFile<span class="token punctuation">)</span>
+	<span class="token comment">//解码数据</span>
+	decoder<span class="token punctuation">.</span><span class="token function">Decode</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>DATA<span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span>
+
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//load File</span>
+	err <span class="token operator">:=</span> <span class="token function">load</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+	cmd <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+	s <span class="token operator">:=</span> bufio<span class="token punctuation">.</span><span class="token function">NewScanner</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdin<span class="token punctuation">)</span>
+	<span class="token keyword">for</span> s<span class="token punctuation">.</span><span class="token function">Scan</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		text <span class="token operator">:=</span> s<span class="token punctuation">.</span><span class="token function">Text</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		cmd <span class="token operator">=</span> strings<span class="token punctuation">.</span><span class="token function">Split</span><span class="token punctuation">(</span>text<span class="token punctuation">,</span> <span class="token string">" "</span><span class="token punctuation">)</span>
+		<span class="token comment">//strings.TrimSpace()</span>
+		<span class="token comment">//strings.Fields()</span>
+		<span class="token keyword">switch</span> cmd<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">case</span> <span class="token string">"SET"</span><span class="token punctuation">:</span>
+			<span class="token function">SET</span><span class="token punctuation">(</span>cmd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> cmd<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+		<span class="token keyword">case</span> <span class="token string">"GET"</span><span class="token punctuation">:</span>
+			<span class="token function">GET</span><span class="token punctuation">(</span>cmd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+		<span class="token keyword">case</span> <span class="token string">"SHOW"</span><span class="token punctuation">:</span>
+			<span class="token function">SHOW</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token keyword">case</span> <span class="token string">"DELETE"</span><span class="token punctuation">:</span>
+			<span class="token function">DELETE</span><span class="token punctuation">(</span>cmd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+		<span class="token keyword">case</span> <span class="token string">"UPDATE"</span><span class="token punctuation">:</span>
+			<span class="token function">UPDATE</span><span class="token punctuation">(</span>cmd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> cmd<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+		<span class="token keyword">case</span> <span class="token string">"STOP"</span><span class="token punctuation">:</span>
+			err <span class="token operator">=</span> <span class="token function">save</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+			<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+				fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+			<span class="token punctuation">&#125;</span>
+		<span class="token keyword">default</span><span class="token punctuation">:</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Unknown command - please try again!"</span><span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token comment">//end to save file</span>
+	err <span class="token operator">=</span> <span class="token function">save</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>map</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>通过Go+Map写k-v数据库（SET-GET简单实现网络服务版）</title>
+    <url>/2022/10/01/go21/</url>
+    <content><![CDATA[<h3 id="通过实现一个简单的K–V存储数据库，学习Go语言（四）"><a href="#通过实现一个简单的K–V存储数据库，学习Go语言（四）" class="headerlink" title="通过实现一个简单的K–V存储数据库，学习Go语言（四）"></a>通过实现一个简单的K–V存储数据库，学习Go语言（四）</h3><blockquote>
+<p>为了能够和网络中的 key-value 存储交互，我们创建自定义的 TCP 协议。</p>
+<p>您将需要为 key-value 存储的每一个函数定义关键字。</p>
+<p>为简单起见，每个关键字都跟着相关数据。大多数命令的结果将是成功或失败消息</p>
+</blockquote>
+<span id="more"></span>
+
+<h4 id="通过TCP连接，实现myRedis客户端与服务端"><a href="#通过TCP连接，实现myRedis客户端与服务端" class="headerlink" title="通过TCP连接，实现myRedis客户端与服务端"></a>通过TCP连接，实现<code>myRedis</code>客户端与服务端</h4><ul>
+<li><strong>服务端</strong></li>
+</ul>
+<blockquote>
+<p>目前存在小BUG，待优化——如多客户端连接问题等</p>
+</blockquote>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"bufio"</span>
+	<span class="token string">"encoding/gob"</span>
+	<span class="token string">"fmt"</span>
+	<span class="token string">"net"</span>
+	<span class="token string">"os"</span>
+	<span class="token string">"strings"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> DATA <span class="token operator">=</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">var</span> DATAFILE <span class="token operator">=</span> <span class="token string">"dataFile.gob"</span>
+
+<span class="token comment">//myRedis基础功能</span>
+<span class="token comment">//启动应用时，加载数据</span>
+<span class="token keyword">func</span> <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	err <span class="token operator">:=</span> <span class="token function">load</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">load</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+	loadFile<span class="token punctuation">,</span> err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span>DATAFILE<span class="token punctuation">)</span>
+	<span class="token keyword">defer</span> loadFile<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Empty key/value store!"</span><span class="token punctuation">)</span>
+		<span class="token keyword">return</span> err
+	<span class="token punctuation">&#125;</span>
+	<span class="token comment">//反序列化读取文件</span>
+	decoder <span class="token operator">:=</span> gob<span class="token punctuation">.</span><span class="token function">NewDecoder</span><span class="token punctuation">(</span>loadFile<span class="token punctuation">)</span>
+	<span class="token comment">//解码数据</span>
+	decoder<span class="token punctuation">.</span><span class="token function">Decode</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>DATA<span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"初始化："</span><span class="token punctuation">,</span> DATA<span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">SET</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">,</span> value <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> ok <span class="token operator">:=</span> DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+		DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> value
+		<span class="token keyword">return</span> <span class="token string">""</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> <span class="token string">"error: existence of this key!"</span>
+
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">GET</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> ok <span class="token operator">:=</span> DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> <span class="token string">"error: not found this key!"</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">DELETE</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> ok <span class="token operator">:=</span> DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> <span class="token string">"error: not found this key!"</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token function">delete</span><span class="token punctuation">(</span>DATA<span class="token punctuation">,</span> key<span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token string">""</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">UPDATE</span><span class="token punctuation">(</span>key <span class="token builtin">string</span><span class="token punctuation">,</span> value <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> <span class="token boolean">_</span><span class="token punctuation">,</span> ok <span class="token operator">:=</span> DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> <span class="token string">"error: not found this key!"</span>
+	<span class="token punctuation">&#125;</span>
+	DATA<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> value
+	<span class="token keyword">return</span> <span class="token string">""</span>
+
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">SHOW</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
+	str <span class="token operator">:=</span> <span class="token string">""</span>
+	<span class="token keyword">for</span> k<span class="token punctuation">,</span> v <span class="token operator">:=</span> <span class="token keyword">range</span> DATA <span class="token punctuation">&#123;</span>
+		str <span class="token operator">+=</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%s:%s "</span><span class="token punctuation">,</span> k<span class="token punctuation">,</span> v<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> str
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">//数据持久化</span>
+
+<span class="token comment">//保存数据在磁盘上</span>
+<span class="token keyword">func</span> <span class="token function">save</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//去除原数据文件，保存为新数据文件</span>
+	err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Remove</span><span class="token punctuation">(</span>DATAFILE<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+	saveFile<span class="token punctuation">,</span> err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Create</span><span class="token punctuation">(</span>DATAFILE<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Cannot create"</span><span class="token punctuation">,</span> DATAFILE<span class="token punctuation">)</span>
+		<span class="token keyword">return</span> err
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">defer</span> saveFile<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token comment">//序列化存储数据到文件</span>
+	encoder <span class="token operator">:=</span> gob<span class="token punctuation">.</span><span class="token function">NewEncoder</span><span class="token punctuation">(</span>saveFile<span class="token punctuation">)</span>
+	<span class="token comment">//转码数据</span>
+	err <span class="token operator">=</span> encoder<span class="token punctuation">.</span><span class="token function">Encode</span><span class="token punctuation">(</span>DATA<span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>DATA<span class="token punctuation">,</span> saveFile<span class="token punctuation">,</span> DATAFILE<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Cannot save to"</span><span class="token punctuation">,</span> DATAFILE<span class="token punctuation">)</span>
+		<span class="token keyword">return</span> err
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">myRedis</span><span class="token punctuation">(</span>text <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">&#123;</span>
+	cmd <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+	cmd <span class="token operator">=</span> strings<span class="token punctuation">.</span><span class="token function">Split</span><span class="token punctuation">(</span>text<span class="token punctuation">,</span> <span class="token string">" "</span><span class="token punctuation">)</span>
+	<span class="token keyword">switch</span> cmd<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">case</span> <span class="token string">"SET"</span><span class="token punctuation">:</span>
+		s <span class="token operator">:=</span> <span class="token function">SET</span><span class="token punctuation">(</span>cmd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> cmd<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> s <span class="token operator">==</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">break</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token keyword">return</span> s
+	<span class="token keyword">case</span> <span class="token string">"GET"</span><span class="token punctuation">:</span>
+		s <span class="token operator">:=</span> <span class="token function">GET</span><span class="token punctuation">(</span>cmd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> s <span class="token operator">==</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">break</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token keyword">return</span> s
+	<span class="token keyword">case</span> <span class="token string">"SHOW"</span><span class="token punctuation">:</span>
+		s <span class="token operator">:=</span> <span class="token function">SHOW</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> s <span class="token operator">==</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">break</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token keyword">return</span> s
+	<span class="token keyword">case</span> <span class="token string">"DELETE"</span><span class="token punctuation">:</span>
+		s <span class="token operator">:=</span> <span class="token function">DELETE</span><span class="token punctuation">(</span>cmd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> s <span class="token operator">==</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">break</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token keyword">return</span> s
+	<span class="token keyword">case</span> <span class="token string">"UPDATE"</span><span class="token punctuation">:</span>
+		s <span class="token operator">:=</span> <span class="token function">UPDATE</span><span class="token punctuation">(</span>cmd<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> cmd<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> s <span class="token operator">==</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">break</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token keyword">return</span> s
+	<span class="token keyword">case</span> <span class="token string">"STOP"</span><span class="token punctuation">:</span>
+		err <span class="token operator">:=</span> <span class="token function">save</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token keyword">default</span><span class="token punctuation">:</span>
+		<span class="token keyword">return</span> <span class="token string">"Unknown command - please try again!"</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> <span class="token string">"sucess"</span>
+
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//net.Listen() 函数用于监听连接,如果第二个参数不包含 IP 地址，只有端口号的话，net.Listen()</span>
+	<span class="token comment">//将监听本地系统上所有可用的 IP 地址。</span>
+	listen<span class="token punctuation">,</span> err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Listen</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span> <span class="token string">"localhost:5000"</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"myRedis localhost:5000 启动..."</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token keyword">return</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">defer</span> listen<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	conn<span class="token punctuation">,</span> err <span class="token operator">:=</span> listen<span class="token punctuation">.</span><span class="token function">Accept</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token keyword">return</span>
+	<span class="token punctuation">&#125;</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"=客户端连接成功啦！"</span><span class="token punctuation">)</span>
+	<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">//获取客户端发来的消息</span>
+		data<span class="token punctuation">,</span> err <span class="token operator">:=</span> bufio<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span>conn<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">ReadString</span><span class="token punctuation">(</span><span class="token char">'\n'</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+			<span class="token keyword">return</span>
+		<span class="token punctuation">&#125;</span>
+		sendMsg <span class="token operator">:=</span> <span class="token function">myRedis</span><span class="token punctuation">(</span>strings<span class="token punctuation">.</span><span class="token function">TrimSpace</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"接受客户端消息为："</span><span class="token punctuation">,</span> strings<span class="token punctuation">.</span><span class="token function">TrimSpace</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+		<span class="token comment">//发送给客户端</span>
+		<span class="token keyword">if</span> sendMsg <span class="token operator">!=</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+			conn<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>sendMsg <span class="token operator">+</span> <span class="token string">"\n"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li><strong>客户端</strong></li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"bufio"</span>
+	<span class="token string">"fmt"</span>
+	<span class="token string">"net"</span>
+	<span class="token string">"os"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//连接服务端</span>
+	conn<span class="token punctuation">,</span> err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Dial</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span> <span class="token string">"localhost:5000"</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token keyword">return</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">//通过io输入消息给服务端</span>
+		reader <span class="token operator">:=</span> bufio<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdin<span class="token punctuation">)</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Print</span><span class="token punctuation">(</span><span class="token string">">> "</span><span class="token punctuation">)</span>
+		<span class="token comment">//获取每一行输入</span>
+		text<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> reader<span class="token punctuation">.</span><span class="token function">ReadString</span><span class="token punctuation">(</span><span class="token char">'\n'</span><span class="token punctuation">)</span>
+		<span class="token comment">//标准格式，通过conn数据发送</span>
+		<span class="token comment">//fmt.Fprintf(conn, text)</span>
+		conn<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span><span class="token punctuation">)</span>
+		<span class="token comment">//读取接受消息</span>
+		acceptMsg<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> bufio<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span>conn<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">ReadString</span><span class="token punctuation">(</span><span class="token char">'\n'</span><span class="token punctuation">)</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>acceptMsg<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h4><ul>
+<li>客户端输入</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">&gt;&gt; SHOW
+nil
+   
+&gt;&gt; SET test 1
+sucess
+      
+&gt;&gt; SET test1 2
+sucess
+      
+&gt;&gt; SET test2 3 
+sucess
+
+&gt;&gt; SHOW
+test1:2 test2:3 test:1 
+&#x2F;&#x2F;保存
+&gt;&gt; STOP
+sucess
+
+&#x2F;&#x2F;手动断开连接，重启
+&gt;&gt; SHOW
+test:1 test1:2 test2:3 
+
+&gt;&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>服务端输出</li>
+</ul>
+<pre class="line-numbers language-none"><code class="language-none">myRedis localhost:5000 启动...
+客户端连接成功啦！
+接受客户端消息为： SHOW
+接受客户端消息为： SET test 1
+接受客户端消息为： SET test1 2
+接受客户端消息为： SET test2 3
+接受客户端消息为： SHOW
+&#x2F;&#x2F;保存
+map[test:1 test1:2 test2:3] &amp;&#123;0xc00010f180&#125; dataFile.gob
+接受客户端消息为： STOP
+
+&#x2F;&#x2F;手动断开连接，重启
+myRedis localhost:5000 启动...
+客户端连接成功啦！
+接受客户端消息为： SHOW<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 ]]></content>
       <categories>
         <category>go语言</category>
