@@ -1535,7 +1535,7 @@ test1:2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></s
       </tags>
   </entry>
   <entry>
-    <title>通过Go+Map写k-v数据库（SET-GET简单实现网络服务版）</title>
+    <title>通过Go+Map写k-v数据库（SET-GET简单实现TCP版）</title>
     <url>/2022/10/01/go21/</url>
     <content><![CDATA[<h3 id="通过实现一个简单的K–V存储数据库，学习Go语言（四）"><a href="#通过实现一个简单的K–V存储数据库，学习Go语言（四）" class="headerlink" title="通过实现一个简单的K–V存储数据库，学习Go语言（四）"></a>通过实现一个简单的K–V存储数据库，学习Go语言（四）</h3><blockquote>
 <p>为了能够和网络中的 key-value 存储交互，我们创建自定义的 TCP 协议。</p>
@@ -1548,7 +1548,7 @@ test1:2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></s
 <li><strong>服务端</strong></li>
 </ul>
 <blockquote>
-<p>目前存在小BUG，待优化——如多客户端连接问题等</p>
+<p>目前存在小BUG，待优化——如客户端断开重连问题等</p>
 </blockquote>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
 
@@ -3865,6 +3865,100 @@ https://zh.wikipedia.org/wiki/HTTP/3
       </categories>
       <tags>
         <tag>使用</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>通过Go+Map写k-v数据库（SET-GET简单实现TCP优化版）</title>
+    <url>/2022/10/02/go22/</url>
+    <content><![CDATA[<h3 id="通过实现一个简单的K–V存储数据库，学习Go语言（五）"><a href="#通过实现一个简单的K–V存储数据库，学习Go语言（五）" class="headerlink" title="通过实现一个简单的K–V存储数据库，学习Go语言（五）"></a>通过实现一个简单的K–V存储数据库，学习Go语言（五）</h3><blockquote>
+<p>优化客户端端口重连</p>
+<p>优化服务端断开问题</p>
+<p>下一步优化—-使用协程发送消息</p>
+</blockquote>
+<span id="more"></span>
+
+<ul>
+<li>服务端</li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//net.Listen() 函数用于监听连接,如果第二个参数不包含 IP 地址，只有端口号的话，net.Listen()</span>
+	<span class="token comment">//将监听本地系统上所有可用的 IP 地址。</span>
+	listen<span class="token punctuation">,</span> err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Listen</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span> <span class="token string">"localhost:5000"</span><span class="token punctuation">)</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"myRedis localhost:5000 启动..."</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token keyword">return</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">defer</span> listen<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">//多次连接</span>
+		conn<span class="token punctuation">,</span> err <span class="token operator">:=</span> listen<span class="token punctuation">.</span><span class="token function">Accept</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+			<span class="token keyword">continue</span>
+		<span class="token punctuation">&#125;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"客户端连接成功啦！"</span><span class="token punctuation">)</span>
+		<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+			<span class="token comment">//获取客户端发来的消息</span>
+			data<span class="token punctuation">,</span> err <span class="token operator">:=</span> bufio<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span>conn<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">ReadString</span><span class="token punctuation">(</span><span class="token char">'\n'</span><span class="token punctuation">)</span>
+			<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+				<span class="token comment">//断开，重新连接，开启新连接</span>
+				fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"客户端断开连接...\n%s"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+				conn<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+				<span class="token keyword">break</span>
+			<span class="token punctuation">&#125;</span>
+			<span class="token comment">//strings.TrimSpace(data)去掉字符串的 回车 13 换行符 10</span>
+			sendMsg <span class="token operator">:=</span> <span class="token function">myRedis</span><span class="token punctuation">(</span>strings<span class="token punctuation">.</span><span class="token function">TrimSpace</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"接受客户端消息为："</span><span class="token punctuation">,</span> strings<span class="token punctuation">.</span><span class="token function">TrimSpace</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>strings<span class="token punctuation">.</span><span class="token function">TrimSpace</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+			<span class="token comment">//发送给客户端</span>
+			<span class="token keyword">if</span> sendMsg <span class="token operator">!=</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+				conn<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>sendMsg <span class="token operator">+</span> <span class="token string">"\n"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+			<span class="token punctuation">&#125;</span>
+
+		<span class="token punctuation">&#125;</span>
+
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ul>
+<li>客户端</li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//连接服务端</span>
+	conn<span class="token punctuation">,</span> err <span class="token operator">:=</span> net<span class="token punctuation">.</span><span class="token function">Dial</span><span class="token punctuation">(</span><span class="token string">"tcp"</span><span class="token punctuation">,</span> <span class="token string">"localhost:5000"</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token keyword">return</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token keyword">for</span> <span class="token punctuation">&#123;</span>
+		<span class="token comment">//通过io输入消息给服务端</span>
+		reader <span class="token operator">:=</span> bufio<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdin<span class="token punctuation">)</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Print</span><span class="token punctuation">(</span><span class="token string">">>"</span><span class="token punctuation">)</span>
+		<span class="token comment">//分行发送消息</span>
+		text<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> reader<span class="token punctuation">.</span><span class="token function">ReadString</span><span class="token punctuation">(</span><span class="token char">'\n'</span><span class="token punctuation">)</span>
+		<span class="token comment">//标准格式，通过conn数据发送</span>
+		<span class="token comment">//fmt.Fprintf(conn, text)</span>
+		conn<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span><span class="token punctuation">)</span>
+		<span class="token comment">//读取接受消息</span>
+		acceptMsg<span class="token punctuation">,</span> err <span class="token operator">:=</span> bufio<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span>conn<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">ReadString</span><span class="token punctuation">(</span><span class="token char">'\n'</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"服务端端断开连接...\n%s"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+			conn<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+			<span class="token keyword">break</span>
+		<span class="token punctuation">&#125;</span>
+		fmt<span class="token punctuation">.</span><span class="token function">Print</span><span class="token punctuation">(</span>acceptMsg<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>map</tag>
       </tags>
   </entry>
 </search>
