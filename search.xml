@@ -4011,7 +4011,13 @@ https://zh.wikipedia.org/wiki/HTTP/3
 		time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
 	<span class="token punctuation">&#125;</span>
 	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="all-goroutines-are-asleep-deadlock-Go中协程死锁详解"><a href="#all-goroutines-are-asleep-deadlock-Go中协程死锁详解" class="headerlink" title="all goroutines are asleep - deadlock-Go中协程死锁详解"></a>all goroutines are asleep - deadlock-Go中协程死锁详解</h4><blockquote>
+<p>channel 程序写的不对很容易发生死锁</p>
+</blockquote>
+<p>这究竟是咋回事呢？<br>首先我们这里通过make(chan int)，开辟的通道是一种无缓冲通道，所以当对这个缓冲通道写的时候，会一直阻塞等到某个协程对这个缓冲通道读（大家发现没有这个与典型的生产者消费者有点不一样，当队列中“内容”已经满了，生产者再生往里放东西才会阻塞，而这里我讲c&lt;-‘A’理解为生产，他却是需要等到某个协程读了再能继续运行）。<br>main函数的执行在go语言中本身就是一个协程的执行，所以在执行到c&lt;-‘A’的时候，执行main函数的协程将被阻塞，换句话说main函数被阻塞了，此时不能在继续往下执行了，所以整个程序阻塞，发生了死锁。</p>
+]]></content>
       <categories>
         <category>go语言</category>
       </categories>
