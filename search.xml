@@ -3406,9 +3406,12 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
   <entry>
     <title>计算机网络1--TCP/HTTP相关</title>
     <url>/2022/08/23/netWork1/</url>
-    <content><![CDATA[<h3 id="TCP与UDP的区别"><a href="#TCP与UDP的区别" class="headerlink" title="TCP与UDP的区别"></a>TCP与UDP的区别</h3><ol>
+    <content><![CDATA[<p><img src="/2022/08/23/netWork1/image-20221003100929792.png" alt="image-20221003100929792"></p>
+<h3 id="TCP与UDP的区别"><a href="#TCP与UDP的区别" class="headerlink" title="TCP与UDP的区别"></a>TCP与UDP的区别</h3><ol>
 <li>TCP是面向连接的，UDP是无连接的；</li>
 </ol>
+<span id="more"></span>
+
 <details>
 <summary>什么叫无连接？</summary>
 UDP发送数据之前不需要建立连接
@@ -3435,7 +3438,7 @@ UDP接收方收到报文后，不需要给出任何确认
 <summary>展开</summary>
 对某些实时性要求比较高的情况，选择UDP，比如游戏，媒体通信，实时视频流（直播），即使出现传输错误也可以容忍；其它大部分情况下，HTTP都是用TCP，因为要求传输的内容可靠，不出现丢失
 </details>
-<span id="more"></span>
+
 
 <h5 id="HTTP可以使用UDP吗？"><a href="#HTTP可以使用UDP吗？" class="headerlink" title="HTTP可以使用UDP吗？"></a>HTTP可以使用UDP吗？</h5><details>
 <summary>展开</summary>
@@ -3959,6 +3962,62 @@ https://zh.wikipedia.org/wiki/HTTP/3
       </categories>
       <tags>
         <tag>map</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>协程---channel 练习</title>
+    <url>/2022/10/03/go23/</url>
+    <content><![CDATA[<h3 id="1-用协程实现顺序打印123"><a href="#1-用协程实现顺序打印123" class="headerlink" title="1. 用协程实现顺序打印123"></a>1. 用协程实现顺序打印123</h3><pre class="line-numbers language-none"><code class="language-none">func main() &#123;
+	ch :&#x3D; make(chan int)
+	for i :&#x3D; 1; i &lt;&#x3D; 3; i++ &#123;
+		go func() &#123;
+			fmt.Println(&lt;-ch)
+		&#125;()
+		ch &lt;- i
+		time.Sleep(time.Second)
+	&#125;
+
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<span id="more"></span>
+
+<h3 id="2-用Channel和两个协程实现数组相加"><a href="#2-用Channel和两个协程实现数组相加" class="headerlink" title="2. 用Channel和两个协程实现数组相加"></a>2. 用Channel和两个协程实现数组相加</h3><pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">//用Channel和两个协程实现数组相加</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	num1 <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">&#125;</span>
+	num2 <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">&#123;</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">&#125;</span>
+	res <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span>
+	ch1 <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+	ch2 <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token builtin">int</span><span class="token punctuation">)</span>
+	sum <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">3</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+			<span class="token operator">&lt;-</span>sum
+			ch1 <span class="token operator">&lt;-</span> num1<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+			ch2 <span class="token operator">&lt;-</span> num2<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">3</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+			tem <span class="token operator">:=</span> <span class="token operator">&lt;-</span>ch1 <span class="token operator">+</span> <span class="token operator">&lt;-</span>ch2
+			res<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> tem
+			fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"+"</span><span class="token punctuation">,</span> tem<span class="token punctuation">)</span>
+
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">3</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">&#123;</span>
+		sum <span class="token operator">&lt;-</span> <span class="token keyword">struct</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+		time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>Channel</tag>
+        <tag>goroutine</tag>
       </tags>
   </entry>
 </search>

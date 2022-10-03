@@ -22,35 +22,28 @@
     var CONFIG = {"hostname":"asonemaster.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="什么是GC垃圾回收就是对程序中不再使用的内存资源进行自动回收的操作。 堆内存上分配的数据对象，不会再使用时，不会自动释放内存，就变成垃圾，在程序的运行过程中，如果不能及时清理，会导致越来越多的内存空间被浪费，导致系统性能下降。 因此需要内存回收，内存回收分为两种方式:  手动释放占用内存空间 可能会出现的问题：悬挂指针： 释放的早了，后续对数据的访问就会出错，因为对应的内存空间可能已经清空，重新分">
-<meta property="og:type" content="article">
-<meta property="og:title" content="go语言基础3——GC相关">
-<meta property="og:url" content="https://asonemaster.github.io/2022/08/18/go4/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="迅的个人博客">
+<meta property="og:url" content="https://asonemaster.github.io/page/8/index.html">
 <meta property="og:site_name" content="迅的个人博客">
-<meta property="og:description" content="什么是GC垃圾回收就是对程序中不再使用的内存资源进行自动回收的操作。 堆内存上分配的数据对象，不会再使用时，不会自动释放内存，就变成垃圾，在程序的运行过程中，如果不能及时清理，会导致越来越多的内存空间被浪费，导致系统性能下降。 因此需要内存回收，内存回收分为两种方式:  手动释放占用内存空间 可能会出现的问题：悬挂指针： 释放的早了，后续对数据的访问就会出错，因为对应的内存空间可能已经清空，重新分">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://asonemaster.github.io/2022/08/18/go4/image-20220802113108020.png">
-<meta property="article:published_time" content="2022-08-18T03:28:55.755Z">
-<meta property="article:modified_time" content="2022-08-18T03:30:39.791Z">
 <meta property="article:author" content="asOneMaster">
-<meta property="article:tag" content="GC垃圾回收">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://asonemaster.github.io/2022/08/18/go4/image-20220802113108020.png">
 
-<link rel="canonical" href="https://asonemaster.github.io/2022/08/18/go4/">
+<link rel="canonical" href="https://asonemaster.github.io/page/8/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : false,
-    isPost : true,
+    isHome : true,
+    isPost : false,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>go语言基础3——GC相关 | 迅的个人博客</title>
+  <title>迅的个人博客</title>
   
 
 
@@ -188,14 +181,13 @@
         <div class="content-wrap">
           
 
-          <div class="content post posts-expand">
+          <div class="content index posts-expand">
             
-
-    
+      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/18/go4/">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/17/golangStudy/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/me.jpg">
@@ -207,9 +199,10 @@
       <meta itemprop="name" content="迅的个人博客">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          go语言基础3——GC相关
-        </h1>
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/08/17/golangStudy/" class="post-title-link" itemprop="url">golang学习路线，所需知识</a>
+        </h2>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -217,10 +210,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-08-18 11:28:55 / 修改时间：11:30:39" itemprop="dateCreated datePublished" datetime="2022-08-18T11:28:55+08:00">2022-08-18</time>
+              <time title="创建时间：2022-08-17 09:50:07" itemprop="dateCreated datePublished" datetime="2022-08-17T09:50:07+08:00">2022-08-17</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-18 14:37:47" itemprop="dateModified" datetime="2022-08-18T14:37:47+08:00">2022-08-18</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -232,25 +231,6 @@
             </span>
 
           
-            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span id="busuanzi_value_page_pv"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/08/18/go4/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/08/18/go4/" itemprop="commentCount"></span>
-    </a>
-  </span>
   
   
             <span class="post-meta-item" title="本文字数">
@@ -258,14 +238,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.9k</span>
+              <span>1.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>1 分钟</span>
             </span>
 
         </div>
@@ -277,174 +257,58 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h5 id="什么是GC"><a href="#什么是GC" class="headerlink" title="什么是GC"></a>什么是GC</h5><p>垃圾回收就是对程序中不再使用的内存资源进行自动回收的操作。</p>
-<p>堆<a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=%E5%86%85%E5%AD%98&spm=1001.2101.3001.7020">内存</a>上分配的数据对象，不会再使用时，不会自动释放内存，就变成垃圾，在程序的运行过程中，如果不能及时清理，会导致越来越多的内存空间被浪费，导致系统性能下降。</p>
-<p>因此需要<strong>内存回收</strong>，内存回收分为两种方式:</p>
-<ol>
-<li><p>手动释放占用内存空间</p>
-<p>可能会出现的问题：<br><strong>悬挂指针：</strong> 释放的早了，后续对数据的访问就会出错，因为对应的内存空间可能已经清空，重新分配，甚至是归还给操作系统了。<br><strong>内存泄漏：</strong> 如果忘了释放，一直占用内存，导致内存泄漏。</p>
-</li>
-<li><p>自动内存回收</p>
-<p>程序自动检测对象决定是否要回收其内存。</p>
-<p><strong>核心思想：</strong>程序中用得到的数据，一定是可以从栈或数据段这些根节点追踪得到的数据，追踪不到的数据，肯定用不到，也就是垃圾。</p>
-<span id="more"></span></li>
+          <h2 id="计算机基础"><a href="#计算机基础" class="headerlink" title="计算机基础"></a>计算机基础</h2><h3 id="1-操作系统"><a href="#1-操作系统" class="headerlink" title="1. 操作系统"></a>1. 操作系统</h3><ul>
+<li><h5 id="了解进程、线程、协程的区别"><a href="#了解进程、线程、协程的区别" class="headerlink" title="了解进程、线程、协程的区别"></a>了解进程、线程、协程的区别</h5></li>
+<li><h5 id="了解进程间常用的通信方式"><a href="#了解进程间常用的通信方式" class="headerlink" title="了解进程间常用的通信方式"></a>了解进程间常用的通信方式</h5><ol>
+<li>管道</li>
+<li>命名管道（FIFO）</li>
+<li>消息队列</li>
+<li>信号量</li>
+<li>共享内存</li>
+<li>套接字（Socket）</li>
 </ol>
-<h5 id="go-gc-是怎么实现的？"><a href="#go-gc-是怎么实现的？" class="headerlink" title="go gc 是怎么实现的？"></a>go gc 是怎么实现的？</h5><hr>
-<p>一次完整的垃圾回收会分为四个阶段，分别是标记准备、标记开始、标记终止、清理：</p>
-<ol>
-<li><strong>标记准备（Mark Setup）</strong>：打开写屏障（Write Barrier），需 STW（stop the world)</li>
-<li><strong>标记开始（Marking）</strong>：使用三色标记法并发标记 ，与用户程序并发执行</li>
-<li><strong>标记终止（Mark Termination</strong>）：对触发写屏障的对象进行重新扫描标记，关闭写屏障（Write Barrier），需 STW（stop the world)</li>
-<li><strong>清理（Sweeping）</strong>：将需要回收的内存归还到堆中，将过多的内存归还给操作系统，与用户程序并发执行</li>
-</ol>
-<hr>
-<ol>
-<li><p><strong>GC机制随着golang版本变化如何变化的？</strong></p>
-<p>go 1.3 之前采用<strong>标记清除法</strong>，需要<strong>STW</strong><br>go 1.5 采用<strong>三色标记法</strong>，插入<strong>写屏障机制</strong>（只在堆内存中生效），最后仍需对栈内存进行STW<br>go 1.8 采用混合写屏障机制**，屏障限制只在堆内存中生效。避免了最后节点对栈进行STW的问题，提升了GC效率</p>
 </li>
-<li><p>一个概念：<strong>STW</strong>：stop the word，指程序执行过程中，中断暂停程序逻辑，专门去进行<a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6&spm=1001.2101.3001.7020">垃圾回收</a>。（STW<strong>目的是为了防止GC扫描时内存变化引起的混乱</strong>）</p>
-</li>
-<li><p><strong>标记清除法</strong></p>
-<p>从根变量开始遍历所有引用的对象，标记引用的对象，没有被标记的进行回收。</p>
-<ul>
-<li>开启STW，</li>
-<li>从根节点出发，标记所有可达对象 </li>
-<li>停止STW，然后回收所有未标记的对象。</li>
-<li>优点：解决了引用计数的缺点。</li>
-<li>缺点：需要 STW，暂时停掉程序运行。</li>
-</ul>
-</li>
-<li><p><strong>三色标记法【改进的标记清除法】+写屏障机制的流程</strong></p>
-</li>
-</ol>
-<p>三色标记法是对标记阶段的改进，原理如下：</p>
-<ul>
-<li>初始状态所有对象都是白色。</li>
-<li>从root根出发扫描所有根对象（下图a,b），将他们引用的对象标记为灰色（图中A，B）</li>
-</ul>
-<blockquote>
-<p>那么什么是root呢？ 看了很多文章都没解释这这个概念，在这儿说明下：root区域主要是程序运行到当前时刻的栈、寄存器和全局变量。</p>
-<p><img src="/2022/08/18/go4/image-20220802113108020.png" alt="image-20220802113108020"></p>
-</blockquote>
-<ul>
-<li><p>遍历灰色对象，将灰色对象引用的对象由白色  也变成灰色对象，然后将遍历过的灰色对象变成黑色对象。</p>
-</li>
-<li><p>循环步骤3，直到灰色对象全部变黑色。重复以上操作</p>
-<blockquote>
-<p>其中通过<strong>写屏障</strong>(write-barrier)【<strong>写屏障就是让goroutine与GC同时运行的手段，大大减少STW的时间</strong>，开启后指针传递时会把指针标记，本轮不回收，下轮GC时回收】检测对象有变化；还有一个<strong>辅助GC</strong>(mutator assist)机制【<strong>为防止内存分配过快，GC过程中，辅助GC线程并发运行，协助GC做一部分工作</strong>，先做一部分标记工作】，</p>
-</blockquote>
-</li>
-<li><p>收集所有白色对象（垃圾）。</p>
-</li>
-</ul>
-<p><strong>插入写屏障</strong></p>
-<p>对象被引用时触发的机制（只在堆内存中生效）：赋值器这一行为通知给并发执行的回收器，被引用的对象标记为灰色</p>
-<p>缺点：结束时需要STW来重新扫描栈，标记栈上引用的白色对象的存活</p>
-<p><strong>删除写屏障</strong></p>
-<p>对象被删除时触发的机制（只在堆内存中生效）：赋值器将这一行为通知给并发执行的回收器，被删除的对象，如果自身为灰色或者白色，那么标记为灰色</p>
-<p>缺点：一个对象的引用被删除后，即使没有其他存活的对象引用它，它仍然会活到下一轮，会产生很大冗余扫描成本，且降低了回收精度</p>
-<p><strong>混合写屏障</strong></p>
-<p>GC没有混合写屏障前，一直是插入写屏障；混合写屏障是插入写屏障 + 删除写屏障，写屏障只应用在堆上应用，栈上不启用（栈上启用成本很高）</p>
-<ul>
-<li>GC开始将栈上的对象全部扫描并标记为黑色。</li>
-<li>GC期间，任何在栈上创建的新对象，均为黑色。</li>
-<li>被删除的对象标记为灰色。</li>
-<li>被添加的对象标记为灰色。</li>
-</ul>
-<h5 id="GC-的触发时机"><a href="#GC-的触发时机" class="headerlink" title="GC 的触发时机"></a>GC 的触发时机</h5><p><strong>主动触发</strong>：</p>
-<ul>
-<li>调用 runtime.GC() 方法，触发 GC</li>
-</ul>
-<p><strong>被动触发：</strong></p>
-<ul>
-<li>定时触发，该触发条件由 <code>runtime.forcegcperiod</code> 变量控制，默认为 2 分 钟。当超过两分钟没有产生任何 GC 时，触发 GC</li>
-<li>根据内存分配阈值触发，该触发条件由环境变量GOGC控制，默认值为100（100%），当前堆内存占用是上次GC结束后占用内存的2倍时，触发GC</li>
-</ul>
-
+<li><h5 id="了解5种网络IO模型"><a href="#了解5种网络IO模型" class="headerlink" title="了解5种网络IO模型"></a>了解5种网络IO模型</h5><ol>
+<li>阻塞 IO（blocking IO）</li>
+<li>非阻塞 IO（non-blocking IO）</li>
+<li>多路复用 IO（IO multiplexing）</li>
+<li>异步 IO（Asynchronous I/O）</li>
+<li>信号驱动 IO（signal driven I/O， SIGIO）</li>
+</ol></li></ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/17/golangStudy/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
     <div>
         
-           <div>
-    
-        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
-    
-</div>
-
-        
     </div>
     
     
     
-        <div class="reward-container">
-  <div>打赏一瓶矿泉水</div>
-  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
-    打赏
-  </button>
-  <div id="qr" style="display: none;">
-      
-      <div style="display: inline-block;">
-        <img src="/images/weChatPay.jpg" alt="asOneMaster 微信支付">
-        <p>微信支付</p>
-      </div>
-      
-      <div style="display: inline-block;">
-        <img src="/images/aliPay.jpg" alt="asOneMaster 支付宝">
-        <p>支付宝</p>
-      </div>
-
-  </div>
-</div>
-
-        
-
-<div>
-<ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>asOneMaster
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="https://asonemaster.github.io/2022/08/18/go4/" title="go语言基础3——GC相关">https://asonemaster.github.io/2022/08/18/go4/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-
-	
       <footer class="post-footer">
-          
-          <div class="post-tags">
-              <a href="/tags/GC%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/" rel="tag"><i class="fa fa-tag"></i> GC垃圾回收</a>
-          </div>
-
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2022/08/18/go3/" rel="prev" title="go语言基础2——map相关">
-      <i class="fa fa-chevron-left"></i> go语言基础2——map相关
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/08/18/go5/" rel="next" title="go语言基础4——Channel相关">
-      go语言基础4——Channel相关 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
+        <div class="post-eof"></div>
       </footer>
-    
   </article>
   
   
   
 
 
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span>
+  </nav>
+
+
 
           </div>
           
-    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -491,7 +355,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFGC"><span class="nav-number">1.</span> <span class="nav-text">什么是GC</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#go-gc-%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E7%9A%84%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">go gc 是怎么实现的？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#GC-%E7%9A%84%E8%A7%A6%E5%8F%91%E6%97%B6%E6%9C%BA"><span class="nav-number">3.</span> <span class="nav-text">GC 的触发时机</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
