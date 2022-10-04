@@ -4055,7 +4055,8 @@ https://zh.wikipedia.org/wiki/HTTP/3
   <entry>
     <title>通过Linux系统抓包，学习TCP</title>
     <url>/2022/10/04/linux4/</url>
-    <content><![CDATA[<h3 id="Linux命令实战"><a href="#Linux命令实战" class="headerlink" title="Linux命令实战"></a>Linux命令实战</h3><p>开启3个命令窗口</p>
+    <content><![CDATA[<h3 id="Linux命令实战"><a href="#Linux命令实战" class="headerlink" title="Linux命令实战"></a>Linux命令实战</h3><p><a href="https://www.bilibili.com/video/BV1Gr4y1F7UV/?p=5&vd_source=5d110a858f2be0cfcf644f3a61ef01c8">【TCP/IP协议】数据包如何发送出去_哔哩哔哩_bilibili</a></p>
+<p>开启3个命令窗口</p>
 <ol>
 <li>获取baidu.com ip地址</li>
 </ol>
