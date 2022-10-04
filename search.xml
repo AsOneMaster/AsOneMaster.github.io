@@ -4052,4 +4052,60 @@ https://zh.wikipedia.org/wiki/HTTP/3
         <tag>goroutine</tag>
       </tags>
   </entry>
+  <entry>
+    <title>通过Linux系统抓包，学习TCP</title>
+    <url>/2022/10/04/linux4/</url>
+    <content><![CDATA[<h3 id="Linux命令实战"><a href="#Linux命令实战" class="headerlink" title="Linux命令实战"></a>Linux命令实战</h3><p>开启3个命令窗口</p>
+<ol>
+<li>获取baidu.com ip地址</li>
+</ol>
+<blockquote>
+<p><a href="https://blog.csdn.net/zhuimeng_by/article/details/105120437">Linux查看DNS地址以及端口，nslookup命令以及更强大的dig命令_beyond_champion的博客-CSDN博客_nslookup 端口</a></p>
+</blockquote>
+<pre class="line-numbers language-none"><code class="language-none">lighthouse@VM-12-11-ubuntu:~$ nslookup baidu.com
+Server:         127.0.0.53
+Address:        127.0.0.53#53
+
+Non-authoritative answer:
+Name:   baidu.com
+Address: 39.156.66.10
+Name:   baidu.com
+Address: 110.242.68.66<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<span id="more"></span>
+
+<ol start="2">
+<li>使用 110.242.68.66为抓包地址，开启抓包监听</li>
+</ol>
+<blockquote>
+<p><a href="https://blog.csdn.net/qq_39825430/article/details/127113677">Tcpdump抓包命令_游子丿的博客-CSDN博客</a></p>
+</blockquote>
+<pre class="line-numbers language-none"><code class="language-none">tcpdump -i any -nn host 110.242.68.66<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<ol start="3">
+<li>连接baidu.com域名</li>
+</ol>
+<pre class="line-numbers language-none"><code class="language-none">curl baidu.com<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<ol start="4">
+<li>查看tcpdump抓包记录</li>
+</ol>
+<p><img src="/2022/10/04/linux4/image-20221004184906655.png" alt="image-20221004184906655"></p>
+<blockquote>
+<p>马赛克部分为我内网ip</p>
+</blockquote>
+<p>[s]表示SYN</p>
+<p>[s.]表示SYN+ACK</p>
+<p>[.]表示ACK</p>
+<p>[p.]表示push+ack 立即发送数据包，有3个是因为发送长度有限制，需要多次才能发完</p>
+<p>[F]表示Finsh</p>
+<p>上述截图 表示了完整的三次握手和四次挥手过程</p>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>命令行实战</tag>
+      </tags>
+  </entry>
 </search>
