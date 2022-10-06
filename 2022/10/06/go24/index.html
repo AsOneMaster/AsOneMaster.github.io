@@ -22,25 +22,20 @@
     var CONFIG = {"hostname":"asonemaster.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="MySql存储引擎Mysql体系结构 连接层 服务层 引擎层 存储层  什么是存储引擎 存储引擎就是存储数据、建立索引、更新&#x2F;查询数据等技术的实现方式。存储引擎是基于表的，而不是基于库的，所以存储引擎也可被称为表类型。">
+  <meta name="description" content="使用腾讯公有云COS 安装SDK，访问官网对象存储 快速入门-SDK 文档-文档中心-腾讯云 (tencent.com)">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Mysql进阶1——Mysql存储引擎与索引相关">
-<meta property="og:url" content="https://asonemaster.github.io/2022/08/18/mysql1/index.html">
+<meta property="og:title" content="腾讯COS公有云-golang上传-下载">
+<meta property="og:url" content="https://asonemaster.github.io/2022/10/06/go24/index.html">
 <meta property="og:site_name" content="迅的个人博客">
-<meta property="og:description" content="MySql存储引擎Mysql体系结构 连接层 服务层 引擎层 存储层  什么是存储引擎 存储引擎就是存储数据、建立索引、更新&#x2F;查询数据等技术的实现方式。存储引擎是基于表的，而不是基于库的，所以存储引擎也可被称为表类型。">
+<meta property="og:description" content="使用腾讯公有云COS 安装SDK，访问官网对象存储 快速入门-SDK 文档-文档中心-腾讯云 (tencent.com)">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://asonemaster.github.io/2022/08/18/mysql1/image-20220818151444624.png">
-<meta property="og:image" content="https://asonemaster.github.io/2022/08/18/mysql1/image-20220818151922258.png">
-<meta property="og:image" content="https://asonemaster.github.io/2022/08/18/mysql1/image-20220818150013108.png">
-<meta property="article:published_time" content="2022-08-18T06:42:08.272Z">
-<meta property="article:modified_time" content="2022-08-18T07:37:45.025Z">
+<meta property="article:published_time" content="2022-10-06T14:01:31.452Z">
+<meta property="article:modified_time" content="2022-10-06T14:41:02.119Z">
 <meta property="article:author" content="asOneMaster">
-<meta property="article:tag" content="索引">
-<meta property="article:tag" content="Mysql存储引擎">
+<meta property="article:tag" content="OSS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://asonemaster.github.io/2022/08/18/mysql1/image-20220818151444624.png">
 
-<link rel="canonical" href="https://asonemaster.github.io/2022/08/18/mysql1/">
+<link rel="canonical" href="https://asonemaster.github.io/2022/10/06/go24/">
 
 
 <script id="page-configurations">
@@ -53,7 +48,7 @@
   };
 </script>
 
-  <title>Mysql进阶1——Mysql存储引擎与索引相关 | 迅的个人博客</title>
+  <title>腾讯COS公有云-golang上传-下载 | 迅的个人博客</title>
   
 
 
@@ -198,7 +193,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/18/mysql1/">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/10/06/go24/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/me.jpg">
@@ -211,7 +206,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Mysql进阶1——Mysql存储引擎与索引相关
+          腾讯COS公有云-golang上传-下载
         </h1>
 
         <div class="post-meta">
@@ -222,7 +217,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-08-18 14:42:08 / 修改时间：15:37:45" itemprop="dateCreated datePublished" datetime="2022-08-18T14:42:08+08:00">2022-08-18</time>
+              <time title="创建时间：2022-10-06 22:01:31 / 修改时间：22:41:02" itemprop="dateCreated datePublished" datetime="2022-10-06T22:01:31+08:00">2022-10-06</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -230,7 +225,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
+                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
                 </span>
             </span>
 
@@ -250,8 +245,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2022/08/18/mysql1/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/08/18/mysql1/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/10/06/go24/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/10/06/go24/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -261,14 +256,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.4k</span>
+              <span>2.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -280,84 +275,104 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="MySql存储引擎"><a href="#MySql存储引擎" class="headerlink" title="MySql存储引擎"></a>MySql存储引擎</h3><h4 id="Mysql体系结构"><a href="#Mysql体系结构" class="headerlink" title="Mysql体系结构"></a>Mysql体系结构</h4><ul>
-<li>连接层</li>
-<li>服务层</li>
-<li>引擎层</li>
-<li>存储层</li>
-</ul>
-<h4 id="什么是存储引擎"><a href="#什么是存储引擎" class="headerlink" title="什么是存储引擎"></a>什么是存储引擎</h4><blockquote>
-<p>存储引擎就是存储数据、建立索引、更新/查询数据等技术的实现方式。存储引擎是基于表的，而不是基于库的，所以存储引擎也可被称为表类型。</p>
+        <h3 id="使用腾讯公有云COS"><a href="#使用腾讯公有云COS" class="headerlink" title="使用腾讯公有云COS"></a>使用腾讯公有云COS</h3><blockquote>
+<p>安装SDK，访问官网<a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/436/31215">对象存储 快速入门-SDK 文档-文档中心-腾讯云 (tencent.com)</a></p>
 </blockquote>
 <span id="more"></span>
 
-<h4 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h4><ul>
-<li><p>InnoDB</p>
-<pre><code>➢介绍：
-      InnoDB是一种兼顾高可靠性和高性能的通用存储引擎,在MySQL 5.5之后, InnoDB是默认的MySQL存储引擎。
-  ➢特点：
-      DML操作遵循ACID模型，支持事务;
-      行级锁，提高并发访问性能; 
-      支持外键FOREIGN KEY约束,保证数据的完整性和正确性;
-</code></pre>
-<p>​    ➢文件：</p>
-<p>​        xxx.ibd: xxx代表的是表名, innoDB引擎的每张表都会对应这样一个表空间文件, 存储该表的表结构(frm、 sdi) 、数据和索引。<br>​        参数: innpdb_ file_ per_ table    </p>
-<p>​    ➢逻辑存储结构：</p>
-<p>​        TableSpece:     表空间</p>
-<p>​        |</p>
-<p>​        segment:          段<br>​        |</p>
-<p>​        Extent:I             区[1M—一个区可以有64个页]<br>​        |</p>
-<p>​        Page:                 页[16K]<br>​        |</p>
-<p>​        Row:                  行</p>
-</li>
-</ul>
-<p><img src="/2022/08/18/mysql1/image-20220818151444624.png" alt="image-20220818151444624"></p>
-<ul>
-<li><p>MyISAM</p>
-<pre><code>        ➢介绍
-              MyISAM是MySQL早期的默认存储引擎。
-          ➢特点
-              不支持事务,不支持外键
-              支持表锁，不支持行锁
-              访问速度快
-          ➢文件
-              xxx.sdi:存储表结构信息
-              XXX.MYD:存储数据
-              XXX.MYI:存储索引
-</code></pre>
-</li>
-<li><p>Memory</p>
-<pre><code>        ➢介绍
-              Memory引擎的表数据时存储在内存中的，由于受到硬件问题、或断电问题的影响，只能将这些表作为临时表或缓存使用。
-          ➢特点
-              内存存放
-              hash索引( 默认)
-          ➢文件
-              xxx.sdi:存储表结构信息
-</code></pre>
-</li>
-</ul>
-<p><strong>MySql存储引擎特点总结：</strong></p>
-<p><img src="/2022/08/18/mysql1/image-20220818151922258.png" alt="image-20220818151922258"></p>
-<h4 id="存储引擎选择"><a href="#存储引擎选择" class="headerlink" title="存储引擎选择"></a>存储引擎选择</h4><p>在选择存储引擎时，应该根据应用系统的特点选择合适的存储引擎。对于复杂的应用系统，还可以根据实际情况选择多种存储引擎进行组合。</p>
-<p>​            ➢InnoDB ：是Mysql的默认存储引擎， 支持事务、外键。如果应用对事务的完整性有比较高的要求，在并发条件下要求数据的-致</p>
-<p>​                                性，数据操作除了插入和查询之外，还包含很多的更新、删除操作，那么InnoDB存储 引擎是比较合适的选择。</p>
-<p>​            ➢MyISAM：如果应用是以读操作和插入操作为主，只有很少的更新和删除操作，并且对事务的完整性、并发性要求不是很高，那</p>
-<p>​                                么选择这个存储引擎是非常合适的。<strong>（现如今被NOSQL-MongoDB替代）</strong></p>
-<p>​            ➢MEMORY：将所有数据保存在内存中，访问速度快，通常用于临时表及缓存。MEMORY的缺陷就是对表的大小有限制，太大的表</p>
-<p>​                                无法缓存在内存中，而且无法保障数据的安全性。<strong>（现如今被NOSQL-Redis替代）</strong></p>
-<h3 id="Mysql索引（存储引擎层）"><a href="#Mysql索引（存储引擎层）" class="headerlink" title="Mysql索引（存储引擎层）"></a>Mysql索引（存储引擎层）</h3><h4 id="什么是索引"><a href="#什么是索引" class="headerlink" title="什么是索引"></a>什么是索引</h4><blockquote>
-<p>索引(index)是帮助MySQL高效获取数据的数据结构(有序)。在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用(指向)数据，这样就可以在这些数据结构上实现高级的查找算法，这种数据结构就是索引。</p>
-<p><strong>简单的说，索引是一种数据结构，一种实现高级查找算法的数据结构。</strong></p>
+<ol>
+<li>创建COS连接客户端</li>
+</ol>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> cos
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"github.com/tencentyun/cos-go-sdk-v5"</span>
+	<span class="token string">"net/http"</span>
+	<span class="token string">"net/url"</span>
+	<span class="token string">"storage-cloud/config"</span>
+<span class="token punctuation">)</span>
+<span class="token keyword">var</span> cosCli <span class="token operator">*</span>cos<span class="token punctuation">.</span>Client
+<span class="token comment">// Client : 创建oss client对象</span>
+<span class="token keyword">func</span> <span class="token function">Client</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>cos<span class="token punctuation">.</span>Client <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> cosCli <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> cosCli
+	<span class="token punctuation">&#125;</span>
+    <span class="token comment">//https://console.cloud.tencent.com/cos5/bucket, 关于地域的详情见 https://cloud.tencent.com/document/product/436/6224</span>
+	u<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> url<span class="token punctuation">.</span><span class="token function">Parse</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span>BucketURL<span class="token punctuation">)</span>
+	<span class="token comment">// 用于Get Service 查询，默认全地域 service.cos.myqcloud.com</span>
+	su<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> url<span class="token punctuation">.</span><span class="token function">Parse</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span>ServiceURL<span class="token punctuation">)</span>
+	b <span class="token operator">:=</span> <span class="token operator">&amp;</span>cos<span class="token punctuation">.</span>BaseURL<span class="token punctuation">&#123;</span>BucketURL<span class="token punctuation">:</span> u<span class="token punctuation">,</span> ServiceURL<span class="token punctuation">:</span> su<span class="token punctuation">&#125;</span>
+	<span class="token comment">// 1.永久密钥</span>
+	cosCli <span class="token operator">=</span> cos<span class="token punctuation">.</span><span class="token function">NewClient</span><span class="token punctuation">(</span>b<span class="token punctuation">,</span> <span class="token operator">&amp;</span>http<span class="token punctuation">.</span>Client<span class="token punctuation">&#123;</span>
+		Transport<span class="token punctuation">:</span> <span class="token operator">&amp;</span>cos<span class="token punctuation">.</span>AuthorizationTransport<span class="token punctuation">&#123;</span>
+			SecretID<span class="token punctuation">:</span>  config<span class="token punctuation">.</span>SECRETID<span class="token punctuation">,</span>  <span class="token comment">// 替换为用户的 SecretId，请登录访问管理控制台进行查看和管理，https://console.cloud.tencent.com/cam/capi</span>
+			SecretKey<span class="token punctuation">:</span> config<span class="token punctuation">.</span>SecretKey<span class="token punctuation">,</span> <span class="token comment">// 替换为用户的 SecretKey，请登录访问管理控制台进行查看和管理，https://console.cloud.tencent.com/cam/capi</span>
+		<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+	<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> cosCli
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ol start="2">
+<li>上传示例（使用预签名URL上传）</li>
+</ol>
+<blockquote>
+<p>使用该方法主要为了添加Header，使上传文件包含文件类型元信息，促使下载时能直接下载为该类型文件</p>
 </blockquote>
-<h4 id="索引结构"><a href="#索引结构" class="headerlink" title="索引结构"></a>索引结构</h4><p>MySQL的索引是在存储引擎层实现的，不同的存储引擎有不同的结构,主要包含以下几种:</p>
-<ul>
-<li>B+Tree    ——    最常见的索引类型，大部分引擎都支持B+树索引</li>
-<li>Hash       ——    底层数据结构是用哈希表实现的，只有精确匹配索引列的查询才有效，不支持范围查询</li>
-<li>R-tree(空间索引)       ——  空间索引是MyISAM弓|擎的一个特殊索引类型，主要用于地理空间数据类型，通常使用较少</li>
-<li>Full-text(全文索引)   ——  是一种通过建立倒排索引,快速匹配文档的方式。类似于Lucene，Solr，ES</li>
-</ul>
-<h4 id="索引结构与对应支持引擎"><a href="#索引结构与对应支持引擎" class="headerlink" title="索引结构与对应支持引擎"></a>索引结构与对应支持引擎</h4><p><img src="/2022/08/18/mysql1/image-20220818150013108.png" alt="image-20220818150013108"></p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">//腾讯云COS上传</span>
+		c <span class="token operator">:=</span> cos<span class="token punctuation">.</span><span class="token function">Client</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		cosPath <span class="token operator">:=</span> COSLocation <span class="token operator">+</span> fileMeta<span class="token punctuation">.</span>FileSha1
+		<span class="token comment">// 1. 获取预签名URL </span>
+		presignedURL<span class="token punctuation">,</span> err <span class="token operator">:=</span> c<span class="token punctuation">.</span>Object<span class="token punctuation">.</span><span class="token function">GetPresignedURL</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> http<span class="token punctuation">.</span>MethodPut<span class="token punctuation">,</span> cosPath<span class="token punctuation">,</span> config<span class="token punctuation">.</span>SECRETID<span class="token punctuation">,</span> config<span class="token punctuation">.</span>SecretKey<span class="token punctuation">,</span> time<span class="token punctuation">.</span>Hour<span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			<span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token comment">// 2. 通过预签名方式上传对象</span>
+		req<span class="token punctuation">,</span> err <span class="token operator">:=</span> http<span class="token punctuation">.</span><span class="token function">NewRequest</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>MethodPut<span class="token punctuation">,</span> presignedURL<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> newFile<span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			<span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token comment">//head为 file, head, err := r.FormFile("file") http上传文件的元信息</span>
+		contentType <span class="token operator">:=</span> head<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">)</span>
+		<span class="token comment">// 用户可自行设置请求头部</span>
+		req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">,</span> contentType<span class="token punctuation">)</span>
+		<span class="token comment">//使浏览器不自动预览</span>
+		req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"Content-Disposition"</span><span class="token punctuation">,</span> <span class="token string">"attachment"</span><span class="token punctuation">)</span>
+		<span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">=</span> http<span class="token punctuation">.</span>DefaultClient<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>req<span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			<span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ol start="3">
+<li>下载接口（使用预签名URL下载）</li>
+</ol>
+<blockquote>
+<p>方便直接通过URL浏览器下载</p>
+<p>也可使用官网其他方法<a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/436/65646">对象存储 下载对象-SDK 文档-文档中心-腾讯云 (tencent.com)</a></p>
+<p>如果需要通过浏览器下载，也可如下：</p>
+<p>示例</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// 1. 从响应体中获取对象</span>
+resp<span class="token punctuation">,</span> err <span class="token operator">:=</span> client<span class="token punctuation">.</span>Object<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> key<span class="token punctuation">,</span> opt<span class="token punctuation">)</span>
+<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+     <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+data<span class="token punctuation">,</span> err<span class="token operator">:=</span>ioutil<span class="token punctuation">.</span><span class="token function">ReadAll</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>Body<span class="token punctuation">)</span>
+<span class="token comment">//识别http浏览器响应头 让浏览器识别出是文件下载</span>
+w<span class="token punctuation">.</span><span class="token function">Header</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span>FileTypeHeader<span class="token punctuation">,</span> FileTypeHeaderValue<span class="token punctuation">)</span>
+w<span class="token punctuation">.</span><span class="token function">Header</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span>FileDisHeader<span class="token punctuation">,</span> FileDisHeaderValue<span class="token operator">+</span><span class="token operator">&lt;</span>你文件的名称：FileName<span class="token operator">></span><span class="token operator">+</span><span class="token string">"\""</span><span class="token punctuation">)</span>
+w<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<p>预签名URL方法：</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// 1.获取对象访问 URL</span>
+cosPath <span class="token operator">:=</span> row<span class="token punctuation">.</span>FileAddr<span class="token punctuation">.</span>String
+c <span class="token operator">:=</span> cos<span class="token punctuation">.</span><span class="token function">Client</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment">// 获取预签名URL</span>
+presignedURL<span class="token punctuation">,</span> err <span class="token operator">:=</span> c<span class="token punctuation">.</span>Object<span class="token punctuation">.</span><span class="token function">GetPresignedURL</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> http<span class="token punctuation">.</span>MethodGet<span class="token punctuation">,</span> cosPath<span class="token punctuation">,</span> config<span class="token punctuation">.</span>SECRETID<span class="token punctuation">,</span> config<span class="token punctuation">.</span>SecretKey<span class="token punctuation">,</span> time<span class="token punctuation">.</span>Hour<span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+	<span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//通过预签名URL下载对象</span>
+w<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>presignedURL<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 
     </div>
     <div>
@@ -402,7 +417,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://asonemaster.github.io/2022/08/18/mysql1/" title="Mysql进阶1——Mysql存储引擎与索引相关">https://asonemaster.github.io/2022/08/18/mysql1/</a>
+    <a href="https://asonemaster.github.io/2022/10/06/go24/" title="腾讯COS公有云-golang上传-下载">https://asonemaster.github.io/2022/10/06/go24/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -414,8 +429,7 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/%E7%B4%A2%E5%BC%95/" rel="tag"><i class="fa fa-tag"></i> 索引</a>
-              <a href="/tags/Mysql%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/" rel="tag"><i class="fa fa-tag"></i> Mysql存储引擎</a>
+              <a href="/tags/OSS/" rel="tag"><i class="fa fa-tag"></i> OSS</a>
           </div>
 
         
@@ -424,13 +438,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/08/18/go5/" rel="prev" title="go语言基础4——Channel相关">
-      <i class="fa fa-chevron-left"></i> go语言基础4——Channel相关
+    <a href="/2022/10/04/linux4/" rel="prev" title="通过Linux系统抓包，学习TCP">
+      <i class="fa fa-chevron-left"></i> 通过Linux系统抓包，学习TCP
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/08/18/mysql2/" rel="next" title="为什么InnoDB存储引擎选择使用B+tree索引结构?">
-      为什么InnoDB存储引擎选择使用B+tree索引结构? <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -490,7 +501,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySql%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.</span> <span class="nav-text">MySql存储引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Mysql%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">Mysql体系结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.2.</span> <span class="nav-text">什么是存储引擎</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.3.</span> <span class="nav-text">存储引擎</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E9%80%89%E6%8B%A9"><span class="nav-number">1.4.</span> <span class="nav-text">存储引擎选择</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mysql%E7%B4%A2%E5%BC%95%EF%BC%88%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%B1%82%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">Mysql索引（存储引擎层）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%B4%A2%E5%BC%95"><span class="nav-number">2.1.</span> <span class="nav-text">什么是索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%BB%93%E6%9E%84"><span class="nav-number">2.2.</span> <span class="nav-text">索引结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E5%BA%94%E6%94%AF%E6%8C%81%E5%BC%95%E6%93%8E"><span class="nav-number">2.3.</span> <span class="nav-text">索引结构与对应支持引擎</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%85%BE%E8%AE%AF%E5%85%AC%E6%9C%89%E4%BA%91COS"><span class="nav-number">1.</span> <span class="nav-text">使用腾讯公有云COS</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

@@ -187,6 +187,111 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/09/13/go13/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/me.jpg">
+      <meta itemprop="name" content="asOneMaster">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="迅的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/09/13/go13/" class="post-title-link" itemprop="url">控制gorutine并发数量</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-09-13 19:51:01" itemprop="dateCreated datePublished" datetime="2022-09-13T19:51:01+08:00">2022-09-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-09-14 11:13:27" itemprop="dateModified" datetime="2022-09-14T11:13:27+08:00">2022-09-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
+                </span>
+            </span>
+
+          
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="控制并发数量可以避免服务器奔溃：以下方式尝试控制"><a href="#控制并发数量可以避免服务器奔溃：以下方式尝试控制" class="headerlink" title="控制并发数量可以避免服务器奔溃：以下方式尝试控制"></a>控制并发数量可以避免服务器奔溃：以下方式尝试控制</h3><blockquote>
+<p>注意：多个并发协程之间不需要通信，那么就可以使用 sync.WaitGroup</p>
+<p>如果并发启动了多个子协程，需要等待所有的子协程完成任务，WaitGroup 非常适合于这类场景</p>
+</blockquote>
+<ul>
+<li><strong>只是用Chan控制</strong></li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/09/13/go13/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    <div>
+        
+    </div>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/09/13/go12/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -575,100 +680,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/08/24/linux2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/me.jpg">
-      <meta itemprop="name" content="asOneMaster">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="迅的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/08/24/linux2/" class="post-title-link" itemprop="url">linux系统后端常用命令</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-08-24 20:30:55" itemprop="dateCreated datePublished" datetime="2022-08-24T20:30:55+08:00">2022-08-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-25 23:36:44" itemprop="dateModified" datetime="2022-08-25T23:36:44+08:00">2022-08-25</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
-                </span>
-            </span>
-
-          
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>161</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="1-常用指令"><a href="#1-常用指令" class="headerlink" title="1. 常用指令"></a>1. 常用指令</h1><h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_24950043/article/details/126294756">连夜整理了多年后端开发最常用linux指令__linux软件运行指令</a></p>
-<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1799381">面试常问的 25+ 个 Linux 命令 - 腾讯云开发者社区-腾讯云 (tencent.com)</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u013197629/article/details/73608613">Linux权限详解（chmod、600、644、700、711、755、777、4755、6755、7755）_林20的博客-CSDN博客_权限700</a></p>
-
-      
-    </div>
-    <div>
-        
-    </div>
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -740,7 +751,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-count">38</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -753,7 +764,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-count">27</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -779,6 +790,9 @@
     </div>
     <ul class="links-of-recent-posts-list">
         <li class="links-of-recent-posts-item">
+          <a href="/2022/10/06/go24/" title="2022&#x2F;10&#x2F;06&#x2F;go24&#x2F;">腾讯COS公有云-golang上传-下载</a>
+        </li>
+        <li class="links-of-recent-posts-item">
           <a href="/2022/10/04/linux4/" title="2022&#x2F;10&#x2F;04&#x2F;linux4&#x2F;">通过Linux系统抓包，学习TCP</a>
         </li>
         <li class="links-of-recent-posts-item">
@@ -792,9 +806,6 @@
         </li>
         <li class="links-of-recent-posts-item">
           <a href="/2022/09/30/go20/" title="2022&#x2F;09&#x2F;30&#x2F;go20&#x2F;">通过Go+Map写k-v数据库（SET-GET简单实现磁盘存储版）</a>
-        </li>
-        <li class="links-of-recent-posts-item">
-          <a href="/2022/09/30/go19/" title="2022&#x2F;09&#x2F;30&#x2F;go19&#x2F;">通过Go+Map写k-v数据库（SET-GET简单实现命令行版）</a>
         </li>
     </ul>
   </div>
@@ -829,13 +840,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">58k</span>
+    <span title="站点总字数">61k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">53 分钟</span>
+    <span title="站点阅读时长">55 分钟</span>
 </div>
 
         

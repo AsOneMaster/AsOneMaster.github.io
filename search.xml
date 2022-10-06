@@ -4101,12 +4101,124 @@ Address: 110.242.68.66<span aria-hidden="true" class="line-numbers-rows"><span><
 <p>[p.]表示push+ack 立即发送数据包，有3个是因为发送长度有限制，需要多次才能发完</p>
 <p>[F]表示Finsh</p>
 <p>上述截图 表示了完整的三次握手和四次挥手过程</p>
+<p>待学习~</p>
+<p><a href="https://www.cnblogs.com/nmap/p/6148306.html">nc命令用法举例 - nmap - 博客园 (cnblogs.com)</a></p>
+<p><a href="https://linux.cn/article-2434-1.html">技术|netstat 的10个基本用法 (linux.cn)</a></p>
 ]]></content>
       <categories>
         <category>linux</category>
       </categories>
       <tags>
         <tag>命令行实战</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>腾讯COS公有云-golang上传-下载</title>
+    <url>/2022/10/06/go24/</url>
+    <content><![CDATA[<h3 id="使用腾讯公有云COS"><a href="#使用腾讯公有云COS" class="headerlink" title="使用腾讯公有云COS"></a>使用腾讯公有云COS</h3><blockquote>
+<p>安装SDK，访问官网<a href="https://cloud.tencent.com/document/product/436/31215">对象存储 快速入门-SDK 文档-文档中心-腾讯云 (tencent.com)</a></p>
+</blockquote>
+<span id="more"></span>
+
+<ol>
+<li>创建COS连接客户端</li>
+</ol>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> cos
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"github.com/tencentyun/cos-go-sdk-v5"</span>
+	<span class="token string">"net/http"</span>
+	<span class="token string">"net/url"</span>
+	<span class="token string">"storage-cloud/config"</span>
+<span class="token punctuation">)</span>
+<span class="token keyword">var</span> cosCli <span class="token operator">*</span>cos<span class="token punctuation">.</span>Client
+<span class="token comment">// Client : 创建oss client对象</span>
+<span class="token keyword">func</span> <span class="token function">Client</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span>cos<span class="token punctuation">.</span>Client <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> cosCli <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> cosCli
+	<span class="token punctuation">&#125;</span>
+    <span class="token comment">//https://console.cloud.tencent.com/cos5/bucket, 关于地域的详情见 https://cloud.tencent.com/document/product/436/6224</span>
+	u<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> url<span class="token punctuation">.</span><span class="token function">Parse</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span>BucketURL<span class="token punctuation">)</span>
+	<span class="token comment">// 用于Get Service 查询，默认全地域 service.cos.myqcloud.com</span>
+	su<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> url<span class="token punctuation">.</span><span class="token function">Parse</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span>ServiceURL<span class="token punctuation">)</span>
+	b <span class="token operator">:=</span> <span class="token operator">&amp;</span>cos<span class="token punctuation">.</span>BaseURL<span class="token punctuation">&#123;</span>BucketURL<span class="token punctuation">:</span> u<span class="token punctuation">,</span> ServiceURL<span class="token punctuation">:</span> su<span class="token punctuation">&#125;</span>
+	<span class="token comment">// 1.永久密钥</span>
+	cosCli <span class="token operator">=</span> cos<span class="token punctuation">.</span><span class="token function">NewClient</span><span class="token punctuation">(</span>b<span class="token punctuation">,</span> <span class="token operator">&amp;</span>http<span class="token punctuation">.</span>Client<span class="token punctuation">&#123;</span>
+		Transport<span class="token punctuation">:</span> <span class="token operator">&amp;</span>cos<span class="token punctuation">.</span>AuthorizationTransport<span class="token punctuation">&#123;</span>
+			SecretID<span class="token punctuation">:</span>  config<span class="token punctuation">.</span>SECRETID<span class="token punctuation">,</span>  <span class="token comment">// 替换为用户的 SecretId，请登录访问管理控制台进行查看和管理，https://console.cloud.tencent.com/cam/capi</span>
+			SecretKey<span class="token punctuation">:</span> config<span class="token punctuation">.</span>SecretKey<span class="token punctuation">,</span> <span class="token comment">// 替换为用户的 SecretKey，请登录访问管理控制台进行查看和管理，https://console.cloud.tencent.com/cam/capi</span>
+		<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+	<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> cosCli
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ol start="2">
+<li>上传示例（使用预签名URL上传）</li>
+</ol>
+<blockquote>
+<p>使用该方法主要为了添加Header，使上传文件包含文件类型元信息，促使下载时能直接下载为该类型文件</p>
+</blockquote>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">//腾讯云COS上传</span>
+		c <span class="token operator">:=</span> cos<span class="token punctuation">.</span><span class="token function">Client</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+		cosPath <span class="token operator">:=</span> COSLocation <span class="token operator">+</span> fileMeta<span class="token punctuation">.</span>FileSha1
+		<span class="token comment">// 1. 获取预签名URL </span>
+		presignedURL<span class="token punctuation">,</span> err <span class="token operator">:=</span> c<span class="token punctuation">.</span>Object<span class="token punctuation">.</span><span class="token function">GetPresignedURL</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> http<span class="token punctuation">.</span>MethodPut<span class="token punctuation">,</span> cosPath<span class="token punctuation">,</span> config<span class="token punctuation">.</span>SECRETID<span class="token punctuation">,</span> config<span class="token punctuation">.</span>SecretKey<span class="token punctuation">,</span> time<span class="token punctuation">.</span>Hour<span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			<span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token comment">// 2. 通过预签名方式上传对象</span>
+		req<span class="token punctuation">,</span> err <span class="token operator">:=</span> http<span class="token punctuation">.</span><span class="token function">NewRequest</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>MethodPut<span class="token punctuation">,</span> presignedURL<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> newFile<span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			<span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token comment">//head为 file, head, err := r.FormFile("file") http上传文件的元信息</span>
+		contentType <span class="token operator">:=</span> head<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">)</span>
+		<span class="token comment">// 用户可自行设置请求头部</span>
+		req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"Content-Type"</span><span class="token punctuation">,</span> contentType<span class="token punctuation">)</span>
+		<span class="token comment">//使浏览器不自动预览</span>
+		req<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span><span class="token string">"Content-Disposition"</span><span class="token punctuation">,</span> <span class="token string">"attachment"</span><span class="token punctuation">)</span>
+		<span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">=</span> http<span class="token punctuation">.</span>DefaultClient<span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>req<span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			<span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ol start="3">
+<li>下载接口（使用预签名URL下载）</li>
+</ol>
+<blockquote>
+<p>方便直接通过URL浏览器下载</p>
+<p>也可使用官网其他方法<a href="https://cloud.tencent.com/document/product/436/65646">对象存储 下载对象-SDK 文档-文档中心-腾讯云 (tencent.com)</a></p>
+<p>如果需要通过浏览器下载，也可如下：</p>
+<p>示例</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// 1. 从响应体中获取对象</span>
+resp<span class="token punctuation">,</span> err <span class="token operator">:=</span> client<span class="token punctuation">.</span>Object<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> key<span class="token punctuation">,</span> opt<span class="token punctuation">)</span>
+<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+     <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+data<span class="token punctuation">,</span> err<span class="token operator">:=</span>ioutil<span class="token punctuation">.</span><span class="token function">ReadAll</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span>Body<span class="token punctuation">)</span>
+<span class="token comment">//识别http浏览器响应头 让浏览器识别出是文件下载</span>
+w<span class="token punctuation">.</span><span class="token function">Header</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span>FileTypeHeader<span class="token punctuation">,</span> FileTypeHeaderValue<span class="token punctuation">)</span>
+w<span class="token punctuation">.</span><span class="token function">Header</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span>FileDisHeader<span class="token punctuation">,</span> FileDisHeaderValue<span class="token operator">+</span><span class="token operator">&lt;</span>你文件的名称：FileName<span class="token operator">></span><span class="token operator">+</span><span class="token string">"\""</span><span class="token punctuation">)</span>
+w<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</blockquote>
+<p>预签名URL方法：</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// 1.获取对象访问 URL</span>
+cosPath <span class="token operator">:=</span> row<span class="token punctuation">.</span>FileAddr<span class="token punctuation">.</span>String
+c <span class="token operator">:=</span> cos<span class="token punctuation">.</span><span class="token function">Client</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment">// 获取预签名URL</span>
+presignedURL<span class="token punctuation">,</span> err <span class="token operator">:=</span> c<span class="token punctuation">.</span>Object<span class="token punctuation">.</span><span class="token function">GetPresignedURL</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">Background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> http<span class="token punctuation">.</span>MethodGet<span class="token punctuation">,</span> cosPath<span class="token punctuation">,</span> config<span class="token punctuation">.</span>SECRETID<span class="token punctuation">,</span> config<span class="token punctuation">.</span>SecretKey<span class="token punctuation">,</span> time<span class="token punctuation">.</span>Hour<span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+	<span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//通过预签名URL下载对象</span>
+w<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>presignedURL<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>OSS</tag>
       </tags>
   </entry>
 </search>
