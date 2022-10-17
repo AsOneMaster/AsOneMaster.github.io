@@ -4290,7 +4290,7 @@ w<span class="token punctuation">.</span><span class="token function">Write</spa
 
 <span class="token keyword">var</span> defaultServeMux ServeMux<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>http.HandleFunc()是由实现了Handler接口的方法</p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>http.HandleFunc()是由实现了Handler接口的方法类型HandleFunc func（w ResponseWriter, r *Request）实现的可自定义handler方法调用</p>
 ]]></content>
       <categories>
         <category>go语言</category>
