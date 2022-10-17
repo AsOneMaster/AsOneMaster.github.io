@@ -3346,7 +3346,7 @@ mysql&gt; explain select *from tbl_file where file_sha1 like &#39;0c4%&#39;;
 1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 </blockquote>
 <ul>
-<li>or连 接的条件</li>
+<li><strong>or连接的条件</strong></li>
 </ul>
 <blockquote>
 <p>用or分割开的条件，如果or前的条件中 的列有索引，而后面的列中没有索引，那么涉及的索引都不会被用到。</p>
@@ -4219,6 +4219,84 @@ w<span class="token punctuation">.</span><span class="token function">Write</spa
       </categories>
       <tags>
         <tag>OSS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>go源码分析——HandlerFunc</title>
+    <url>/2022/10/09/go25/</url>
+    <content><![CDATA[<h3 id="1-http-Handle-“-“-lt-Handle类型-gt"><a href="#1-http-Handle-“-“-lt-Handle类型-gt" class="headerlink" title="1. http.Handle(“/“,&lt;Handle类型&gt;)"></a>1. http.Handle(“/“,&lt;Handle类型&gt;)</h3><p>第二个参数是一个接口，需要通过实现ServeHTTP完成，也就是说只要实现了  ServeHTTP(ResponseWriter, *Request) 就是Handler类型</p>
+<p>源码如下</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Handle</span><span class="token punctuation">(</span>pattern <span class="token builtin">string</span><span class="token punctuation">,</span> handler Handler<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> DefaultServeMux<span class="token punctuation">.</span><span class="token function">Handle</span><span class="token punctuation">(</span>pattern<span class="token punctuation">,</span> handler<span class="token punctuation">)</span> <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<blockquote>
+<p> 这里注意：DefaultServeMux.Handle(pattern, handler) </p>
+</blockquote>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Handler <span class="token keyword">interface</span> <span class="token punctuation">&#123;</span>
+   <span class="token function">ServeHTTP</span><span class="token punctuation">(</span>ResponseWriter<span class="token punctuation">,</span> <span class="token operator">*</span>Request<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<span id="more"></span>
+
+<p>实现示例:</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"net/http"</span>
+	<span class="token string">"log"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">type</span> httpServer <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>server httpServer<span class="token punctuation">)</span> <span class="token function">ServeHTTP</span><span class="token punctuation">(</span>w http<span class="token punctuation">.</span>ResponseWriter<span class="token punctuation">,</span> r <span class="token operator">*</span>http<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	w<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>URL<span class="token punctuation">.</span>Path<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">var</span> server httpServer
+	http<span class="token punctuation">.</span><span class="token function">Handle</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> server<span class="token punctuation">)</span>
+	http<span class="token punctuation">.</span><span class="token function">ListenAndServe</span><span class="token punctuation">(</span><span class="token string">"localhost:9000"</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>可是这样太麻烦，不同逻辑的Handler我们都要通过结构体绑定重构一次，我们需要一个像函数一样任意创建使用的Handler，HandleFunc便出现了</p>
+<h3 id="2-http-HandleFunc-“-“-lt-func-ResponseWriter-Request-类型-gt"><a href="#2-http-HandleFunc-“-“-lt-func-ResponseWriter-Request-类型-gt" class="headerlink" title="2. http.HandleFunc(“/“, &lt;func(ResponseWriter, *Request)类型&gt;)"></a>2. http.HandleFunc(“/“, &lt;func(ResponseWriter, *Request)类型&gt;)</h3><p>第二个参数是一个方法，源代码如下</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">HandleFunc</span><span class="token punctuation">(</span>pattern <span class="token builtin">string</span><span class="token punctuation">,</span> handler <span class="token keyword">func</span><span class="token punctuation">(</span>ResponseWriter<span class="token punctuation">,</span> <span class="token operator">*</span>Request<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   DefaultServeMux<span class="token punctuation">.</span><span class="token function">HandleFunc</span><span class="token punctuation">(</span>pattern<span class="token punctuation">,</span> handler<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>为什么这样写呢，继续看DefaultServeMux.HandleFunc(pattern, handler)方法：</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>mux <span class="token operator">*</span>ServeMux<span class="token punctuation">)</span> <span class="token function">HandleFunc</span><span class="token punctuation">(</span>pattern <span class="token builtin">string</span><span class="token punctuation">,</span> handler <span class="token keyword">func</span><span class="token punctuation">(</span>ResponseWriter<span class="token punctuation">,</span> <span class="token operator">*</span>Request<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   <span class="token keyword">if</span> handler <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+      <span class="token function">panic</span><span class="token punctuation">(</span><span class="token string">"http: nil handler"</span><span class="token punctuation">)</span>
+   <span class="token punctuation">&#125;</span>
+   mux<span class="token punctuation">.</span><span class="token function">Handle</span><span class="token punctuation">(</span>pattern<span class="token punctuation">,</span> <span class="token function">HandlerFunc</span><span class="token punctuation">(</span>handler<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>通过ServeMux绑定的HandleFunc() 实现了  mux.Handle(pattern, HandlerFunc(handler))，HandlerFunc(handler)的源码如下</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> HandlerFunc <span class="token keyword">func</span><span class="token punctuation">(</span>ResponseWriter<span class="token punctuation">,</span> <span class="token operator">*</span>Request<span class="token punctuation">)</span>
+
+<span class="token comment">// ServeHTTP calls f(w, r).</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>f HandlerFunc<span class="token punctuation">)</span> <span class="token function">ServeHTTP</span><span class="token punctuation">(</span>w ResponseWriter<span class="token punctuation">,</span> r <span class="token operator">*</span>Request<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+   <span class="token function">f</span><span class="token punctuation">(</span>w<span class="token punctuation">,</span> r<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>可以看出HandlerFunc(ResponseWriter, *Request)方法为实现了ServeHTTP 的Handle接口，并且运行了HandlerFunc方法，而只要实现了该方法就是实现了Hanler接口，就可以运行.Handle()方法</p>
+<p>mux.Handle(pattern, HandlerFunc(handler))的的源码与DefaultServeMux.Handle(pattern, handler)的源码一样都是：</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>mux <span class="token operator">*</span>ServeMux<span class="token punctuation">)</span> <span class="token function">Handle</span><span class="token punctuation">(</span>pattern <span class="token builtin">string</span><span class="token punctuation">,</span> handler Handler<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>那这是为什么呢？</p>
+<p>原因很简单，其实DefaultServeMux就是ServeMux类型的指针</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// DefaultServeMux is the default ServeMux used by Serve.</span>
+<span class="token keyword">var</span> DefaultServeMux <span class="token operator">=</span> <span class="token operator">&amp;</span>defaultServeMux
+
+<span class="token keyword">var</span> defaultServeMux ServeMux<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>http.HandleFunc()是由实现了Handler接口的方法</p>
+]]></content>
+      <categories>
+        <category>go语言</category>
+      </categories>
+      <tags>
+        <tag>net/http</tag>
       </tags>
   </entry>
 </search>

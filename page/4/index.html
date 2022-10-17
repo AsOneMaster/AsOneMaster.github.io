@@ -187,6 +187,103 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/09/14/go14/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/me.jpg">
+      <meta itemprop="name" content="asOneMaster">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="迅的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/09/14/go14/" class="post-title-link" itemprop="url">使用Context控制gorutine并发</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-09-14 11:13:19 / 修改时间：20:44:49" itemprop="dateCreated datePublished" datetime="2022-09-14T11:13:19+08:00">2022-09-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">go语言</span></a>
+                </span>
+            </span>
+
+          
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>更复杂的场景如何做并发控制呢？比如子协程中开启了新的子协程，或者需要同时控制多个子协程。这种场景下，<code>select+chan</code>的方式就显得力不从心了。Go 语言提供了 Context 标准库可以解决这类场景的问题，Context 的作用和它的名字很像，上下文，即子协程的下上文。Context 有两个主要的功能：</p>
+<ul>
+<li>通知子协程退出（正常退出，超时退出等）；</li>
+<li>传递必要的参数。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/09/14/go14/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    <div>
+        
+    </div>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/09/13/go13/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -577,109 +674,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://asonemaster.github.io/2022/09/01/mysql3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/me.jpg">
-      <meta itemprop="name" content="asOneMaster">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="迅的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/09/01/mysql3/" class="post-title-link" itemprop="url">什么情况下索引失效</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-09-01 13:50:14 / 修改时间：15:12:37" itemprop="dateCreated datePublished" datetime="2022-09-01T13:50:14+08:00">2022-09-01</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mysql/" itemprop="url" rel="index"><span itemprop="name">Mysql</span></a>
-                </span>
-            </span>
-
-          
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="索引失效情况：索引使用"><a href="#索引失效情况：索引使用" class="headerlink" title="索引失效情况：索引使用"></a>索引失效情况：索引使用</h3><blockquote>
-<p>使用explain 分析索引是否使用</p>
-<pre class="line-numbers language-mysql" data-language="mysql"><code class="language-mysql"> explain select *from tbl_file where file_sha1&#x3D;&#39;0c4b1036671ad0b2727a9d18349d02feae0e8161&#39;;
-+----+-------------+----------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
-| id | select_type | table    | partitions | type  | possible_keys | key           | key_len | ref   | rows | filtered | Extra |
-+----+-------------+----------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
-|  1 | SIMPLE      | tbl_file | NULL       | const | idx_file_hash | idx_file_hash | 120     | const |    1 |   100.00 | NULL  |
-+----+-------------+----------+------------+-------+---------------+---------------+---------+-------+------+----------+-------+
-1 row in set, 1 warning (0.00 sec)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</blockquote>
-<p>possible_keys ：可能索引  key：索引键</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/09/01/mysql3/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    <div>
-        
-    </div>
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -751,7 +745,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">38</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -764,7 +758,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-count">28</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -790,6 +784,9 @@
     </div>
     <ul class="links-of-recent-posts-list">
         <li class="links-of-recent-posts-item">
+          <a href="/2022/10/09/go25/" title="2022&#x2F;10&#x2F;09&#x2F;go25&#x2F;">go源码分析——HandlerFunc</a>
+        </li>
+        <li class="links-of-recent-posts-item">
           <a href="/2022/10/06/go24/" title="2022&#x2F;10&#x2F;06&#x2F;go24&#x2F;">腾讯COS公有云-golang上传-下载</a>
         </li>
         <li class="links-of-recent-posts-item">
@@ -803,9 +800,6 @@
         </li>
         <li class="links-of-recent-posts-item">
           <a href="/2022/10/01/go21/" title="2022&#x2F;10&#x2F;01&#x2F;go21&#x2F;">通过Go+Map写k-v数据库（SET-GET简单实现TCP版）</a>
-        </li>
-        <li class="links-of-recent-posts-item">
-          <a href="/2022/09/30/go20/" title="2022&#x2F;09&#x2F;30&#x2F;go20&#x2F;">通过Go+Map写k-v数据库（SET-GET简单实现磁盘存储版）</a>
         </li>
     </ul>
   </div>
@@ -840,13 +834,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">61k</span>
+    <span title="站点总字数">63k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">55 分钟</span>
+    <span title="站点阅读时长">57 分钟</span>
 </div>
 
         
