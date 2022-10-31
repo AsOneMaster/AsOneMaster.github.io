@@ -26,14 +26,14 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="协程---channel 练习">
 <meta property="og:url" content="https://asonemaster.github.io/2022/10/03/go23/index.html">
-<meta property="og:site_name" content="迅的个人博客">
+<meta property="og:site_name" content="语言学习项目">
 <meta property="og:description" content="1. 用协程实现顺序打印123func main() &amp;#123; 	ch :&#x3D; make(chan int) 	for i :&#x3D; 1; i &lt;&#x3D; 3; i++ &amp;#123; 		go func() &amp;#123; 			fmt.Println(&lt;-ch) 		&amp;#125;() 		ch &lt;- i 		time.Sleep(time.Second)">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-10-03T12:35:01.290Z">
 <meta property="article:modified_time" content="2022-10-03T13:04:03.269Z">
 <meta property="article:author" content="asOneMaster">
-<meta property="article:tag" content="Channel">
 <meta property="article:tag" content="goroutine">
+<meta property="article:tag" content="Channel">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://asonemaster.github.io/2022/10/03/go23/">
@@ -49,7 +49,7 @@
   };
 </script>
 
-  <title>协程---channel 练习 | 迅的个人博客</title>
+  <title>协程---channel 练习 | 语言学习项目</title>
   
 
 
@@ -100,9 +100,10 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">迅的个人博客</h1>
+      <h1 class="site-title">语言学习项目</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
+      <p class="site-subtitle" itemprop="description">迅的个人博客</p>
   </div>
 
   <div class="site-nav-right">
@@ -199,11 +200,11 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/me.jpg">
       <meta itemprop="name" content="asOneMaster">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content="一些学习记录、疑惑，以及杂记">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="迅的个人博客">
+      <meta itemprop="name" content="语言学习项目">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -408,8 +409,8 @@
       <footer class="post-footer">
           
           <div class="post-tags">
-              <a href="/tags/Channel/" rel="tag"><i class="fa fa-tag"></i> Channel</a>
               <a href="/tags/goroutine/" rel="tag"><i class="fa fa-tag"></i> goroutine</a>
+              <a href="/tags/Channel/" rel="tag"><i class="fa fa-tag"></i> Channel</a>
           </div>
 
         
@@ -493,7 +494,7 @@
     <img class="site-author-image" itemprop="image" alt="asOneMaster"
       src="/images/me.jpg">
   <p class="site-author-name" itemprop="name">asOneMaster</p>
-  <div class="site-description" itemprop="description"></div>
+  <div class="site-description" itemprop="description">一些学习记录、疑惑，以及杂记</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">

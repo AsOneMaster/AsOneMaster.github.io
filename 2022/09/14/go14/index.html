@@ -26,7 +26,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用Context控制gorutine并发">
 <meta property="og:url" content="https://asonemaster.github.io/2022/09/14/go14/index.html">
-<meta property="og:site_name" content="迅的个人博客">
+<meta property="og:site_name" content="语言学习项目">
 <meta property="og:description" content="更复杂的场景如何做并发控制呢？比如子协程中开启了新的子协程，或者需要同时控制多个子协程。这种场景下，select+chan的方式就显得力不从心了。Go 语言提供了 Context 标准库可以解决这类场景的问题，Context 的作用和它的名字很像，上下文，即子协程的下上文。Context 有两个主要的功能：  通知子协程退出（正常退出，超时退出等）； 传递必要的参数。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-09-14T03:13:19.251Z">
@@ -49,7 +49,7 @@
   };
 </script>
 
-  <title>使用Context控制gorutine并发 | 迅的个人博客</title>
+  <title>使用Context控制gorutine并发 | 语言学习项目</title>
   
 
 
@@ -100,9 +100,10 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">迅的个人博客</h1>
+      <h1 class="site-title">语言学习项目</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
+      <p class="site-subtitle" itemprop="description">迅的个人博客</p>
   </div>
 
   <div class="site-nav-right">
@@ -199,11 +200,11 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/me.jpg">
       <meta itemprop="name" content="asOneMaster">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content="一些学习记录、疑惑，以及杂记">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="迅的个人博客">
+      <meta itemprop="name" content="语言学习项目">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -673,7 +674,7 @@ stop work3 退出错误显示： context deadline exceeded
     <img class="site-author-image" itemprop="image" alt="asOneMaster"
       src="/images/me.jpg">
   <p class="site-author-name" itemprop="name">asOneMaster</p>
-  <div class="site-description" itemprop="description"></div>
+  <div class="site-description" itemprop="description">一些学习记录、疑惑，以及杂记</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">

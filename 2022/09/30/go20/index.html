@@ -26,7 +26,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="通过Go+Map写k-v数据库（SET-GET简单实现磁盘存储版）">
 <meta property="og:url" content="https://asonemaster.github.io/2022/09/30/go20/index.html">
-<meta property="og:site_name" content="迅的个人博客">
+<meta property="og:site_name" content="语言学习项目">
 <meta property="og:description" content="通过实现一个简单的K–V存储数据库，学习Go语言（三） 作为数据库我们需要将键值存储的数据保存在磁盘上，以及如何在下一次启动应用程序时将其加载到内存。 我们准备创建两个新函数，save()保存数据到磁盘，load()从磁盘加载数据。 将数据转换为字节流的过程称为序列化。读取数据文件并将其转换为对象的过程称为反序列化。 encoding&#x2F;gob标准Go包将用于程序中。它将有助于序列化和反序列化过程。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-09-30T08:45:51.972Z">
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>通过Go+Map写k-v数据库（SET-GET简单实现磁盘存储版） | 迅的个人博客</title>
+  <title>通过Go+Map写k-v数据库（SET-GET简单实现磁盘存储版） | 语言学习项目</title>
   
 
 
@@ -99,9 +99,10 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">迅的个人博客</h1>
+      <h1 class="site-title">语言学习项目</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
+      <p class="site-subtitle" itemprop="description">迅的个人博客</p>
   </div>
 
   <div class="site-nav-right">
@@ -198,11 +199,11 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/me.jpg">
       <meta itemprop="name" content="asOneMaster">
-      <meta itemprop="description" content="">
+      <meta itemprop="description" content="一些学习记录、疑惑，以及杂记">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="迅的个人博客">
+      <meta itemprop="name" content="语言学习项目">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -578,7 +579,7 @@
     <img class="site-author-image" itemprop="image" alt="asOneMaster"
       src="/images/me.jpg">
   <p class="site-author-name" itemprop="name">asOneMaster</p>
-  <div class="site-description" itemprop="description"></div>
+  <div class="site-description" itemprop="description">一些学习记录、疑惑，以及杂记</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
